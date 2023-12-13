@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public struct Image: Equatable, Hashable, Codable, _PrimitiveView {
+public struct Image: Equatable, Hashable, _PrimitiveView {
     
     let storage: Storage
     
@@ -29,6 +29,21 @@ public struct Image: Equatable, Hashable, Codable, _PrimitiveView {
         self.storage = .system(imageName)
     }
 }
+
+// MARK: - Codable
+
+extension Image: Codable {
+    
+    public init(from decoder: Decoder) throws {
+        self.storage = try .init(from: decoder)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        try self.storage.encode(to: encoder)
+    }
+}
+
+// MARK: - Supporting Types
 
 internal extension Image {
     
