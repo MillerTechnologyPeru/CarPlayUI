@@ -101,7 +101,7 @@ public struct Label<Title, Icon> : View where Title : View, Icon : View {
         self.icon = icon()
     }
     
-    public var body: some View {
+    public var body: TupleView<(Title, Icon)> {
         title
         icon
     }
