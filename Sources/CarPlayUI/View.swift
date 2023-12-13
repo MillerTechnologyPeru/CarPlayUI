@@ -8,17 +8,34 @@
 import Foundation
 
 public protocol View {
-  associatedtype Body: View
+    
+    associatedtype Body: View
+    
+    @ViewBuilder
+    var body: Self.Body { get }
+    
+    func _visitChildren<V: ViewVisitor>(_ visitor: V)
 
-  @ViewBuilder
-  var body: Self.Body { get }
+    static func _makeView(_ inputs: ViewInputs<Self>) -> ViewOutputs
+}
+
+public extension View {
+    
+    func _visitChildren<V: ViewVisitor>(_ visitor: V) {
+        visitor.visit(body)
+    }
+    
+    static func _makeView(_ inputs: ViewInputs<Self>) -> ViewOutputs {
+      .init(inputs: inputs)
+    }
 }
 
 public extension Never {
-  @_spi(CarPlayUI)
-  var body: Never {
-    fatalError()
-  }
+    
+    @_spi(CarPlayUI)
+    var body: Never {
+        fatalError()
+    }
 }
 
 extension Never: View {}
@@ -28,10 +45,12 @@ public protocol _PrimitiveView: View where Body == Never {}
 
 public extension _PrimitiveView {
     
-  @_spi(CarPlayUI)
-  var body: Never {
-    neverBody(String(reflecting: Self.self))
-  }
+    @_spi(CarPlayUI)
+    var body: Never {
+        neverBody(String(reflecting: Self.self))
+    }
+    
+    func _visitChildren<V>(_ visitor: V) where V: ViewVisitor { }
 }
 
 /// A `View` type that renders with subviews, usually specified in the `Content` type argument
