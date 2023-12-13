@@ -6,21 +6,21 @@
 //
 
 /// A `View` created from a `Tuple` of `View` values.
-public struct TupleView<T>: _PrimitiveView {
+public struct TupleView<T>: _PrimitiveView, GroupView {
   public let value: T
 
-  let _children: [AnyView]
+  public let children: [AnyView]
   private let visit: (ViewVisitor) -> ()
 
-  public init(_ value: T) {
+  internal init(_ value: T) {
     self.value = value
-    _children = []
+    children = []
     visit = { _ in }
   }
 
-  public init(_ value: T, children: [AnyView]) {
+  internal init(_ value: T, children: [AnyView]) {
     self.value = value
-    _children = children
+    self.children = children
     visit = {
       for child in children {
         $0.visit(child)
@@ -34,7 +34,7 @@ public struct TupleView<T>: _PrimitiveView {
 
   init<T1: View, T2: View>(_ v1: T1, _ v2: T2) where T == (T1, T2) {
     value = (v1, v2)
-    _children = [AnyView(v1), AnyView(v2)]
+    children = [AnyView(v1), AnyView(v2)]
     visit = {
       $0.visit(v1)
       $0.visit(v2)
@@ -44,7 +44,7 @@ public struct TupleView<T>: _PrimitiveView {
   // swiftlint:disable large_tuple
   init<T1: View, T2: View, T3: View>(_ v1: T1, _ v2: T2, _ v3: T3) where T == (T1, T2, T3) {
     value = (v1, v2, v3)
-    _children = [AnyView(v1), AnyView(v2), AnyView(v3)]
+    children = [AnyView(v1), AnyView(v2), AnyView(v3)]
     visit = {
       $0.visit(v1)
       $0.visit(v2)
@@ -56,7 +56,7 @@ public struct TupleView<T>: _PrimitiveView {
     where T == (T1, T2, T3, T4)
   {
     value = (v1, v2, v3, v4)
-    _children = [AnyView(v1), AnyView(v2), AnyView(v3), AnyView(v4)]
+    children = [AnyView(v1), AnyView(v2), AnyView(v3), AnyView(v4)]
     visit = {
       $0.visit(v1)
       $0.visit(v2)
@@ -73,7 +73,7 @@ public struct TupleView<T>: _PrimitiveView {
     _ v5: T5
   ) where T == (T1, T2, T3, T4, T5) {
     value = (v1, v2, v3, v4, v5)
-    _children = [AnyView(v1), AnyView(v2), AnyView(v3), AnyView(v4), AnyView(v5)]
+    children = [AnyView(v1), AnyView(v2), AnyView(v3), AnyView(v4), AnyView(v5)]
     visit = {
       $0.visit(v1)
       $0.visit(v2)
@@ -92,7 +92,7 @@ public struct TupleView<T>: _PrimitiveView {
     _ v6: T6
   ) where T == (T1, T2, T3, T4, T5, T6) {
     value = (v1, v2, v3, v4, v5, v6)
-    _children = [AnyView(v1), AnyView(v2), AnyView(v3), AnyView(v4), AnyView(v5), AnyView(v6)]
+    children = [AnyView(v1), AnyView(v2), AnyView(v3), AnyView(v4), AnyView(v5), AnyView(v6)]
     visit = {
       $0.visit(v1)
       $0.visit(v2)
@@ -113,7 +113,7 @@ public struct TupleView<T>: _PrimitiveView {
     _ v7: T7
   ) where T == (T1, T2, T3, T4, T5, T6, T7) {
     value = (v1, v2, v3, v4, v5, v6, v7)
-    _children = [
+    children = [
       AnyView(v1),
       AnyView(v2),
       AnyView(v3),
@@ -144,7 +144,7 @@ public struct TupleView<T>: _PrimitiveView {
     _ v8: T8
   ) where T == (T1, T2, T3, T4, T5, T6, T7, T8) {
     value = (v1, v2, v3, v4, v5, v6, v7, v8)
-    _children = [
+    children = [
       AnyView(v1),
       AnyView(v2),
       AnyView(v3),
@@ -178,7 +178,7 @@ public struct TupleView<T>: _PrimitiveView {
     _ v9: T9
   ) where T == (T1, T2, T3, T4, T5, T6, T7, T8, T9) {
     value = (v1, v2, v3, v4, v5, v6, v7, v8, v9)
-    _children = [
+    children = [
       AnyView(v1),
       AnyView(v2),
       AnyView(v3),
@@ -226,7 +226,7 @@ public struct TupleView<T>: _PrimitiveView {
     _ v10: T10
   ) where T == (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) {
     value = (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10)
-    _children = [
+    children = [
       AnyView(v1),
       AnyView(v2),
       AnyView(v3),
@@ -251,8 +251,4 @@ public struct TupleView<T>: _PrimitiveView {
       $0.visit(v10)
     }
   }
-}
-
-extension TupleView: GroupView {
-  public var children: [AnyView] { _children }
 }
