@@ -13,7 +13,7 @@ public final class CarplaySceneDelegate: UIResponder, CPTemplateApplicationScene
     
     // MARK: - Properties
     
-    var interfaceController: CPInterfaceController?
+    private(set) var interfaceController: CPInterfaceController?
     
     // MARK: - Initialization
     
@@ -22,15 +22,6 @@ public final class CarplaySceneDelegate: UIResponder, CPTemplateApplicationScene
         
         // store singleton
         CarPlayAppCache.sceneDelegate = self
-    }
-    
-    // MARK: - Methods
-    
-    private func startRendering() {
-        guard let interfaceController = self.interfaceController else {
-            return
-        }
-        
     }
     
     // MARK: - CPTemplateApplicationSceneDelegate
@@ -53,6 +44,6 @@ public final class CarplaySceneDelegate: UIResponder, CPTemplateApplicationScene
         from window: CPWindow
     ) {
         self.interfaceController = nil
-        CarPlayAppCache.renderer.disconnectScene(templateApplicationScene)
+        CarPlayAppCache.renderer.disconnectScene()
     }
 }

@@ -14,7 +14,9 @@ import TokamakCore
 
 final class CarplayRenderer: Renderer {
     
-    private(set) var reconcilers = [UIScene: StackReconciler<CarplayRenderer>]()
+    private(set) var reconciler: StackReconciler<CarplayRenderer>?
+    
+    private(set) var scene: CPTemplateApplicationScene?
     
     init() { }
     
@@ -22,6 +24,7 @@ final class CarplayRenderer: Renderer {
         app: any App,
         scene: CPTemplateApplicationScene
     ) {
+        self.scene = scene
         let sceneReconciler = StackReconciler(
             app: app,
             target: CarPlayTarget(scene),
@@ -33,11 +36,12 @@ final class CarplayRenderer: Renderer {
                 }
             }
         )
-        self.reconcilers[scene] = sceneReconciler
+        self.reconciler = sceneReconciler
     }
     
-    func disconnectScene(_ scene: UIScene) {
-        reconcilers.removeValue(forKey: scene)
+    func disconnectScene() {
+        scene = nil
+        reconciler = nil
     }
     
     /** Function called by a reconciler when a new target instance should be
@@ -52,36 +56,40 @@ final class CarplayRenderer: Renderer {
       to parent: CarPlayTarget,
       with host: MountedHost
     ) -> CarPlayTarget? {
-        guard let anyWidget = mapAnyView(
-          host.view,
-          transform: { (widget: AnyTemplate) in widget }
-        ) else {
-          // handle cases like `TupleView`
-          if mapAnyView(host.view, transform: { (view: ParentView) in view }) != nil {
-            return parent
-          }
-
-          return nil
-        }
-                
-        switch parent.storage {
-        case .scene(let scene):
-            // initialize template
-            let newTemplate = anyWidget.build(scene)
-            scene.interfaceController.setRootTemplate(newTemplate, animated: false) // connect to interface
-            return CarPlayTarget(host.view, newTemplate)
-        case .template(let parentTemplate):
-            if #available(iOS 14.0, *), let tabBar = parentTemplate as? CPTabBarTemplate {
-                //let oldTemplates = tabBar.templates
-                //oldTemplates.append()
-                //tabBar.updateTemplates()
+        
+        // handle template view
+        if let anyTemplate = mapAnyView(
+            host.view,
+            transform: { (template: AnyTemplate) in template }
+        ) {
+            
+            switch parent.storage {
+            case .scene(let scene):
+                // initialize template
+                let newTemplate = anyTemplate.build(scene)
+                scene.interfaceController.setRootTemplate(newTemplate, animated: false) // connect to interface
+                return CarPlayTarget(host.view, newTemplate)
+            case .template(let parentTemplate):
+                if #available(iOS 14.0, *), let tabBar = parentTemplate as? CPTabBarTemplate, let scene = self.scene {
+                    let newTemplate = anyTemplate.build(scene)
+                    var templates = tabBar.templates
+                    templates.append(newTemplate)
+                    tabBar.updateTemplates(templates)
+                    return CarPlayTarget(host.view, newTemplate)
+                } else {
+                    return nil
+                }
+            case .dashboard(let scene):
                 return nil
-            } else {
+            case .instrumentCluster(let scene):
                 return nil
             }
-        case .dashboard(let scene):
-            return nil
-        case .instrumentCluster(let scene):
+        } else {
+            // handle cases like `TupleView`
+            if mapAnyView(host.view, transform: { (view: ParentView) in view }) != nil {
+                return parent
+            }
+            
             return nil
         }
     }
@@ -95,12 +103,11 @@ final class CarplayRenderer: Renderer {
       target: CarPlayTarget,
       with host: MountedHost
     ) {
-        guard let template = mapAnyView(host.view, transform: { (template: AnyTemplate) in template })
-            else { return }
-        
-        template.update(target)
+        if let template = mapAnyView(host.view, transform: { (template: AnyTemplate) in template }), let scene = self.scene {
+            template.update(target, scene: scene)
+        }
     }
-
+    
     /** Function called by a reconciler when an existing target instance should be
      unmounted: removed from the parent and most likely destroyed.
      - parameter target: Existing target instance to be unmounted.

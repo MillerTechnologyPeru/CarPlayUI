@@ -14,7 +14,7 @@ internal protocol AnyTemplate {
     
     func build(_ scene: CPTemplateApplicationScene) -> CPTemplate
     
-    func update(_ target: CarPlayTarget)
+    func update(_ target: CarPlayTarget, scene: CPTemplateApplicationScene)
 }
 
 // MARK: - View
@@ -23,13 +23,13 @@ internal struct TemplateView <Content: View> : View, AnyTemplate {
     
     let _build: (CPTemplateApplicationScene) -> CPTemplate
     
-    let _update: (CarPlayTarget) -> ()
+    let _update: (CarPlayTarget, CPTemplateApplicationScene) -> ()
     
     let content: Content
     
     init(
         build: @escaping (CPTemplateApplicationScene) -> CPTemplate,
-        update: @escaping (CarPlayTarget) -> (),
+        update: @escaping (CarPlayTarget, CPTemplateApplicationScene) -> (),
         @ViewBuilder content: () -> Content
     ) {
         self._build = build
@@ -41,10 +41,10 @@ internal struct TemplateView <Content: View> : View, AnyTemplate {
         _build(scene)
     }
     
-    func update(_ target: CarPlayTarget) {
+    func update(_ target: CarPlayTarget, scene: CPTemplateApplicationScene) {
         // make sure its a template
         if case .template = target.storage {
-          _update(target)
+          _update(target, scene)
         }
     }
     
