@@ -21,6 +21,7 @@ public class _AnyImageProviderBox: AnyTokenBox, Equatable {
   public struct _Image {
     public indirect enum Storage {
       case named(String, bundle: Bundle?)
+      case system(String)
       case resizable(Storage, capInsets: EdgeInsets, resizingMode: Image.ResizingMode)
     }
 
@@ -100,6 +101,26 @@ private class ResizableProvider: _AnyImageProviderBox {
   }
 }
 
+private class SystemImageProvider: _AnyImageProviderBox {
+    
+    let systemName: String
+    let label: Text?
+    
+    init(systemName: String, label: Text?) {
+        self.systemName = systemName
+        self.label = label
+    }
+    
+    override func equals(_ other: _AnyImageProviderBox) -> Bool {
+      guard let other = other as? SystemImageProvider else { return false }
+      return other.systemName == systemName
+    }
+    
+    override func resolve(in environment: EnvironmentValues) -> ResolvedValue {
+        .init(storage: .system(systemName), label: label)
+    }
+}
+
 public struct Image: _PrimitiveView, Equatable {
   @_spi(TokamakCore)
   public let provider: _AnyImageProviderBox
@@ -132,6 +153,13 @@ public extension Image {
   init(decorative name: String, bundle: Bundle? = nil) {
     self.init(NamedImageProvider(name: name, bundle: bundle, label: nil))
   }
+}
+
+public extension Image {
+    
+    init(systemName imageName: String, label: Text? = nil) {
+        self.init(SystemImageProvider(systemName: imageName, label: label))
+    }
 }
 
 public extension Image {
