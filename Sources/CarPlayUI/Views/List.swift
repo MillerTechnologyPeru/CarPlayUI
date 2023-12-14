@@ -28,7 +28,7 @@ extension List: CarPlayPrimitive {
                     return CPListTemplate(title: nil, sections: [
                         CPListSection(items: items.map { .init(text: $0, detailText: nil) })
                     ])
-                }, update: { _ in
+                }, update: { _, _ in
                     
                 }, content: {
                     proxy.content
