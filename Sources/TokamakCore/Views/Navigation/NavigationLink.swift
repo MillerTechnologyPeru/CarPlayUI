@@ -28,7 +28,7 @@ public struct NavigationLink<Label, Destination>: _PrimitiveView where Label: Vi
   @State
   var destination: NavigationLinkDestination
 
-  let label: Label
+  public let label: Label
 
   @EnvironmentObject
   var navigationContext: NavigationContext
