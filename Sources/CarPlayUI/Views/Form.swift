@@ -95,15 +95,31 @@ extension ParentView {
     
     var informationItem: CPInformationItem {
         // extract labels
-        let labels = children.prefix(2).map {
+        let labels = children.prefix(2).compactMap {
             mapAnyView($0, transform: { (view: Text) in
                 _TextProxy(view).rawText
             })
         }
-        return .init(
-            title: labels.count > 0 ? labels[0] : nil,
-            detail: labels.count > 1 ? labels[1] : nil
-        )
+        let rating = children.compactMap {
+            mapAnyView($0, transform: { (view: Rating) in
+                view
+            })
+        }.first
+        let title = labels.count > 0 ? labels[0] : nil
+        let detail = labels.count > 1 ? labels[1] : nil
+        if let rating = rating {
+            return CPInformationRatingItem(
+                rating: rating.rating as NSNumber,
+                maximumRating: rating.maximum as NSNumber,
+                title: title,
+                detail: detail
+            )
+        } else {
+            return CPInformationItem(
+                title: title,
+                detail: detail
+            )
+        }
     }
 }
 
