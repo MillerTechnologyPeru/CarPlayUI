@@ -25,6 +25,8 @@ public struct Form <Content: View> : View {
     }
 }
 
+// MARK: - CarPlayPrimitive
+
 @available(iOS 14.0, *)
 extension Form: CarPlayPrimitive {
     
@@ -32,13 +34,13 @@ extension Form: CarPlayPrimitive {
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(
-                build: { _ in
+                build: { scene in
                     let children = (content as? ParentView)?.children ?? []
                     let items = children.compactMap { mapAnyView($0) { (view: InformationItem) in
                         view.informationItem
                     }}
                     let actions = children.compactMap { mapAnyView($0) { (view: TextButton) in
-                        view.textButton
+                        view.textButton(for: scene)
                     }}
                     return CPInformationTemplate(
                         title: "",
@@ -47,7 +49,7 @@ extension Form: CarPlayPrimitive {
                         actions: actions
                     )
                 },
-                update: { target in
+                update: { (target, scene) in
                     guard case let .template(template) = target.storage,
                         let informationTemplate = template as? CPInformationTemplate else {
                         return
@@ -57,7 +59,7 @@ extension Form: CarPlayPrimitive {
                         view.informationItem
                     }}
                     let actions = children.compactMap { mapAnyView($0) { (view: TextButton) in
-                        view.textButton
+                        view.textButton(for: scene)
                     }}
                     informationTemplate.items = items
                     informationTemplate.actions = actions
@@ -67,6 +69,8 @@ extension Form: CarPlayPrimitive {
         )
     }
 }
+
+// MARK: - Supporting Types
 
 @available(iOS 14.0, *)
 protocol InformationItem {
