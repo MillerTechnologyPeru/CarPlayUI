@@ -15,12 +15,15 @@
 //  Created by Carson Katri on 7/12/21.
 //
 
-public struct ButtonRole: Equatable {
-  public static let destructive = ButtonRole(rawValue: 0)
-  public static let cancel = ButtonRole(rawValue: 1)
+public struct ButtonRole: Equatable, Hashable, RawRepresentable {
+    
+    public static var destructive: ButtonRole { ButtonRole(rawValue: 0) }
+    
+    public static var cancel: ButtonRole { ButtonRole(rawValue: 1) }
 
-  private let rawValue: Int
-  private init(rawValue: Int) {
-    self.rawValue = rawValue
-  }
+    public let rawValue: Int
+    
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
 }
