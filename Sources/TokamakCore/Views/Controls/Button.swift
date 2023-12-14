@@ -36,9 +36,10 @@
 ///       Button("\(counter)", action: { counter += 1 })
 ///     }
 public struct Button<Label>: View where Label: View {
-  let label: Label
-  let action: () -> ()
-  let role: ButtonRole?
+    
+    public let label: Label
+    public let action: () -> ()
+    public let role: ButtonRole?
 
   @Environment(\.buttonStyle)
   var buttonStyle
