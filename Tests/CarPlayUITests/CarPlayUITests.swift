@@ -1,10 +1,11 @@
+import Foundation
 import XCTest
+import CarPlay
 @testable import CarPlayUI
 
 final class CarPlayUITests: XCTestCase {
     
-    func testExample() throws {
-        
+    func testTemplateState() throws {
         
     }
 }
