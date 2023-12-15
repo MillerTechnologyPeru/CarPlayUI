@@ -9,8 +9,7 @@ import Foundation
 import Dispatch
 import UIKit
 import CarPlay
-@_spi(TokamakCore)
-import TokamakCore
+
 
 final class CarplayRenderer: Renderer {
     

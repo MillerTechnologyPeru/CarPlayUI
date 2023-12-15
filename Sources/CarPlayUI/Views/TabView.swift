@@ -7,7 +7,6 @@
 
 import Foundation
 import CarPlay
-import TokamakCore
 
 @available(iOS 14.0, *)
 public struct TabView <Content: View> : View {
@@ -38,7 +37,7 @@ public struct TabView <Content: View> : View {
 @available(iOS 14.0, *)
 extension TabView: CarPlayPrimitive {
     
-    @_spi(TokamakCore)
+    
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(

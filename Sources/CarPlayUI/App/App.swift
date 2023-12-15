@@ -8,10 +8,9 @@
 import Foundation
 import UIKit
 import CarPlay
-import TokamakCore
 import Combine
 
-public extension TokamakCore.App {
+public extension CarPlayUI.App {
     
     static func _launch(_ app: Self, with configuration: _AppConfiguration) {
         // create renderer

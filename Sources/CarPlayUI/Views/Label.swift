@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import TokamakCore
 
 public struct Label<Title, Icon> : View where Title : View, Icon : View {
     
@@ -35,6 +34,8 @@ extension Label: ParentView {
         body.children
     }
 }
+
+extension Label: GroupView { }
 
 extension Label where Title == Text, Icon == Image {
 

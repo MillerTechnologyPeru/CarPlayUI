@@ -7,7 +7,6 @@
 
 import Foundation
 import CarPlay
-import TokamakCore
 
 public struct Grid <Content: View> : View {
         
@@ -83,7 +82,7 @@ extension Grid.Storage {
 
 extension Grid.Template: CarPlayPrimitive {
     
-    @_spi(TokamakCore)
+    
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(

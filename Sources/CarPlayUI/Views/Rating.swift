@@ -7,7 +7,6 @@
 
 import Foundation
 import CarPlay
-import TokamakCore
 
 /// CarPlay Rating View
 @available(iOS 14.0, *)

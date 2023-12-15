@@ -12,13 +12,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "CarPlayUI",
-            dependencies: [
-                "TokamakCore"
-            ]
-        ),
-        .target(
-            name: "TokamakCore"
+            name: "CarPlayUI"
         ),
         .testTarget(
             name: "CarPlayUITests",

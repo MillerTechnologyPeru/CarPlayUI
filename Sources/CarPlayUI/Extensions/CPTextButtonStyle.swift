@@ -7,7 +7,6 @@
 
 import Foundation
 import CarPlay
-import TokamakCore
 
 @available(iOS 14.0, *)
 internal extension CPTextButtonStyle {

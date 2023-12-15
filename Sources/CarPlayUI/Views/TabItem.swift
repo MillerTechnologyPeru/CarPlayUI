@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import CarPlay
-import TokamakCore
 
 @available(iOS 14.0, *)
 public struct TabItem {

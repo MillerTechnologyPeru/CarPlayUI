@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import CarPlay
-import TokamakCore
 
 internal protocol AnyTemplate {
     

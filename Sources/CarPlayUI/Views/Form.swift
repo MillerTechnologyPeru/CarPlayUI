@@ -7,7 +7,6 @@
 
 import Foundation
 import CarPlay
-import TokamakCore
 
 @available(iOS 14.0, *)
 public struct Form <Content: View> : View {
@@ -53,7 +52,7 @@ extension Form {
 @available(iOS 14.0, *)
 extension Form.Template: CarPlayPrimitive {
     
-    @_spi(TokamakCore)
+    
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(
