@@ -29,6 +29,13 @@ public struct Label<Title, Icon> : View where Title : View, Icon : View {
     }
 }
 
+extension Label: ParentView {
+    
+    public var children: [AnyView] {
+        body.children
+    }
+}
+
 extension Label where Title == Text, Icon == Image {
 
     /// Creates a label with an icon image and a title generated from a string.
