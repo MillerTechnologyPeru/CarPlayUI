@@ -128,7 +128,7 @@ final class CarplayRenderer: Renderer {
             }
             templateView.update(template)
             return
-        case .component(let component):
+        case .component(var component):
             guard let componentView = mapAnyView(host.view, transform: { (component: AnyComponent) in component }) else {
                 assertionFailure("Underlying view is not a component")
                 return
@@ -143,7 +143,8 @@ final class CarplayRenderer: Renderer {
                 return
             }
             // TODO: Update components
-            componentView.update(component: component, parent: parentObject)
+            componentView.update(component: &component, parent: parentObject)
+            target.update(component: component)
             return
         case .dashboard(let scene):
             return
@@ -245,7 +246,7 @@ internal final class CarPlayTarget: Target {
         case instrumentCluster(UIScene) // CPTemplateApplicationInstrumentClusterScene
     }
     
-    let storage: Storage
+    private(set) var storage: Storage
     
     var view: AnyView
     
@@ -278,5 +279,25 @@ internal final class CarPlayTarget: Target {
     init(scene: CPTemplateApplicationInstrumentClusterScene) {
         self.storage = .instrumentCluster(scene)
         self.view = AnyView(EmptyView())
+    }
+}
+
+internal extension CarPlayTarget {
+    
+    var component: NSObject? {
+        get {
+            guard case let .component(component) = storage else {
+                return nil
+            }
+            return component
+        }
+    }
+    
+    func update(component: NSObject) {
+        guard case .component = storage else {
+            assertionFailure("Not component target \(storage)")
+            return
+        }
+        storage = .component(component)
     }
 }

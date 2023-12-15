@@ -19,12 +19,12 @@ extension Text: AnyComponent {
         }
     }
     
-    func update(component: NSObject, parent: NSObject) {
+    func update(component: inout NSObject, parent: NSObject) {
         if #available(iOS 14, *),
            let item = component as? CPInformationItem,
            let template = parent as? CPInformationTemplate {
             let view = FormItem(title: _TextProxy(self).rawText)
-            view.update(item, template: template)
+            component = view.update(item, template: template)
         }
     }
 }

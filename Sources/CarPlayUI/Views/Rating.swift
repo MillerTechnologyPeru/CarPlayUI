@@ -62,24 +62,20 @@ extension Rating: AnyComponent {
     
     func build(template: CPInformationTemplate) -> CPInformationRatingItem {
         let informationItem = buildRatingItem()
-        template.items.append(informationItem)
+        template.append(item: informationItem)
         return informationItem
     }
     
-    func update(component: NSObject, parent: NSObject) {
+    func update(component: inout NSObject, parent: NSObject) {
         if let item = component as? CPInformationRatingItem,
            let template = parent as? CPInformationTemplate {
-            update(item, template: template)
+            component = update(item, template: template)
         }
     }
     
-    func update(_ oldValue: CPInformationRatingItem, template: CPInformationTemplate) {
+    func update(_ oldValue: CPInformationRatingItem, template: CPInformationTemplate) -> CPInformationRatingItem {
         let newValue = buildRatingItem()
-        if let index = template.items.firstIndex(of: oldValue) {
-            template.items[index] = newValue
-        } else {
-            assertionFailure()
-            template.items.append(newValue)
-        }
+        template.update(oldValue: oldValue, newValue: newValue)
+        return newValue
     }
 }

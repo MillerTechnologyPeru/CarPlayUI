@@ -58,14 +58,17 @@ extension Form.Template: CarPlayPrimitive {
         AnyView(
             TemplateView(
                 build: {
-                    return CPInformationTemplate(
+                    let coordinator = CPInformationTemplate.Coordinator()
+                    let template = CPInformationTemplate(
                         title: title,
                         layout: layout,
                         items: [],
                         actions: []
                     )
+                    template.userInfo = coordinator
+                    return template
                 },
-                update: { informationTemplate in
+                update: { (informationTemplate: CPInformationTemplate) in
                     // update title
                     if informationTemplate.title != title {
                         informationTemplate.title = title
@@ -78,6 +81,52 @@ extension Form.Template: CarPlayPrimitive {
                 content: { content }
             )
         )
+    }
+}
+
+@available(iOS 14.0, *)
+internal extension CPInformationTemplate {
+    
+    final class Coordinator {
+        
+        // must keep copy since template copies on demand
+        fileprivate(set) var items = [CPInformationItem]()
+        
+        fileprivate init() { }
+    }
+}
+
+@available(iOS 14.0, *)
+internal extension CPInformationTemplate {
+    
+    var coordinator: Coordinator! {
+        userInfo as? Coordinator
+    }
+    
+    // to prevent fetching copies items
+    private var _items: [CPInformationItem] {
+        get {
+            coordinator.items
+        }
+        set {
+            // store original instance
+            coordinator.items = newValue
+            // send to CarPlay IPC
+            self.items = newValue
+        }
+    }
+    
+    func append(item: CPInformationItem) {
+        _items.append(item)
+    }
+    
+    func update(oldValue: CPInformationItem, newValue: CPInformationItem) {
+        guard let index = _items.firstIndex(where: { $0 === oldValue }) else {
+            assertionFailure("Unable to find item in graph")
+            return
+        }
+        // update with new instance at
+        _items[index] = newValue
     }
 }
 
@@ -120,26 +169,24 @@ extension FormItem: AnyComponent {
     
     func build(template: CPInformationTemplate) -> CPInformationItem {
         let informationItem = buildItem()
-        print("Build \(informationItem) \(informationItem.title ?? "")")
-        template.items.append(informationItem)
+        template.append(item: informationItem)
+        guard let index = template.items.firstIndex(where: { $0 === informationItem }) else {
+            fatalError("Unable to find item in graph")
+        }
         return informationItem
     }
     
-    func update(component: NSObject, parent: NSObject) {
+    func update(component: inout NSObject, parent: NSObject) {
         if let item = component as? CPInformationItem,
            let template = parent as? CPInformationTemplate {
-            update(item, template: template)
+            component = update(item, template: template)
         }
     }
     
-    func update(_ oldValue: CPInformationItem, template: CPInformationTemplate) {
+    func update(_ oldValue: CPInformationItem, template: CPInformationTemplate) -> CPInformationItem {
         let newValue = buildItem()
-        print("Update \(oldValue) \(oldValue.title ?? "") \(oldValue.detail ?? "") -> \(self.title ?? "") \(self.detail ?? "")")
-        guard let index = template.items.firstIndex(where: { $0 === oldValue }) else {
-            assertionFailure("Unable to find item in graph")
-            return
-        }
-        template.items[index] = newValue
+        template.update(oldValue: oldValue, newValue: newValue)
+        return newValue
     }
 }
 
@@ -170,7 +217,7 @@ extension TupleView where T == (Text, Text) {
             title: title,
             detail: detail
         )
-        template.items.append(informationItem)
+        template.append(item: informationItem)
         return informationItem
     }
 }

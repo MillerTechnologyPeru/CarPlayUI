@@ -67,20 +67,20 @@ internal protocol AnyComponent {
     
     func build(parent: NSObject) -> NSObject?
     
-    func update(component: NSObject, parent: NSObject)
+    func update(component: inout NSObject, parent: NSObject)
 }
 
 internal struct ComponentView <Content: View> : View, AnyComponent {
     
     let _build: (NSObject) -> NSObject?
     
-    let _update: (NSObject, NSObject) -> ()
+    let _update: (inout NSObject, NSObject) -> ()
     
     let content: Content
     
     init(
         build: @escaping (NSObject) -> NSObject?,
-        update: @escaping (NSObject, NSObject) -> (),
+        update: @escaping (inout NSObject, NSObject) -> (),
         @ViewBuilder content: () -> Content
     ) {
         self._build = build
@@ -92,8 +92,8 @@ internal struct ComponentView <Content: View> : View, AnyComponent {
         _build(parent)
     }
     
-    func update(component: NSObject, parent: NSObject) {
-        _update(component, parent)
+    func update(component: inout NSObject, parent: NSObject) {
+        _update(&component, parent)
     }
     
     var body: Never {
