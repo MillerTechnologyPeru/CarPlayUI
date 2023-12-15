@@ -24,7 +24,7 @@ public final class MountedHostView<R: Renderer>: MountedElement<R> {
    around the target of a host view to its closests descendant host
    views. Thus, a parent target is not always the same as a target of
    a parent `View`. */
-  private let parentTarget: R.TargetType
+  public let parentTarget: R.TargetType
 
   /// Target of this host view supplied by a renderer after mounting has completed.
   private(set) var target: R.TargetType?
