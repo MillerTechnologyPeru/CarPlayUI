@@ -59,6 +59,8 @@ extension Grid {
     }
 }
 
+// MARK: - Supporting Types
+
 extension Grid.Storage {
     
     var buttons: [CPGridButton] {
@@ -80,8 +82,9 @@ extension Grid.Storage {
     }
 }
 
+// MARK: - CarPlayPrimitive
+
 extension Grid.Template: CarPlayPrimitive {
-    
     
     public var renderedBody: AnyView {
         AnyView(
@@ -115,6 +118,8 @@ extension Grid.Template: CarPlayPrimitive {
         )
     }
 }
+
+// MARK: - Coordinator
 
 internal extension CPGridTemplate {
     
@@ -183,57 +188,70 @@ internal extension CPGridTemplate {
     }
 }
 
+// MARK: - Grid Button
+
+extension Button {
+    
+    func buildGridButton() -> CPGridButton? {
+        let action = self.action
+        return mapAnyView(AnyView(label), transform: { (view: ParentView) in view })
+            .flatMap { CPGridButton(label: $0, action: { _ in action() }) }
+    }
+    
+    func build(template: CPGridTemplate, before sibling: CPGridButton? = nil) -> CPGridButton? {
+        guard let newButton = buildGridButton() else {
+            return nil
+        }
+        template.insert(newButton, before: sibling)
+        return newButton
+    }
+    
+    func update(_ oldValue: CPGridButton, template: CPGridTemplate) -> CPGridButton {
+        guard let newValue = buildGridButton() else {
+            assertionFailure("Could not extract grid button")
+            return oldValue
+        }
+        template.update(oldValue: oldValue, newValue: newValue)
+        return newValue
+    }
+}
+
+extension NavigationLink {
+    
+    func buildGridButton() -> CPGridButton? {
+        let action: () -> () = { }
+        return mapAnyView(AnyView(label), transform: { (view: ParentView) in view })
+            .flatMap { CPGridButton(label: $0, action: { _ in action() }) }
+    }
+    
+    func build(template: CPGridTemplate, before sibling: CPGridButton? = nil) -> CPGridButton? {
+        guard let newButton = buildGridButton() else {
+            return nil
+        }
+        template.insert(newButton, before: sibling)
+        return newButton
+    }
+    
+    func update(_ oldValue: CPGridButton, template: CPGridTemplate) -> CPGridButton {
+        guard let newValue = buildGridButton() else {
+            assertionFailure("Could not extract grid button")
+            return oldValue
+        }
+        template.update(oldValue: oldValue, newValue: newValue)
+        return newValue
+    }
+}
+
 protocol GridButton {
     
     func gridButton() -> CPGridButton
 }
 
-extension View where Body: GridButton {
-    
-    func gridButton() -> CPGridButton {
-        body.gridButton()
-    }
-}
-
-extension ParentView {
-    
-    func gridButton(
-        handler: @escaping (CPGridButton) -> ()
-    ) -> CPGridButton {
-        // extract labels
-        var labels = children.compactMap {
-            mapAnyView($0, transform: { (view: Text) in
-                _TextProxy(view).rawText
-            })
-        }
-        // Set default label if none are found
-        if labels.isEmpty {
-            labels.append("Button")
-        }
-        
-        // extract image
-        let defaultImage = _ImageProxy(Image(systemName: "car"))
-        let image = children.compactMap {
-            mapAnyView($0, transform: { (view: Image) in
-                _ImageProxy(view)
-            })
-        }.first
-        
-        // create button
-        return CPGridButton(
-            titleVariants: labels,
-            image: .unsafe((image ?? defaultImage).provider.resolve(in: .defaultEnvironment), traitCollection: nil),
-            handler: handler
-        )
-    }
-}
-
 extension Button: GridButton where Label: ParentView {
     
     func gridButton() -> CPGridButton {
-        label.gridButton(handler: { _ in
+        CPGridButton(label: label) { _ in
             action()
-        })
+        }
     }
 }
-
