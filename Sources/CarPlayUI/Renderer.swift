@@ -257,7 +257,7 @@ internal final class CarPlayTarget: Target {
     init(_ view: AnyView, template: CPTemplate) {
         assert(mapAnyView(view, transform: { (component: AnyTemplate) in component }) != nil)
         self.storage = .template(template)
-        self.view = AnyView(view)
+        self.view = view
     }
     
     init(_ view: AnyView, component: NSObject) {
@@ -265,23 +265,34 @@ internal final class CarPlayTarget: Target {
         assert(component is CPTemplate == false, "\(type(of: component))")
         assert(component is UIScene == false, "\(type(of: component))")
         self.storage = .component(component)
-        self.view = AnyView(view)
+        self.view = view
     }
     
     static var application: CarPlayTarget {
         .init(EmptyView(), .application)
     }
     
+    @available(iOS 13.4, *)
     static var dashboard: CarPlayTarget {
         .init(EmptyView(), .dashboard)
     }
     
+    @available(iOS 15.4, *)
     static var instrumentCluster: CarPlayTarget {
         .init(EmptyView(), .instrumentCluster)
     }
 }
 
 internal extension CarPlayTarget {
+    
+    var template: CPTemplate? {
+        get {
+            guard case let .template(template) = storage else {
+                return nil
+            }
+            return template
+        }
+    }
     
     var component: NSObject? {
         get {
