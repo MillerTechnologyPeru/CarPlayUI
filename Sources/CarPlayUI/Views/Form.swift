@@ -116,8 +116,14 @@ internal extension CPInformationTemplate {
         }
     }
     
-    func append(item: CPInformationItem) {
-        _items.append(item)
+    func insert(_ item: CPInformationItem, before sibling: CPInformationItem? = nil) {
+        // move to before sibling
+        if let sibling, let index = _items.firstIndex(of: sibling) {
+            _items.insert(item, before: index)
+        } else {
+            // append to end
+            _items.append(item)
+        }
     }
     
     func update(oldValue: CPInformationItem, newValue: CPInformationItem) {
@@ -160,9 +166,9 @@ public struct FormItem: View, _PrimitiveView {
 @available(iOS 14.0, *)
 extension FormItem: AnyComponent {
     
-    func build(parent: NSObject) -> NSObject? {
+    func build(parent: NSObject, before sibling: NSObject?) -> NSObject? {
         if let template = parent as? CPInformationTemplate {
-            return build(template: template)
+            return build(template: template, before: sibling as? CPInformationItem)
         }
         return nil
     }
@@ -174,9 +180,9 @@ extension FormItem: AnyComponent {
         )
     }
     
-    func build(template: CPInformationTemplate) -> CPInformationItem {
+    func build(template: CPInformationTemplate, before sibling: CPInformationItem?) -> CPInformationItem {
         let informationItem = buildItem()
-        template.append(item: informationItem)
+        template.insert(informationItem, before: sibling)
         return informationItem
     }
     
@@ -208,31 +214,31 @@ extension FormItem: AnyComponent {
 @available(iOS 14.0, *)
 internal extension Text {
     
-    func build(template: CPInformationTemplate) -> CPInformationItem {
+    func build(template: CPInformationTemplate, before sibling: CPInformationItem?) -> CPInformationItem {
         let title = _TextProxy(self).rawText
         let formItem = FormItem(title: title)
-        return formItem.build(template: template)
+        return formItem.build(template: template, before: sibling)
     }
 }
 
 @available(iOS 14.0, *)
 extension TupleView where T == (Text, Text) {
     
-    func build(parent: NSObject) -> NSObject? {
+    func build(parent: NSObject, before sibling: CPInformationItem?) -> NSObject? {
         if let template = parent as? CPInformationTemplate {
-            return build(template: template)
+            return build(template: template, before: sibling)
         }
         return nil
     }
     
-    func build(template: CPInformationTemplate) -> CPInformationItem {
+    func build(template: CPInformationTemplate, before sibling: CPInformationItem?) -> CPInformationItem {
         let title = _TextProxy(self.value.0).rawText
         let detail = _TextProxy(self.value.1).rawText
         let informationItem = CPInformationItem(
             title: title,
             detail: detail
         )
-        template.append(item: informationItem)
+        template.insert(informationItem, before: sibling)
         return informationItem
     }
 }

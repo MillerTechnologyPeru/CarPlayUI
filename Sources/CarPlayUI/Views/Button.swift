@@ -22,7 +22,7 @@ extension Button: CarPlayPrimitive {
     
     var renderedBody: AnyView {
         AnyView(
-            ComponentView(build: { parent in
+            ComponentView(build: { parent, sibling in
                 build(parent: parent)
             }, update: { (component, parent) in
                 
@@ -71,7 +71,7 @@ extension NavigationLink: CarPlayPrimitive {
     
     var renderedBody: AnyView {
         AnyView(
-            ComponentView(build: { parent in
+            ComponentView(build: { (parent, sibling) in
                 build(parent: parent)
             }, update: { (component, parent) in
                 

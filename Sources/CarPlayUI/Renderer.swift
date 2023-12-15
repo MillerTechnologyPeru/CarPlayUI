@@ -68,9 +68,7 @@ final class CarplayRenderer: Renderer {
             case .template(let parentTemplate):
                 if #available(iOS 14.0, *), let tabBar = parentTemplate as? CPTabBarTemplate {
                     let newTemplate = anyTemplate.build()
-                    var templates = tabBar.templates
-                    templates.append(newTemplate)
-                    tabBar.updateTemplates(templates)
+                    tabBar.insert(newTemplate, before: sibling?.template)
                     return CarPlayTarget(host.view, template: newTemplate)
                 } else {
                     assertionFailure("Only Tab Bar can be a parent template")
@@ -86,7 +84,7 @@ final class CarplayRenderer: Renderer {
         ) {
             switch parent.storage {
             case .template(let template):
-                guard let newComponent = anyComponent.build(parent: template) else {
+                guard let newComponent = anyComponent.build(parent: template, before: sibling?.component) else {
                     return nil
                 }
                 return CarPlayTarget(host.view, component: newComponent)

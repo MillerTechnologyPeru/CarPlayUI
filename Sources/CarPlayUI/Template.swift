@@ -65,7 +65,7 @@ extension TemplateView: ParentView {
 
 internal protocol AnyComponent {
     
-    func build(parent: NSObject) -> NSObject?
+    func build(parent: NSObject, before sibling: NSObject?) -> NSObject?
     
     func update(component: inout NSObject, parent: NSObject)
     
@@ -74,7 +74,7 @@ internal protocol AnyComponent {
 
 internal struct ComponentView <Content: View> : View, AnyComponent {
     
-    let _build: (NSObject) -> NSObject?
+    let _build: (NSObject, NSObject?) -> NSObject?
     
     let _update: (inout NSObject, NSObject) -> ()
     
@@ -83,7 +83,7 @@ internal struct ComponentView <Content: View> : View, AnyComponent {
     let content: Content
     
     init(
-        build: @escaping (NSObject) -> NSObject?,
+        build: @escaping (NSObject, NSObject?) -> NSObject?,
         update: @escaping (inout NSObject, NSObject) -> (),
         remove: @escaping (NSObject, NSObject) -> (),
         @ViewBuilder content: () -> Content
@@ -94,8 +94,8 @@ internal struct ComponentView <Content: View> : View, AnyComponent {
         self.content = content()
     }
     
-    func build(parent: NSObject) -> NSObject? {
-        _build(parent)
+    func build(parent: NSObject, before sibling: NSObject?) -> NSObject? {
+        _build(parent, sibling)
     }
     
     func update(component: inout NSObject, parent: NSObject) {

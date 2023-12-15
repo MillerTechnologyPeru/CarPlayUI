@@ -42,9 +42,9 @@ public struct Rating: View, _PrimitiveView {
 @available(iOS 14.0, *)
 extension Rating: AnyComponent {
     
-    func build(parent: NSObject) -> NSObject? {
+    func build(parent: NSObject, before sibling: NSObject?) -> NSObject? {
         if let template = parent as? CPInformationTemplate {
-            return build(template: template)
+            return build(template: template, before: sibling as? CPInformationItem)
         } else {
             assertionFailure("Invalid parent: \(parent)")
             return nil
@@ -60,9 +60,9 @@ extension Rating: AnyComponent {
         )
     }
     
-    func build(template: CPInformationTemplate) -> CPInformationRatingItem {
+    func build(template: CPInformationTemplate, before sibling: CPInformationItem?) -> CPInformationRatingItem {
         let informationItem = buildRatingItem()
-        template.append(item: informationItem)
+        template.insert(informationItem, before: sibling)
         return informationItem
     }
     
