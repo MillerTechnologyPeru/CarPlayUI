@@ -125,7 +125,7 @@ final class CarplayRenderer: Renderer {
             return
         case .component(var component):
             guard let componentView = mapAnyView(host.view, transform: { (component: AnyComponent) in component }) else {
-                assertionFailure("Underlying view is not a component")
+                //assertionFailure("Underlying view is not a component")
                 return
             }
             let parentObject: NSObject
@@ -189,7 +189,7 @@ final class CarplayRenderer: Renderer {
             return
         case .component(let component):
             guard let componentView = mapAnyView(target.view, transform: { (component: AnyComponent) in component }) else {
-                assertionFailure("Underlying view is not a component")
+                //assertionFailure("Underlying view is not a component")
                 return
             }
             let parentObject: NSObject

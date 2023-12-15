@@ -11,9 +11,9 @@ import TokamakCore
 
 extension Text: AnyComponent {
         
-    func build(parent: NSObject, before: NSObject?) -> NSObject? {
+    func build(parent: NSObject, before sibling: NSObject?) -> NSObject? {
         if #available(iOS 14.0, *), let template = parent as? CPInformationTemplate {
-            return build(template: template, before: before as? CPInformationItem)
+            return build(template: template, before: sibling as? CPInformationItem)
         } else {
             return nil
         }

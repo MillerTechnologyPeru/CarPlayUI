@@ -89,8 +89,11 @@ internal extension CPInformationTemplate {
     
     final class Coordinator {
         
-        // must keep copy since template copies on demand
+        // must keep original since template copies on demand
         fileprivate(set) var items = [CPInformationItem]()
+        
+        // must keep copy original template copies on demand
+        fileprivate(set) var actions = [CPTextButton]()
         
         fileprivate init() { }
     }
@@ -103,16 +106,19 @@ internal extension CPInformationTemplate {
         userInfo as? Coordinator
     }
     
-    // to prevent fetching copies items
+    // to prevent fetching copied items
     private var _items: [CPInformationItem] {
         get {
             coordinator.items
         }
         set {
+            // The template can display 10 items maximum. 
+            // If the array contains more items, the template uses only the first 10.
+            let items = Array(newValue.prefix(10))
             // store original instance
-            coordinator.items = newValue
+            coordinator.items = items
             // send to CarPlay IPC
-            self.items = newValue
+            self.items = items
         }
     }
     
@@ -140,6 +146,48 @@ internal extension CPInformationTemplate {
             return
         }
         _items.remove(at: index)
+    }
+    
+    // to prevent fetching copies items
+    private var _actions: [CPTextButton] {
+        get {
+            coordinator.actions
+        }
+        set {
+            // The template can display three actions maximum.
+            // If the array contains more actions, the template uses only the first three.
+            let actions = Array(newValue.prefix(3))
+            // store original instance
+            coordinator.actions = actions
+            // send to CarPlay IPC
+            self.actions = actions
+        }
+    }
+    
+    func insert(_ action: CPTextButton, before sibling: CPTextButton? = nil) {
+        // move to before sibling
+        if let sibling, let index = _actions.firstIndex(of: sibling) {
+            _actions.insert(action, before: index)
+        } else {
+            // append to end
+            _actions.append(action)
+        }
+    }
+    
+    func update(oldValue: CPTextButton, newValue: CPTextButton) {
+        guard let index = _actions.firstIndex(where: { $0 === oldValue }) else {
+            assertionFailure("Unable to find item in graph")
+            return
+        }
+        // update with new instance at
+        _actions[index] = newValue
+    }
+    
+    func remove(action: CPTextButton) {
+        guard let index = _actions.firstIndex(where: { $0 === action }) else {
+            return
+        }
+        _actions.remove(at: index)
     }
 }
 
