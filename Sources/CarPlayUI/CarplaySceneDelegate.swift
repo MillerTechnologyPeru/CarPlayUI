@@ -15,6 +15,8 @@ public final class CarplaySceneDelegate: UIResponder, CPTemplateApplicationScene
     
     private(set) var interfaceController: CPInterfaceController?
     
+    var rootTemplate: CPTemplate?
+    
     // MARK: - Initialization
     
     public override init() {
