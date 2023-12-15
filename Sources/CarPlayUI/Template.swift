@@ -12,24 +12,24 @@ import TokamakCore
 
 internal protocol AnyTemplate {
     
-    func build(_ scene: CPTemplateApplicationScene) -> CPTemplate
+    func build() -> CPTemplate
     
-    func update(_ target: CarPlayTarget, scene: CPTemplateApplicationScene)
+    func update(_ template: CPTemplate)
 }
 
 // MARK: - View
 
-internal struct TemplateView <Content: View> : View, AnyTemplate {
+internal struct TemplateView <Content: View, Template: CPTemplate> : View, AnyTemplate {
     
-    let _build: (CPTemplateApplicationScene) -> CPTemplate
+    let _build: () -> Template
     
-    let _update: (CarPlayTarget, CPTemplateApplicationScene) -> ()
+    let _update: (Template) -> ()
     
     let content: Content
     
     init(
-        build: @escaping (CPTemplateApplicationScene) -> CPTemplate,
-        update: @escaping (CarPlayTarget, CPTemplateApplicationScene) -> (),
+        build: @escaping () -> Template,
+        update: @escaping (Template) -> (),
         @ViewBuilder content: () -> Content
     ) {
         self._build = build
@@ -37,15 +37,16 @@ internal struct TemplateView <Content: View> : View, AnyTemplate {
         self.content = content()
     }
     
-    func build(_ scene: CPTemplateApplicationScene) -> CPTemplate {
-        _build(scene)
+    func build() -> CPTemplate {
+        _build()
     }
     
-    func update(_ target: CarPlayTarget, scene: CPTemplateApplicationScene) {
-        // make sure its a template
-        if case .template = target.storage {
-          _update(target, scene)
+    func update(_ anyTemplate: CPTemplate) {
+        guard let template = anyTemplate as? Template else {
+            assertionFailure("Cannot update \(type(of: anyTemplate)) template of a different type than \(Template.self)")
+            return
         }
+        _update(template)
     }
     
     var body: Never {
@@ -54,6 +55,53 @@ internal struct TemplateView <Content: View> : View, AnyTemplate {
 }
 
 extension TemplateView: ParentView {
+    
+    var children: [AnyView] {
+        [AnyView(content)]
+    }
+}
+
+// MARK: - Component
+
+internal protocol AnyComponent {
+    
+    func build(parent: NSObject) -> NSObject?
+    
+    func update(component: NSObject, parent: NSObject)
+}
+
+internal struct ComponentView <Content: View> : View, AnyComponent {
+    
+    let _build: (NSObject) -> NSObject?
+    
+    let _update: (NSObject, NSObject) -> ()
+    
+    let content: Content
+    
+    init(
+        build: @escaping (NSObject) -> NSObject?,
+        update: @escaping (NSObject, NSObject) -> (),
+        @ViewBuilder content: () -> Content
+    ) {
+        self._build = build
+        self._update = update
+        self.content = content()
+    }
+    
+    func build(parent: NSObject) -> NSObject? {
+        _build(parent)
+    }
+    
+    func update(component: NSObject, parent: NSObject) {
+        _update(component, parent)
+    }
+    
+    var body: Never {
+        neverBody("ComponentView")
+    }
+}
+
+extension ComponentView: ParentView {
     
     var children: [AnyView] {
         [AnyView(content)]

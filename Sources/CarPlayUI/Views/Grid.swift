@@ -19,107 +19,55 @@ public struct Grid <Content: View> : View {
         self.content = content()
     }
     
-    public var body: Content {
-        content
+    public var body: some View {
+        ToolbarReader { (title, toolbar) in
+            return Template(
+                title: title.flatMap { mapAnyView($0, transform: { (view: Text) in _TextProxy(view).rawText }) } ?? "",
+                content: content
+            )
+        }
     }
 }
 
-extension Grid: CarPlayPrimitive {
+extension Grid {
+    
+    struct Template: View {
+        
+        let title: String
+        
+        let content: Content
+        
+        public var body: Content {
+            content
+        }
+    }
+}
+
+extension Grid.Template: CarPlayPrimitive {
     
     @_spi(TokamakCore)
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(
-                build: { scene in
-                    let children = (content as? ParentView)?.children ?? []
-                    let buttons = children.compactMap { mapAnyView($0) { (view: GridButton) in
-                        view.gridButton(scene: scene)
-                    }}
-                    return CPGridTemplate(
-                        title: "",
-                        gridButtons: buttons
+                build: {
+                    CPGridTemplate(
+                        title: title,
+                        gridButtons: []
                     )
                 },
-                update: { (target, scene) in
-                    guard case let .template(template) = target.storage,
-                        let gridTemplate = template as? CPGridTemplate else {
-                        return
-                    }
+                update: { gridTemplate in
+                    
                     guard #available(iOS 15.0, *) else {
                         assertionFailure("Unable to update grid content")
                         return
                     }
-                    let children = (content as? ParentView)?.children ?? []
-                    let buttons = children.compactMap { mapAnyView($0) { (view: GridButton) in
-                        view.gridButton(scene: scene)
-                    }}
-                    gridTemplate.updateTitle("")
-                    gridTemplate.updateGridButtons(buttons)
+                    
+                    if gridTemplate.title != title {
+                        gridTemplate.updateTitle(title)
+                    }
                 },
                 content: { content }
             )
         )
-    }
-}
-
-protocol GridButton {
-    
-    func gridButton(scene: CPTemplateApplicationScene) -> CPGridButton
-}
-
-extension View where Body: GridButton {
-    
-    func gridButton(scene: CPTemplateApplicationScene) -> CPGridButton {
-        body.gridButton(scene: scene)
-    }
-}
-
-extension ParentView {
-    
-    func gridButton(
-        scene: CPTemplateApplicationScene,
-        handler: @escaping (CPGridButton) -> ()
-    ) -> CPGridButton {
-        // extract labels
-        var labels = children.compactMap {
-            mapAnyView($0, transform: { (view: Text) in
-                _TextProxy(view).rawText
-            })
-        }
-        // Set default label if none are found
-        if labels.isEmpty {
-            labels.append("Button")
-        }
-        // extract image
-        let image = children.compactMap {
-            mapAnyView($0, transform: { (view: Image) in
-                _ImageProxy(view)
-            })
-        }.first ?? _ImageProxy(Image(systemName: "car"))
-        // create button
-        return CPGridButton(
-            titleVariants: labels,
-            image: .unsafe(image.provider.resolve(in: .defaultEnvironment), traitCollection: scene.interfaceController.traitCollection),
-            handler: handler
-        )
-    }
-}
-
-extension Button: GridButton where Label: ParentView {
-    
-    func gridButton(scene: CPTemplateApplicationScene) -> CPGridButton {
-        label.gridButton(scene: scene, handler: { _ in
-            action()
-        })
-    }
-}
-
-extension NavigationLink: GridButton where Label: ParentView {
-    
-    func gridButton(scene: CPTemplateApplicationScene) -> CPGridButton {
-        return self.label.gridButton(scene: scene) { _ in
-            // TODO: Push new template
-            
-        }
     }
 }

@@ -20,49 +20,60 @@ public struct Form <Content: View> : View {
         self.content = content()
     }
     
-    public var body: Content {
-        content
+    public var body: some View {
+        ToolbarReader { (title, toolbar) in
+            return Template(
+                title: title.flatMap { mapAnyView($0, transform: { (view: Text) in _TextProxy(view).rawText }) } ?? "",
+                layout: .leading,
+                content: content
+            )
+        }
     }
 }
 
 // MARK: - CarPlayPrimitive
 
 @available(iOS 14.0, *)
-extension Form: CarPlayPrimitive {
+extension Form {
+    
+    struct Template: View {
+        
+        let title: String
+        
+        let layout: CPInformationTemplateLayout
+        
+        let content: Content
+        
+        public var body: Content {
+            content
+        }
+    }
+}
+
+@available(iOS 14.0, *)
+extension Form.Template: CarPlayPrimitive {
     
     @_spi(TokamakCore)
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(
-                build: { scene in
-                    let children = (content as? ParentView)?.children ?? []
-                    let items = children.compactMap { mapAnyView($0) { (view: InformationItem) in
-                        view.informationItem
-                    }}
-                    let actions = children.compactMap { mapAnyView($0) { (view: TextButton) in
-                        view.textButton(for: scene)
-                    }}
+                build: {
                     return CPInformationTemplate(
-                        title: "",
-                        layout: .leading,
-                        items: items,
-                        actions: actions
+                        title: title,
+                        layout: layout,
+                        items: [],
+                        actions: []
                     )
                 },
-                update: { (target, scene) in
-                    guard case let .template(template) = target.storage,
-                        let informationTemplate = template as? CPInformationTemplate else {
-                        return
+                update: { informationTemplate in
+                    // update title
+                    if informationTemplate.title != title {
+                        informationTemplate.title = title
                     }
-                    let children = (content as? ParentView)?.children ?? []
-                    let items = children.compactMap { mapAnyView($0) { (view: InformationItem) in
-                        view.informationItem
-                    }}
-                    let actions = children.compactMap { mapAnyView($0) { (view: TextButton) in
-                        view.textButton(for: scene)
-                    }}
-                    informationTemplate.items = items
-                    informationTemplate.actions = actions
+                    // cant update layout
+                    if informationTemplate.layout != layout {
+                        assertionFailure("Cannot change form style dynamically")
+                    }
                 },
                 content: { content }
             )
@@ -70,87 +81,96 @@ extension Form: CarPlayPrimitive {
     }
 }
 
-// MARK: - Supporting Types
-
 @available(iOS 14.0, *)
-protocol InformationItem {
+public struct FormItem: View, _PrimitiveView {
     
-    var informationItem: CPInformationItem { get }
-}
-
-@available(iOS 14.0, *)
-extension View where Body: InformationItem {
+    let title: String?
     
-    var item: CPInformationItem {
-        body.informationItem
+    let detail: String?
+    
+    public init(
+        title: String?,
+        detail: String? = nil
+    ) {
+        self.title = title
+        self.detail = detail
+    }
+    
+    public var body: Never {
+        neverBody(String(reflecting: Self.self))
     }
 }
 
 @available(iOS 14.0, *)
-extension Text: InformationItem {
+extension FormItem: AnyComponent {
     
-    var informationItem: CPInformationItem {
-        .init(title: _TextProxy(self).rawText, detail: nil)
-    }
-}
-
-@available(iOS 14.0, *)
-extension ParentView {
-    
-    var informationItem: CPInformationItem {
-        // extract labels
-        let labels = children.prefix(2).compactMap {
-            mapAnyView($0, transform: { (view: Text) in
-                _TextProxy(view).rawText
-            })
+    func build(parent: NSObject) -> NSObject? {
+        if let template = parent as? CPInformationTemplate {
+            return build(template: template)
         }
-        let rating = children.compactMap {
-            mapAnyView($0, transform: { (view: Rating) in
-                view
-            })
-        }.first
-        let title = labels.count > 0 ? labels[0] : nil
-        let detail = labels.count > 1 ? labels[1] : nil
-        if let rating = rating {
-            return CPInformationRatingItem(
-                rating: rating.rating as NSNumber,
-                maximumRating: rating.maximum as NSNumber,
-                title: title,
-                detail: detail
-            )
-        } else {
-            return CPInformationItem(
-                title: title,
-                detail: detail
-            )
+        return nil
+    }
+    
+    func buildItem() -> CPInformationItem {
+        CPInformationItem(
+            title: title,
+            detail: detail
+        )
+    }
+    
+    func build(template: CPInformationTemplate) -> CPInformationItem {
+        let informationItem = buildItem()
+        print("Build \(informationItem) \(informationItem.title ?? "")")
+        template.items.append(informationItem)
+        return informationItem
+    }
+    
+    func update(component: NSObject, parent: NSObject) {
+        if let item = component as? CPInformationItem,
+           let template = parent as? CPInformationTemplate {
+            update(item, template: template)
         }
     }
-}
-
-@available(iOS 14.0, *)
-extension _ConditionalContent: InformationItem { }
-
-@available(iOS 14.0, *)
-extension TupleView: InformationItem { }
-
-@available(iOS 14.0, *)
-extension ForEach: InformationItem { }
-
-@available(iOS 14.0, *)
-extension HStack: InformationItem { }
-
-@available(iOS 14.0, *)
-extension EmptyView: InformationItem {
     
-    var informationItem: CPInformationItem {
-        .init(title: nil, detail: nil)
+    func update(_ oldValue: CPInformationItem, template: CPInformationTemplate) {
+        let newValue = buildItem()
+        print("Update \(oldValue) \(oldValue.title ?? "") \(oldValue.detail ?? "") -> \(self.title ?? "") \(self.detail ?? "")")
+        guard let index = template.items.firstIndex(where: { $0 === oldValue }) else {
+            assertionFailure("Unable to find item in graph")
+            return
+        }
+        template.items[index] = newValue
     }
 }
 
 @available(iOS 14.0, *)
-extension ModifiedContent: InformationItem where Content: InformationItem {
+internal extension Text {
     
-    var informationItem: CPInformationItem {
-        content.informationItem
+    func build(template: CPInformationTemplate) -> CPInformationItem {
+        let title = _TextProxy(self).rawText
+        let formItem = FormItem(title: title)
+        return formItem.build(template: template)
+    }
+}
+
+@available(iOS 14.0, *)
+extension TupleView where T == (Text, Text) {
+    
+    func build(parent: NSObject) -> NSObject? {
+        if let template = parent as? CPInformationTemplate {
+            return build(template: template)
+        }
+        return nil
+    }
+    
+    func build(template: CPInformationTemplate) -> CPInformationItem {
+        let title = _TextProxy(self.value.0).rawText
+        let detail = _TextProxy(self.value.1).rawText
+        let informationItem = CPInformationItem(
+            title: title,
+            detail: detail
+        )
+        template.items.append(informationItem)
+        return informationItem
     }
 }

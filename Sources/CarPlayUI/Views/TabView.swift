@@ -9,10 +9,6 @@ import Foundation
 import CarPlay
 import TokamakCore
 
-import Foundation
-import CarPlay
-import TokamakCore
-
 @available(iOS 14.0, *)
 public struct TabView <Content: View> : View {
     
@@ -36,10 +32,10 @@ extension TabView: CarPlayPrimitive {
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(
-                build: { scene in
+                build: {
                     CPTabBarTemplate(templates: [])
                 },
-                update: { (target, scene) in
+                update: { template in
                     
                 },
                 content: { content }
@@ -47,3 +43,4 @@ extension TabView: CarPlayPrimitive {
         )
     }
 }
+

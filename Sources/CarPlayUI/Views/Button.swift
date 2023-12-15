@@ -9,76 +9,125 @@ import Foundation
 import CarPlay
 import TokamakCore
 
+// MARK: - ButtonRole
+
 public extension ButtonRole {
     
     static var confirm: ButtonRole { ButtonRole(rawValue: 2) }
 }
 
-@available(iOS 14.0, *)
-protocol TextButton {
-    
-    func textButton(for scene: CPTemplateApplicationScene) -> CPTextButton
-}
+// MARK: - CarPlayPrimitive
 
-@available(iOS 14.0, *)
-extension Button: TextButton where Label == Text {
+extension Button: CarPlayPrimitive {
     
-    func textButton(for scene: CPTemplateApplicationScene) -> CPTextButton {
-        CPTextButton(
-            title: _TextProxy(label).rawText,
-            textStyle: .init(role: role),
-            handler: { _ in
-                action()
-            }
+    var renderedBody: AnyView {
+        AnyView(
+            ComponentView(build: { parent in
+                build(parent: parent)
+            }, update: { (component, parent) in
+                
+            }, content: {
+                
+            })
         )
+    }
+    
+    func build(parent: NSObject) -> NSObject? {
+        if #available(iOS 14.0, *), 
+            let button = self as? Button<Text>,
+            let template = parent as? CPInformationTemplate {
+            return button.build(template: template)
+        } else {
+            return nil
+        }
     }
 }
 
 @available(iOS 14.0, *)
-extension _Button: TextButton where Label == Text {
+extension Button where Label == Text {
     
-    func textButton(for scene: CPTemplateApplicationScene) -> CPTextButton {
-        CPTextButton(
-            title: _TextProxy(label).rawText,
-            textStyle: .init(role: role),
+    func buildTextButton() -> CPTextButton {
+        let title = _TextProxy(self.label).rawText
+        let button = CPTextButton(
+            title: title,
+            textStyle: CPTextButtonStyle(role: role),
             handler: { _ in
                 action()
             }
         )
+        return button
+    }
+    
+    func build(template: CPInformationTemplate) -> CPTextButton {
+        let button = buildTextButton()
+        template.actions.append(button)
+        return button
+    }
+}
+
+extension NavigationLink: CarPlayPrimitive {
+    
+    var renderedBody: AnyView {
+        AnyView(
+            ComponentView(build: { parent in
+                build(parent: parent)
+            }, update: { (component, parent) in
+                
+            }, content: {
+                
+            })
+        )
+    }
+    
+    func build(parent: NSObject) -> NSObject? {
+        if #available(iOS 14.0, *),
+            let label = self.label as? Text {
+            let title = _TextProxy(label).rawText
+            if let template = parent as? CPInformationTemplate {
+                return buildTextButton(title: title, template: template)
+            } else if let template = parent as? CPPointOfInterestTemplate {
+                return buildTextButton(title: title, template: template)
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
     }
 }
 
 @available(iOS 14.0, *)
-extension NavigationLink: TextButton where Label == Text {
+private extension NavigationLink {
     
-    func textButton(for scene: CPTemplateApplicationScene) -> CPTextButton {
-        CPTextButton(
-            title: _TextProxy(label).rawText,
+    func buildTextButton(title: String) -> CPTextButton {
+        
+        let button = CPTextButton(
+            title: title,
             textStyle: .normal,
             handler: { _ in
-                // TODO: Navigation
+                //action()
+                // todo
             }
         )
+        return button
+    }
+    
+    func buildTextButton(
+        title: String,
+        template: CPInformationTemplate
+    ) -> CPTextButton {
+        let button = buildTextButton(title: title)
+        template.actions.append(button)
+        return button
+    }
+    
+    func buildTextButton(
+        title: String,
+        template: CPPointOfInterestTemplate
+    ) -> CPTextButton {
+        let button = buildTextButton(title: title)
+        assertionFailure("Not implemented")
+        return button
     }
 }
 
-@available(iOS 14.0, *)
-internal extension CPTextButtonStyle {
-    
-    init(role: ButtonRole?) {
-        guard let role else {
-            self = .normal
-            return
-        }
-        switch role {
-        case .cancel:
-            self = .cancel
-        case .confirm:
-            self = .confirm
-        case .destructive:
-            self = .confirm
-        default:
-            self = .normal
-        }
-    }
-}
