@@ -15,9 +15,8 @@ public extension TokamakCore.App {
     
     static func _launch(_ app: Self, with configuration: _AppConfiguration) {
         // create renderer
-        let renderer = CarplayRenderer()
+        let renderer = CarplayRenderer(app: app)
         CarPlayAppCache.renderer = renderer
-        CarPlayAppCache.app = app
         CarPlayAppCache.configuration = configuration
     }
 
@@ -34,11 +33,9 @@ public extension TokamakCore.App {
 
 internal enum CarPlayAppCache {
     
-    static var sceneDelegate: CarplaySceneDelegate!
-    
     static var renderer: CarplayRenderer!
     
-    static var app: (any App)?
+    static var sceneDelegate: CarplaySceneDelegate?
     
     static var configuration: _AppConfiguration?
 }

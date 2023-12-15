@@ -15,15 +15,32 @@ public final class CarplaySceneDelegate: UIResponder, CPTemplateApplicationScene
     
     private(set) var interfaceController: CPInterfaceController?
     
-    var rootTemplate: CPTemplate?
+    static var rootTemplate: CPTemplate? {
+        didSet {
+            Self.shared?.updateControllerRootTemplate()
+        }
+    }
     
     // MARK: - Initialization
+    
+    public static var shared: CarplaySceneDelegate? {
+        CarPlayAppCache.sceneDelegate
+    }
     
     public override init() {
         super.init()
         
         // store singleton
         CarPlayAppCache.sceneDelegate = self
+    }
+    
+    // MARK: - Methods
+    
+    private func updateControllerRootTemplate() {
+        
+        if let template = Self.rootTemplate, let controller = interfaceController {
+            controller.setRootTemplate(template, animated: true)
+        }
     }
     
     // MARK: - CPTemplateApplicationSceneDelegate
@@ -36,8 +53,7 @@ public final class CarplaySceneDelegate: UIResponder, CPTemplateApplicationScene
         self.interfaceController = interfaceController
         
         // remount templates
-        let app = CarPlayAppCache.app!
-        CarPlayAppCache.renderer.connectScene(app: app, scene: templateApplicationScene)
+        updateControllerRootTemplate()
     }
     
     public func templateApplicationScene(
@@ -46,6 +62,8 @@ public final class CarplaySceneDelegate: UIResponder, CPTemplateApplicationScene
         from window: CPWindow
     ) {
         self.interfaceController = nil
-        CarPlayAppCache.renderer.disconnectScene()
+        
+        // inform controller
+        
     }
 }

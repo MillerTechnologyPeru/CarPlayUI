@@ -170,9 +170,6 @@ extension FormItem: AnyComponent {
     func build(template: CPInformationTemplate) -> CPInformationItem {
         let informationItem = buildItem()
         template.append(item: informationItem)
-        guard let index = template.items.firstIndex(where: { $0 === informationItem }) else {
-            fatalError("Unable to find item in graph")
-        }
         return informationItem
     }
     

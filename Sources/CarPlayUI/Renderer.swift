@@ -14,20 +14,23 @@ import TokamakCore
 
 final class CarplayRenderer: Renderer {
     
-    private(set) var reconciler: StackReconciler<CarplayRenderer>?
+    private(set) var reconciler: StackReconciler<CarplayRenderer>!
     
-    private(set) var scene: CPTemplateApplicationScene?
+    private(set) var applicationScene: CPTemplateApplicationScene?
     
-    init() { }
+    private static var rootTemplate: CPTemplate? {
+        get {
+            CarplaySceneDelegate.rootTemplate
+        }
+        set {
+            CarplaySceneDelegate.rootTemplate = newValue
+        }
+    }
     
-    func connectScene(
-        app: any App,
-        scene: CPTemplateApplicationScene
-    ) {
-        self.scene = scene
-        let sceneReconciler = StackReconciler(
+    init(app: any App) {
+        self.reconciler = StackReconciler(
             app: app,
-            target: CarPlayTarget(scene: scene),
+            target: CarPlayTarget.application,
             environment: .defaultEnvironment, // merge environment with scene environment
             renderer: self,
             scheduler: { next in
@@ -36,12 +39,6 @@ final class CarplayRenderer: Renderer {
                 }
             }
         )
-        self.reconciler = sceneReconciler
-    }
-    
-    func disconnectScene() {
-        scene = nil
-        reconciler = nil
     }
     
     /** Function called by a reconciler when a new target instance should be
@@ -63,10 +60,10 @@ final class CarplayRenderer: Renderer {
             transform: { (template: AnyTemplate) in template }
         ) {
             switch parent.storage {
-            case .application(let scene):
+            case .application:
                 // initialize template
                 let newTemplate = anyTemplate.build()
-                scene.interfaceController.setRootTemplate(newTemplate, animated: false) // connect to interface
+                Self.rootTemplate = newTemplate // set root template on Scene delegate
                 return CarPlayTarget(host.view, template: newTemplate)
             case .template(let parentTemplate):
                 if #available(iOS 14.0, *), let tabBar = parentTemplate as? CPTabBarTemplate {
@@ -119,7 +116,8 @@ final class CarplayRenderer: Renderer {
       with host: MountedHost
     ) {
         switch target.storage {
-        case .application(let scene):
+        case .application:
+            Self.rootTemplate = nil // set root template on Scene delegate
             return
         case .template(let template):
             guard let templateView = mapAnyView(host.view, transform: { (template: AnyTemplate) in template }) else {
@@ -142,13 +140,13 @@ final class CarplayRenderer: Renderer {
             case .application, .dashboard, .instrumentCluster:
                 return
             }
-            // TODO: Update components
+            // Update component
             componentView.update(component: &component, parent: parentObject)
-            target.update(component: component)
+            target.update(component: component) // might be new instance
             return
-        case .dashboard(let scene):
+        case .dashboard:
             return
-        case .instrumentCluster(let scene):
+        case .instrumentCluster:
             return
         }
         
@@ -168,7 +166,8 @@ final class CarplayRenderer: Renderer {
         defer { task.finish() }
         
         switch target.storage {
-        case .application(let scene):
+        case .application:
+            
             return
         case .template(let template):
             guard let templateView = mapAnyView(target.view, transform: { (template: AnyTemplate) in template }) else {
@@ -199,9 +198,9 @@ final class CarplayRenderer: Renderer {
             // TODO: Update components
             //componentView.update(component: component, parent: parentObject)
             return
-        case .dashboard(let scene):
+        case .dashboard:
             return
-        case .instrumentCluster(let scene):
+        case .instrumentCluster:
             return
         }
     }
@@ -231,7 +230,7 @@ internal final class CarPlayTarget: Target {
     enum Storage {
                 
         ///  A CarPlay scene that controls your app’s user interface.
-        case application(CPTemplateApplicationScene)
+        case application
         
         /// CarPlay user interface templates
         case template(CPTemplate)
@@ -240,15 +239,20 @@ internal final class CarPlayTarget: Target {
         case component(NSObject)
         
         /// A CarPlay scene that controls your app’s dashboard navigation window.
-        case dashboard(UIScene) // CPTemplateApplicationDashboardScene
+        case dashboard
         
         /// Instrument Cluster
-        case instrumentCluster(UIScene) // CPTemplateApplicationInstrumentClusterScene
+        case instrumentCluster
     }
     
     private(set) var storage: Storage
     
     var view: AnyView
+    
+    private init<V: View>(_ view: V, _ storage: Storage) {
+        self.view = AnyView(view)
+        self.storage = storage
+    }
     
     init(_ view: AnyView, template: CPTemplate) {
         assert(mapAnyView(view, transform: { (component: AnyTemplate) in component }) != nil)
@@ -264,21 +268,16 @@ internal final class CarPlayTarget: Target {
         self.view = AnyView(view)
     }
     
-    init(scene: CPTemplateApplicationScene) {
-        self.storage = .application(scene)
-        self.view = AnyView(EmptyView())
+    static var application: CarPlayTarget {
+        .init(EmptyView(), .application)
     }
     
-    @available(iOS 13.4, *)
-    init(scene: CPTemplateApplicationDashboardScene) {
-        self.storage = .dashboard(scene)
-        self.view = AnyView(EmptyView())
+    static var dashboard: CarPlayTarget {
+        .init(EmptyView(), .dashboard)
     }
     
-    @available(iOS 15.4, *)
-    init(scene: CPTemplateApplicationInstrumentClusterScene) {
-        self.storage = .instrumentCluster(scene)
-        self.view = AnyView(EmptyView())
+    static var instrumentCluster: CarPlayTarget {
+        .init(EmptyView(), .instrumentCluster)
     }
 }
 
