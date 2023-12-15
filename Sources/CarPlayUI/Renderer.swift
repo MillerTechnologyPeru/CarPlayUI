@@ -117,8 +117,7 @@ final class CarplayRenderer: Renderer {
     ) {
         switch target.storage {
         case .application:
-            Self.rootTemplate = nil // set root template on Scene delegate
-            return
+            return // nothing to do
         case .template(let template):
             guard let templateView = mapAnyView(host.view, transform: { (template: AnyTemplate) in template }) else {
                 //assertionFailure("Underlying view is not a template")
@@ -137,7 +136,11 @@ final class CarplayRenderer: Renderer {
                 parentObject = template
             case let .component(component):
                 parentObject = component
-            case .application, .dashboard, .instrumentCluster:
+            case .application:
+                assertionFailure("Invalid parent")
+                return
+            case .dashboard, .instrumentCluster:
+                assertionFailure("Not implemented")
                 return
             }
             // Update component
@@ -167,18 +170,23 @@ final class CarplayRenderer: Renderer {
         
         switch target.storage {
         case .application:
-            
-            return
+            return // do nothing
         case .template(let template):
             guard let templateView = mapAnyView(target.view, transform: { (template: AnyTemplate) in template }) else {
                 //assertionFailure("Underlying view is not a template")
                 return
             }
-            // Remove from Tab Bar template
             if #available(iOS 14.0, *),
                 case let .template(parentTemplate) = parent.storage,
-                let tabBar = parentTemplate as? CPTabBarTemplate {
-                
+                let tabBar = parentTemplate as? CPTabBarTemplate,
+                let index = tabBar.templates.firstIndex(of: template) {
+                // Remove from Tab Bar template
+                var templates = tabBar.templates
+                templates.remove(at: index)
+                tabBar.updateTemplates(templates)
+            } else if case .application = parent.storage {
+                // remove from root view
+                Self.rootTemplate = nil // set root template on Scene delegate
             }
             return
         case .component(let component):
@@ -192,11 +200,14 @@ final class CarplayRenderer: Renderer {
                 parentObject = template
             case let .component(component):
                 parentObject = component
-            case .application, .dashboard, .instrumentCluster:
+            case .application:
+                assertionFailure("Invalid parent")
+                return
+            case .dashboard, .instrumentCluster:
+                assertionFailure("Not implemented")
                 return
             }
-            // TODO: Update components
-            //componentView.update(component: component, parent: parentObject)
+            // unmount
             return
         case .dashboard:
             return
