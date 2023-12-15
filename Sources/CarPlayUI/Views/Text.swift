@@ -27,4 +27,17 @@ extension Text: AnyComponent {
             component = view.update(item, template: template)
         }
     }
+    
+    func remove(component: NSObject, parent: NSObject) {
+        if #available(iOS 14, *),
+           let item = component as? CPInformationItem,
+           let template = parent as? CPInformationTemplate {
+            remove(item, template: template)
+        }
+    }
+    
+    @available(iOS 14.0, *)
+    func remove(_ item: CPInformationItem, template: CPInformationTemplate) {
+        template.remove(item: item)
+    }
 }

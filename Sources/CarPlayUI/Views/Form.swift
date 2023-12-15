@@ -128,6 +128,13 @@ internal extension CPInformationTemplate {
         // update with new instance at
         _items[index] = newValue
     }
+    
+    func remove(item: CPInformationItem) {
+        guard let index = _items.firstIndex(where: { $0 === item }) else {
+            return
+        }
+        _items.remove(at: index)
+    }
 }
 
 @available(iOS 14.0, *)
@@ -184,6 +191,17 @@ extension FormItem: AnyComponent {
         let newValue = buildItem()
         template.update(oldValue: oldValue, newValue: newValue)
         return newValue
+    }
+    
+    func remove(component: NSObject, parent: NSObject) {
+        if let item = component as? CPInformationItem,
+           let template = parent as? CPInformationTemplate {
+            remove(item, template: template)
+        }
+    }
+    
+    func remove(_ item: CPInformationItem, template: CPInformationTemplate) {
+        template.remove(item: item)
     }
 }
 

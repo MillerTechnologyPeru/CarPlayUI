@@ -78,4 +78,15 @@ extension Rating: AnyComponent {
         template.update(oldValue: oldValue, newValue: newValue)
         return newValue
     }
+    
+    func remove(component: NSObject, parent: NSObject) {
+        if let item = component as? CPInformationRatingItem,
+           let template = parent as? CPInformationTemplate {
+            remove(item, template: template)
+        }
+    }
+    
+    func remove(_ item: CPInformationRatingItem, template: CPInformationTemplate) {
+        template.remove(item: item)
+    }
 }

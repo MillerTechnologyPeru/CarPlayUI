@@ -208,6 +208,7 @@ final class CarplayRenderer: Renderer {
                 return
             }
             // unmount
+            componentView.remove(component: component, parent: parentObject)
             return
         case .dashboard:
             return

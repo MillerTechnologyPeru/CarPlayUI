@@ -26,6 +26,8 @@ extension Button: CarPlayPrimitive {
                 build(parent: parent)
             }, update: { (component, parent) in
                 
+            }, remove: { (component, parent) in
+                
             }, content: {
                 
             })
@@ -72,6 +74,8 @@ extension NavigationLink: CarPlayPrimitive {
             ComponentView(build: { parent in
                 build(parent: parent)
             }, update: { (component, parent) in
+                
+            }, remove: { (component, parent) in
                 
             }, content: {
                 
