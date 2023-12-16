@@ -28,6 +28,10 @@ final class CarplayRenderer: Renderer {
         TemplateApplicationSceneDelegate.shared?.interfaceController
     }
     
+    public static var shared: CarplayRenderer {
+        CarPlayAppCache.renderer
+    }
+    
     init(app: any App) {
         self.reconciler = StackReconciler(
             app: app,
@@ -74,7 +78,7 @@ final class CarplayRenderer: Renderer {
                         assertionFailure("Missing interface controller")
                         return nil
                     }
-                    
+                    interfaceController.presentTemplate(newTemplate, animated: true)
                 } else if #available(iOS 14.0, *),
                     let tabBar = parentTemplate as? CPTabBarTemplate {
                     // add as tab view child
