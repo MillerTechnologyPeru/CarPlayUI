@@ -19,20 +19,13 @@ public struct NavigationView<Content>: View where Content: View {
     public var body: some View {
         content
             .environmentObject(context)
+        ForEach(context.stack) { destination in
+            destination.view
+                .environmentObject(context)
+        }
     }
 }
-/*
-extension NavigationView: CarPlayPrimitive {
-    
-    var renderedBody: AnyView {
-        AnyView (
-            NavigationRendererView(
-                context: context
-            )
-        )
-    }
-}
-*/
+
 // MARK: - Supporting Types
 
 internal final class NavigationContext: ObservableObject {
@@ -49,22 +42,6 @@ internal final class NavigationContext: ObservableObject {
             return
         }
         stack.removeLast()
-    }
-}
-
-internal protocol AnyNavigation {
-    
-    var context: NavigationContext { get }
-}
-
-internal struct NavigationRendererView <Content>: AnyNavigation, _PrimitiveView {
-    
-    let context: NavigationContext
-    
-    let content: Content
-    
-    var body: Never {
-        neverBody("TemplateView")
     }
 }
 
