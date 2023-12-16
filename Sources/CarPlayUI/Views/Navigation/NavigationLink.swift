@@ -7,8 +7,7 @@
 
 public struct NavigationLink<Label, Destination>: View where Label: View, Destination: View {
     
-    @State
-    var destination: NavigationDestination
+    let destination: Destination
     
     let label: Label
     
@@ -19,7 +18,7 @@ public struct NavigationLink<Label, Destination>: View where Label: View, Destin
     var style
     
     public init(destination: Destination, @ViewBuilder label: () -> Label) {
-        _destination = State(wrappedValue: NavigationDestination(destination))
+        self.destination = destination
         self.label = label()
     }
     
@@ -37,6 +36,7 @@ private extension NavigationLink {
     
     func navigationActivated() {
         // update context
+        let destination = NavigationDestination(self.destination)
         navigationContext.push(destination)
     }
 }
