@@ -13,13 +13,13 @@ public struct TabView <Content: View> : View {
     
     public typealias SelectionValue = Int
         
-    var selection: Binding<SelectionValue>?
+    var selection: Binding<SelectionValue?>?
     
     public let body: Content
     
     @available(iOS 17.0, *)
     public init(
-        selection: Binding<SelectionValue>? = nil,
+        selection: Binding<SelectionValue?>? = nil,
         @ViewBuilder content: () -> Content
     ) {
         self.selection = selection
@@ -52,8 +52,9 @@ extension TabView: CarPlayPrimitive {
                     
                     // programatically select tab
                     if #available(iOS 17.0, *),
-                       let selection = selection?.wrappedValue {
-                        template.selectTemplate(at: selection)
+                       let selection = selection {
+                        let index = selection.wrappedValue.toFoundation()
+                        template.selectTemplate(at: index)
                     }
                 },
                 content: { body }
@@ -68,7 +69,7 @@ internal extension CPTabBarTemplate {
     
     final class Coordinator: NSObject, TemplateCoordinator {
                 
-        fileprivate(set) var selection: Binding<Int>?
+        fileprivate(set) var selection: Binding<Int?>?
         
         //var onAppear: (() -> ())?
         
@@ -84,9 +85,11 @@ extension CPTabBarTemplate.Coordinator: CPTabBarTemplateDelegate {
     public func tabBarTemplate(_ tabBarTemplate: CPTabBarTemplate, didSelect selectedTemplate: CPTemplate) {
         
         // update index binding
-        if let selection = selection,
-           let index = tabBarTemplate.templates.firstIndex(of: selectedTemplate),
-            selection.wrappedValue != index {
+        if let selection = selection {
+            guard let index = tabBarTemplate.templates.firstIndex(of: selectedTemplate) else {
+                assertionFailure("Cannot determine selection index")
+                return
+            }
             // update value
             selection.wrappedValue = index
         }
