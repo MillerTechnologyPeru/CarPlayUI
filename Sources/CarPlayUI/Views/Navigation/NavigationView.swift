@@ -5,12 +5,42 @@
 //  Created by Alsey Coleman Miller on 12/15/23.
 //
 
-public final class NavigationContext: ObservableObject {
+public struct NavigationView<Content>: View where Content: View {
+    
+    let content: Content
+
+    @StateObject
+    var context = NavigationContext()
+
+    public init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    
+    public var body: some View {
+        content
+            .environmentObject(context)
+    }
+}
+/*
+extension NavigationView: CarPlayPrimitive {
+    
+    var renderedBody: AnyView {
+        AnyView (
+            NavigationRendererView(
+                context: context
+            )
+        )
+    }
+}
+*/
+// MARK: - Supporting Types
+
+internal final class NavigationContext: ObservableObject {
     
     @Published
-    var stack = [NavigationLinkDestination]()
+    var stack = [NavigationDestination]()
     
-    func push(_ destination: NavigationLinkDestination) {
+    func push(_ destination: NavigationDestination) {
         stack.append(destination)
     }
     
@@ -22,20 +52,19 @@ public final class NavigationContext: ObservableObject {
     }
 }
 
-public struct NavigationView<Content>: View where Content: View {
+internal protocol AnyNavigation {
     
-  let content: Content
+    var context: NavigationContext { get }
+}
 
-  @StateObject
-  var context = NavigationContext()
-
-  public init(@ViewBuilder content: () -> Content) {
-    self.content = content()
-  }
+internal struct NavigationRendererView <Content>: AnyNavigation, _PrimitiveView {
     
-    public var body: some View {
-        content
-            .environmentObject(context)
+    let context: NavigationContext
+    
+    let content: Content
+    
+    var body: Never {
+        neverBody("TemplateView")
     }
 }
 
@@ -52,21 +81,6 @@ internal struct ToolbarReader<Content>: View where Content: View {
             }
         }
       }
-    }
-  }
-}
-
-struct NavigationDestinationKey: EnvironmentKey {
-  public static let defaultValue: Binding<AnyView>? = nil
-}
-
-extension EnvironmentValues {
-  var navigationDestination: Binding<AnyView>? {
-    get {
-      self[NavigationDestinationKey.self]
-    }
-    set {
-      self[NavigationDestinationKey.self] = newValue
     }
   }
 }

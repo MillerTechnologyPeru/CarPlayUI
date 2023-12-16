@@ -8,10 +8,10 @@
 public struct NavigationLink<Label, Destination>: View where Label: View, Destination: View {
     
     @State
-    var destination: NavigationLinkDestination
-
+    var destination: NavigationDestination
+    
     let label: Label
-
+    
     @EnvironmentObject
     var navigationContext: NavigationContext
   
@@ -19,10 +19,10 @@ public struct NavigationLink<Label, Destination>: View where Label: View, Destin
     var style
     
     public init(destination: Destination, @ViewBuilder label: () -> Label) {
-        _destination = State(wrappedValue: NavigationLinkDestination(destination))
+        _destination = State(wrappedValue: NavigationDestination(destination))
         self.label = label()
     }
-      
+    
     public var body: some View {
         Button(action: {
             navigationActivated()
@@ -39,6 +39,7 @@ public struct NavigationLink<Label, Destination>: View where Label: View, Destin
 private extension NavigationLink {
     
     func navigationActivated() {
+        // update context
         navigationContext.push(destination)
     }
     
@@ -57,11 +58,24 @@ public extension NavigationLink where Label == Text {
         
 // MARK: - Supporting Types
         
-final class NavigationLinkDestination {
+final class NavigationDestination {
     
     let view: AnyView
     
-    init<V: View>(_ destination: V) {
+    let _id: AnyHashable?
+    
+    init<V: View>(
+        _ destination: V,
+        id: AnyHashable? = nil
+    ) {
         view = AnyView(destination)
+        _id = id
+    }
+}
+
+extension NavigationDestination: Identifiable {
+    
+    var id: AnyHashable {
+        _id ?? AnyHashable(ObjectIdentifier(self))
     }
 }
