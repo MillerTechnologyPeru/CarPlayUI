@@ -16,6 +16,8 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
     
     private(set) var interfaceController: CPInterfaceController?
     
+    var activeNavigationContext: NavigationContext?
+    
     static var rootTemplate: CPTemplate? {
         didSet {
             Self.shared?.updateControllerRootTemplate()
@@ -45,14 +47,21 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
     }
     
     private func didConnect(_ interfaceController: CPInterfaceController, scene: CPTemplateApplicationScene) {
+        
+        // connect to interface controller
         self.interfaceController = interfaceController
+        interfaceController.delegate = self
         
         // remount templates
         updateControllerRootTemplate()
+        
+        // update renderer with environment
+        
     }
     
     private func didDisconnect(_ interfaceController: CPInterfaceController, scene: CPTemplateApplicationScene) {
         
+        interfaceController.delegate = nil
         self.interfaceController = nil
     }
     
@@ -130,5 +139,27 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
     @available(iOS 15.4, *)
     public func contentStyleDidChange(_ contentStyle: UIUserInterfaceStyle) {
         
+    }
+}
+
+// MARK: - CPInterfaceControllerDelegate
+
+extension TemplateApplicationSceneDelegate: CPInterfaceControllerDelegate {
+    
+    public func templateWillAppear(_ template: CPTemplate, animated: Bool) {
+        (template.userInfo as? TemplateCoordinator)?.willAppear(animated: animated)
+    }
+
+    public func templateDidAppear(_ template: CPTemplate, animated: Bool) {
+        (template.userInfo as? TemplateCoordinator)?.didAppear(animated: animated)
+        
+    }
+
+    public func templateWillDisappear(_ template: CPTemplate, animated: Bool) {
+        (template.userInfo as? TemplateCoordinator)?.willDisappear(animated: animated)
+    }
+
+    public func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
+        (template.userInfo as? TemplateCoordinator)?.didDisappear(animated: animated)
     }
 }
