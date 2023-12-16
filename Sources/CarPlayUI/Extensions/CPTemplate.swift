@@ -8,9 +8,22 @@
 import Foundation
 import CarPlay
 
+// MARK: - Coordinator
+
+internal extension CPTemplate {
+    
+    var coordinator: TemplateCoordinator {
+        guard let coordinator = userInfo as? TemplateCoordinator else {
+            fatalError("Template \(self) userinfo \(String(describing: userInfo)) is not a TemplateCoordinator")
+        }
+        return coordinator
+    }
+}
+
 // MARK: - NavigationStack Template
 
-protocol NavigationStackTemplate { 
+/// Template can be embedded in a navigation stack.
+protocol NavigationStackTemplate {
     
     var navigationTitle: String? { get }
 }
@@ -47,6 +60,7 @@ extension CPPointOfInterestTemplate: NavigationStackTemplate {
 
 // MARK: - Modal Template
 
+/// Template can only be presented modally.
 protocol ModalTemplate { }
 
 extension CPAlertTemplate: ModalTemplate { }

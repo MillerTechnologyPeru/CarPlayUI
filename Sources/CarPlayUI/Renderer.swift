@@ -89,6 +89,8 @@ final class CarplayRenderer: Renderer {
                         assertionFailure("Missing interface controller")
                         return nil
                     }
+                    // associate destination with template
+                    newTemplate.coordinator.navigationDestination = TemplateApplicationSceneDelegate.shared?.activeNavigationContext?.stack.last
                     // push controller
                     interfaceController.pushTemplate(newTemplate, animated: true)
                 } else {
@@ -287,6 +289,9 @@ internal final class CarPlayTarget: Target {
         
         /// Instrument Cluster
         case instrumentCluster
+        
+        /// Navigation Destination and Context
+        //case navigation(NavigationDestination, NavigationContext)
     }
     
     private(set) var storage: Storage
@@ -311,7 +316,12 @@ internal final class CarPlayTarget: Target {
         self.storage = .component(component)
         self.view = view
     }
-    
+    /*
+    init(navigation destination: NavigationDestination, context: NavigationContext) {
+        self.storage = .navigation(destination, context)
+        self.view = destination.view
+    }
+    */
     static var application: CarPlayTarget {
         .init(EmptyView(), .application)
     }

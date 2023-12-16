@@ -17,7 +17,7 @@ public struct Map: View {
     var region: MKCoordinateRegion
     
     @Binding
-    var selection: MKCoordinateRegion
+    var selection: Int?
     
     public var body: some View {
         EmptyView()
@@ -50,8 +50,18 @@ public struct Annotation<Label, Content> where Label : View, Content : View {
 public extension Map {
     
     final class Coordinator: NSObject, TemplateCoordinator, CPPointOfInterestTemplateDelegate {
+                
+        @Binding
+        var region: MKCoordinateRegion
         
-        fileprivate init() {
+        @Binding
+        var selection: Int?
+        
+        var navigationDestination: NavigationDestination?
+        
+        fileprivate init(region: Binding<MKCoordinateRegion>, selection: Binding<Int?>) {
+            _region = region
+            _selection = selection
             super.init()
         }
         
@@ -60,7 +70,7 @@ public extension Map {
          should respond by updating `pointsOfInterest` to show new points of interest for the new region.
          */
         public func pointOfInterestTemplate(_ pointOfInterestTemplate: CPPointOfInterestTemplate, didChangeMapRegion region: MKCoordinateRegion) {
-            view.region = region
+            self.region = region
         }
         
         /**

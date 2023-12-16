@@ -39,6 +39,8 @@ public struct NavigationLink<Label, Destination>: View where Label: View, Destin
 private extension NavigationLink {
     
     func navigationActivated() {
+        // set active stack
+        TemplateApplicationSceneDelegate.shared?.activeNavigationContext = navigationContext
         // update context
         navigationContext.push(destination)
     }

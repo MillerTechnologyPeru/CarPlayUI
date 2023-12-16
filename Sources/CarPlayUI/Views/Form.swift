@@ -94,6 +94,8 @@ internal extension CPInformationTemplate {
         // must keep copy original template copies on demand
         fileprivate(set) var actions = [CPTextButton]()
         
+        var navigationDestination: NavigationDestination?
+        
         fileprivate init() { }
     }
 }
@@ -101,21 +103,21 @@ internal extension CPInformationTemplate {
 @available(iOS 14.0, *)
 internal extension CPInformationTemplate {
     
-    var coordinator: Coordinator! {
+    var _coordinator: Coordinator! {
         userInfo as? Coordinator
     }
     
     // to prevent fetching copied items
     private var _items: [CPInformationItem] {
         get {
-            coordinator.items
+            _coordinator.items
         }
         set {
             // The template can display 10 items maximum. 
             // If the array contains more items, the template uses only the first 10.
             let items = Array(newValue.prefix(10))
             // store original instance
-            coordinator.items = items
+            _coordinator.items = items
             // send to CarPlay IPC
             self.items = items
         }
@@ -150,14 +152,14 @@ internal extension CPInformationTemplate {
     // to prevent fetching copies items
     private var _actions: [CPTextButton] {
         get {
-            coordinator.actions
+            _coordinator.actions
         }
         set {
             // The template can display three actions maximum.
             // If the array contains more actions, the template uses only the first three.
             let actions = Array(newValue.prefix(3))
             // store original instance
-            coordinator.actions = actions
+            _coordinator.actions = actions
             // send to CarPlay IPC
             self.actions = actions
         }

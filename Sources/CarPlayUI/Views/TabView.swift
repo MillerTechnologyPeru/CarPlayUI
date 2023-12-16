@@ -68,6 +68,8 @@ internal extension CPTabBarTemplate {
     
     final class Coordinator: NSObject, TemplateCoordinator {
         
+        var navigationDestination: NavigationDestination?
+        
         fileprivate(set) var selection: Binding<Int>?
         
         var onAppear: (() -> ())?
@@ -97,7 +99,7 @@ extension CPTabBarTemplate.Coordinator: CPTabBarTemplateDelegate {
 @available(iOS 14.0, *)
 internal extension CPTabBarTemplate {
     
-    var coordinator: Coordinator! {
+    var _coordinator: Coordinator! {
         userInfo as? Coordinator
     }
     

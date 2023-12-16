@@ -125,6 +125,8 @@ internal extension CPGridTemplate {
     
     final class Coordinator: TemplateCoordinator {
         
+        var navigationDestination: NavigationDestination?
+        
         fileprivate(set) var isImmutable = false
         
         fileprivate(set) var gridButtons = [CPGridButton]()
@@ -135,23 +137,23 @@ internal extension CPGridTemplate {
 
 internal extension CPGridTemplate {
     
-    var coordinator: Coordinator! {
+    var _coordinator: Coordinator! {
         userInfo as? Coordinator
     }
     
     private var _gridButtons: [CPGridButton] {
         get {
-            coordinator.gridButtons
+            _coordinator.gridButtons
         }
         set {
-            guard coordinator.isImmutable == false else {
+            guard _coordinator.isImmutable == false else {
                 assertionFailure("Buttons cannot be modified")
                 return
             }
             // When there are more than eight buttons in the array, the template displays only the first eight.
             let gridButtons = Array(newValue.prefix(8))
             // store original instance
-            coordinator.gridButtons = gridButtons
+            _coordinator.gridButtons = gridButtons
             // send to CarPlay IPC
             if #available(iOS 15.0, *) {
                 self.updateGridButtons(gridButtons)

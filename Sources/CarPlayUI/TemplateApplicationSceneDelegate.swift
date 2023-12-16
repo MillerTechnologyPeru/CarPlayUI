@@ -16,7 +16,14 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
     
     private(set) var interfaceController: CPInterfaceController?
     
-    var activeNavigationContext: NavigationContext?
+    var activeNavigationContext: NavigationContext? {
+        willSet {
+            // clear old navigation stack
+            if self.activeNavigationContext !== newValue {
+                self.activeNavigationContext?.stack.removeAll()
+            }
+        }
+    }
     
     static var rootTemplate: CPTemplate? {
         didSet {
@@ -161,5 +168,11 @@ extension TemplateApplicationSceneDelegate: CPInterfaceControllerDelegate {
 
     public func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
         (template.userInfo as? TemplateCoordinator)?.didDisappear(animated: animated)
+        // update navigation stack
+        if let destination = template.coordinator.navigationDestination,
+            let context = activeNavigationContext,
+            let index = context.stack.firstIndex(where: { $0 === destination }) {
+            context.stack.remove(at: index)
+        }
     }
 }
