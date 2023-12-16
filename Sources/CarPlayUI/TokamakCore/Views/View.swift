@@ -60,6 +60,6 @@ public protocol ParentView {
 protocol GroupView: ParentView {}
 
 /// Calls `fatalError` with an explanation that a given `type` is a primitive `View`
-public func neverBody(_ type: String) -> Never {
+internal func neverBody(_ type: String) -> Never {
   fatalError("\(type) is a primitive `View`, you're not supposed to access its `body`.")
 }
