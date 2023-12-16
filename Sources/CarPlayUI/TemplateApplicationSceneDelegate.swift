@@ -32,6 +32,7 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
         super.init()
         
         // store singleton
+        assert(CarPlayAppCache.sceneDelegate == nil, "Already initialized")
         CarPlayAppCache.sceneDelegate = self
     }
     

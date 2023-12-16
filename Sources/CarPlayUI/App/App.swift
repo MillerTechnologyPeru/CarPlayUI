@@ -34,7 +34,7 @@ internal enum CarPlayAppCache {
     
     static var renderer: CarplayRenderer!
     
-    static var sceneDelegate: CarplaySceneDelegate?
+    static var sceneDelegate: TemplateApplicationSceneDelegate?
     
     static var configuration: _AppConfiguration?
 }

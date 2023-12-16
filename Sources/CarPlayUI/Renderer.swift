@@ -19,10 +19,10 @@ final class CarplayRenderer: Renderer {
     
     private static var rootTemplate: CPTemplate? {
         get {
-            CarplaySceneDelegate.rootTemplate
+            TemplateApplicationSceneDelegate.rootTemplate
         }
         set {
-            CarplaySceneDelegate.rootTemplate = newValue
+            TemplateApplicationSceneDelegate.rootTemplate = newValue
         }
     }
     
