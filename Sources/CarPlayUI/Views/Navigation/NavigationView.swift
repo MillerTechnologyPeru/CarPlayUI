@@ -34,6 +34,10 @@ internal final class NavigationContext: ObservableObject {
     var stack = [NavigationDestination]()
     
     func push(_ destination: NavigationDestination) {
+        guard stack.firstIndex(where: { $0 === destination }) == nil else {
+            assertionFailure("View already in stack")
+            return
+        }
         stack.append(destination)
     }
     
