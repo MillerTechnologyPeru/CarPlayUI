@@ -123,7 +123,7 @@ extension Grid.Template: CarPlayPrimitive {
 
 internal extension CPGridTemplate {
     
-    final class Coordinator {
+    final class Coordinator: TemplateCoordinator {
         
         fileprivate(set) var isImmutable = false
         

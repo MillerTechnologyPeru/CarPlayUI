@@ -86,7 +86,7 @@ extension Form.Template: CarPlayPrimitive {
 @available(iOS 14.0, *)
 internal extension CPInformationTemplate {
     
-    final class Coordinator {
+    final class Coordinator: TemplateCoordinator {
         
         // must keep original since template copies on demand
         fileprivate(set) var items = [CPInformationItem]()

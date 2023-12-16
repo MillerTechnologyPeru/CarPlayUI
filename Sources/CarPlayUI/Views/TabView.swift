@@ -37,7 +37,6 @@ public struct TabView <Content: View> : View {
 @available(iOS 14.0, *)
 extension TabView: CarPlayPrimitive {
     
-    
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(
@@ -67,9 +66,11 @@ extension TabView: CarPlayPrimitive {
 @available(iOS 14.0, *)
 internal extension CPTabBarTemplate {
     
-    final class Coordinator: NSObject {
+    final class Coordinator: NSObject, TemplateCoordinator {
         
         fileprivate(set) var selection: Binding<Int>?
+        
+        var onAppear: (() -> ())?
         
         fileprivate override init() { 
             super.init()
