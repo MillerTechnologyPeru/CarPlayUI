@@ -6,7 +6,71 @@
 //
 
 import Foundation
+import UIKit
+import MapKit
 import CarPlay
+
+/// Shows points of interest on CarPlay.
+public struct Map: View {
+    
+    @Binding
+    var region: MKCoordinateRegion
+    
+    @Binding
+    var selection: MKCoordinateRegion
+    
+    public var body: some View {
+        EmptyView()
+    }
+}
+
+/// Point of Interest to show on the map.
+public struct Annotation<Label, Content> where Label : View, Content : View {
+    
+    init(
+        location: MKMapItem,
+        title: String,
+        subtitle: String?,
+        summary: String?,
+        detailTitle: String?,
+        detailSubtitle: String?,
+        detailSummary: String?,
+        pinImage: UIImage?,
+        selectedPinImage: UIImage?
+    ) {
+        
+    }
+    
+    public var body: some View {
+        EmptyView()
+    }
+}
+
+@available(iOS 14.0, *)
+public extension Map {
+    
+    final class Coordinator: NSObject, TemplateCoordinator, CPPointOfInterestTemplateDelegate {
+        
+        fileprivate init() {
+            super.init()
+        }
+        
+        /**
+         The user has changed the map region on the `CPPointOfInterestTemplate`. Your application
+         should respond by updating `pointsOfInterest` to show new points of interest for the new region.
+         */
+        public func pointOfInterestTemplate(_ pointOfInterestTemplate: CPPointOfInterestTemplate, didChangeMapRegion region: MKCoordinateRegion) {
+            view.region = region
+        }
+        
+        /**
+         The user has selected the `pointOfInterest` and the details are being shown.
+         */
+        public func pointOfInterestTemplate(_ pointOfInterestTemplate: CPPointOfInterestTemplate, didSelectPointOfInterest pointOfInterest: CPPointOfInterest) {
+            
+        }
+    }
+}
 
 // MARK: - Button
 
