@@ -24,29 +24,20 @@ public struct NavigationLink<Label, Destination>: View where Label: View, Destin
     }
     
     public var body: some View {
+        // render as button
         Button(action: {
             navigationActivated()
         }, label: {
             label
         })
-        // destination is child view
-        if isActive {
-            destination.view
-        }
     }
 }
 
 private extension NavigationLink {
     
     func navigationActivated() {
-        // set active stack
-        TemplateApplicationSceneDelegate.shared?.activeNavigationContext = navigationContext
         // update context
         navigationContext.push(destination)
-    }
-    
-    var isActive: Bool {
-        navigationContext.stack.firstIndex(where: { $0 === destination }) != nil
     }
 }
 
