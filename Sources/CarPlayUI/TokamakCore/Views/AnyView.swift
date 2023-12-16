@@ -64,7 +64,7 @@ public struct AnyView: _PrimitiveView {
   }
 }
 
-public func mapAnyView<T, V>(_ anyView: AnyView, transform: (V) -> T) -> T? {
+internal func mapAnyView<T, V>(_ anyView: AnyView, transform: (V) -> T) -> T? {
   guard let view = anyView.view as? V else { return nil }
 
   return transform(view)

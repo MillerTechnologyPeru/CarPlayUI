@@ -63,3 +63,9 @@ extension ComponentView: ParentView {
         [AnyView(content)]
     }
 }
+
+/// CarPlay native types that are used as components
+internal protocol ComponentObject: NSObjectProtocol {
+    
+    func build(parent: NSObject, before sibling: NSObject?) -> NSObject?
+}

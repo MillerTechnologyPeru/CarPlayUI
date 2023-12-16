@@ -216,32 +216,6 @@ extension Button {
     }
 }
 
-extension NavigationLink {
-    
-    func buildGridButton() -> CPGridButton? {
-        let action: () -> () = { }
-        return mapAnyView(AnyView(label), transform: { (view: ParentView) in view })
-            .flatMap { CPGridButton(label: $0, action: { _ in action() }) }
-    }
-    
-    func build(template: CPGridTemplate, before sibling: CPGridButton? = nil) -> CPGridButton? {
-        guard let newButton = buildGridButton() else {
-            return nil
-        }
-        template.insert(newButton, before: sibling)
-        return newButton
-    }
-    
-    func update(_ oldValue: CPGridButton, template: CPGridTemplate) -> CPGridButton {
-        guard let newValue = buildGridButton() else {
-            assertionFailure("Could not extract grid button")
-            return oldValue
-        }
-        template.update(oldValue: oldValue, newValue: newValue)
-        return newValue
-    }
-}
-
 protocol GridButton {
     
     func gridButton() -> CPGridButton

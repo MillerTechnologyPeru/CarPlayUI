@@ -14,9 +14,7 @@ import CarPlay
 final class CarplayRenderer: Renderer {
     
     private(set) var reconciler: StackReconciler<CarplayRenderer>!
-    
-    private(set) var applicationScene: CPTemplateApplicationScene?
-    
+        
     private static var rootTemplate: CPTemplate? {
         get {
             TemplateApplicationSceneDelegate.rootTemplate
@@ -24,6 +22,10 @@ final class CarplayRenderer: Renderer {
         set {
             TemplateApplicationSceneDelegate.rootTemplate = newValue
         }
+    }
+    
+    private var interfaceController: CPInterfaceController? {
+        TemplateApplicationSceneDelegate.shared?.interfaceController
     }
     
     init(app: any App) {
@@ -65,14 +67,31 @@ final class CarplayRenderer: Renderer {
                 Self.rootTemplate = newTemplate // set root template on Scene delegate
                 return CarPlayTarget(host.view, template: newTemplate)
             case .template(let parentTemplate):
-                if #available(iOS 14.0, *), let tabBar = parentTemplate as? CPTabBarTemplate {
-                    let newTemplate = anyTemplate.build()
+                let newTemplate = anyTemplate.build()
+                if newTemplate is ModalTemplate {
+                    // can only be presented modally
+                    guard let interfaceController else {
+                        assertionFailure("Missing interface controller")
+                        return nil
+                    }
+                    
+                } else if #available(iOS 14.0, *),
+                    let tabBar = parentTemplate as? CPTabBarTemplate {
+                    // add as tab view child
                     tabBar.insert(newTemplate, before: sibling?.template)
-                    return CarPlayTarget(host.view, template: newTemplate)
+                } else if newTemplate is NavigationStackTemplate {
+                    // push to navigation stack
+                    guard let interfaceController else {
+                        assertionFailure("Missing interface controller")
+                        return nil
+                    }
+                    // push controller
+                    interfaceController.pushTemplate(newTemplate, animated: true)
                 } else {
-                    assertionFailure("Only Tab Bar can be a parent template")
+                    assertionFailure("Invalid parent \(parentTemplate) for \(newTemplate)")
                     return nil
                 }
+                return CarPlayTarget(host.view, template: newTemplate)
             case .dashboard, .instrumentCluster, .component:
                 assertionFailure("Templates can only be mounted to an CPTemplateApplicationScene or CPTabBarTemplate")
                 return nil
@@ -173,14 +192,26 @@ final class CarplayRenderer: Renderer {
                 //assertionFailure("Underlying view is not a template")
                 return
             }
-            if #available(iOS 14.0, *),
-                case let .template(parentTemplate) = parent.storage,
-                let tabBar = parentTemplate as? CPTabBarTemplate,
-                let index = tabBar.templates.firstIndex(of: template) {
-                // Remove from Tab Bar template
-                var templates = tabBar.templates
-                templates.remove(at: index)
-                tabBar.updateTemplates(templates)
+            if case let .template(parentTemplate) = parent.storage {
+                if template is ModalTemplate,
+                    let interfaceController,
+                    interfaceController.presentedTemplate == template {
+                    // dismiss modal template
+                    interfaceController.dismissTemplate(animated: true)
+                } else if #available(iOS 14.0, *),
+                   let tabBar = parentTemplate as? CPTabBarTemplate,
+                   let index = tabBar.templates.firstIndex(of: template) {
+                    // Remove from Tab Bar template
+                    var templates = tabBar.templates
+                    templates.remove(at: index)
+                    tabBar.updateTemplates(templates)
+                } else if template is NavigationStackTemplate,
+                    let interfaceController,
+                    interfaceController.templates.contains(where: { $0 === template }),
+                    interfaceController.templates.firstIndex(of: parentTemplate) != nil {
+                    // attempt to pop to parent programatically
+                    interfaceController.pop(to: parentTemplate, animated: true)
+                }
             } else if case .application = parent.storage {
                 // remove from root view
                 Self.rootTemplate = nil // set root template on Scene delegate

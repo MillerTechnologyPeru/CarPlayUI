@@ -14,12 +14,32 @@ public struct TabItem {
     
     let storage: Storage
     
-    public init(title: Text, image: Image? = nil) {
+    init(title: Text, image: Image? = nil) {
         self.storage = .custom(title, image)
     }
     
-    public init(system: UITabBarItem.SystemItem) {
+    init(system: SystemItem) {
         self.storage = .system(system)
+    }
+}
+
+@available(iOS 14.0, *)
+public extension TabItem {
+    
+    enum SystemItem: Equatable, Hashable {
+        
+        case bookmarks
+        case contacts
+        case downloads
+        case favorites
+        case featured
+        case history
+        case more
+        case mostRecent
+        case mostViewed
+        case recents
+        case search
+        case topRated
     }
 }
 
@@ -31,7 +51,7 @@ internal extension TabItem {
     enum Storage {
         
         case custom(Text, Image?)
-        case system(UITabBarItem.SystemItem)
+        case system(SystemItem)
     }
 }
 
@@ -55,7 +75,12 @@ extension View {
         return tabItem(TabItem(title: label.title, image: label.icon))
     }
     
-    public func tabItem(system: UITabBarItem.SystemItem) -> some View {
+    public func tabItem<V>(@ViewBuilder _ label: () -> TupleView<(Text, Image)>) -> some View where V : View {
+        let label = label()
+        return tabItem(TabItem(title: label.value.0, image: label.value.1))
+    }
+    
+    public func tabItem(system: TabItem.SystemItem) -> some View {
         tabItem(.init(system: system))
     }
     

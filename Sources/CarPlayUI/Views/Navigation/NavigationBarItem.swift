@@ -24,15 +24,3 @@ public struct NavigationBarItem: Equatable {
     case large
   }
 }
-
-public struct _NavigationBarItemProxy {
-  let subject: NavigationBarItem
-
-  public init(_ subject: NavigationBarItem) {
-    self.subject = subject
-  }
-
-  public var displayMode: NavigationBarItem.TitleDisplayMode {
-    subject.displayMode
-  }
-}
