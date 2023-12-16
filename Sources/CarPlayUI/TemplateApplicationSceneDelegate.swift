@@ -175,15 +175,17 @@ extension TemplateApplicationSceneDelegate: CPInterfaceControllerDelegate {
     
     public func templateWillDisappear(_ template: CPTemplate, animated: Bool) {
         template.coordinator.willDisappear(animated: animated)
-        // remove from navigation context
-        if let coordinator = template.coordinator as? NavigationStackTemplateCoordinator, let navigationContext = coordinator.navigationContext,
-            let destination = coordinator.navigationDestination {
-            // remove from stack
-            navigationContext.stack.removeAll(where: { $0 === destination })
-        }
     }
     
     public func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
         template.coordinator.didDisappear(animated: animated)
+        // remove from navigation context
+        if let coordinator = template.coordinator as? NavigationStackTemplateCoordinator, let navigationContext = coordinator.navigationContext,
+            let destination = coordinator.navigationDestination,
+            let interfaceController,
+            interfaceController.templates.contains(where: { $0 === template }) == false {
+            // remove from stack
+            navigationContext.stack.removeAll(where: { $0 === destination })
+        }
     }
 }
