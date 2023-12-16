@@ -123,9 +123,11 @@ extension Grid.Template: CarPlayPrimitive {
 
 internal extension CPGridTemplate {
     
-    final class Coordinator: TemplateCoordinator {
+    final class Coordinator: NavigationStackTemplateCoordinator {
         
         var navigationDestination: NavigationDestination?
+        
+        var navigationContext: NavigationContext?
         
         fileprivate(set) var isImmutable = false
         

@@ -17,12 +17,24 @@ public struct NavigationView<Content>: View where Content: View {
     }
     
     public var body: some View {
+        // root view
+        rootView
+        
+        // pushed navigation stack views
+        ForEach(Array(context.stack.enumerated()), id: \.offset) { (index, destination) in
+            NavigationItemView(
+                navigationContext: context,
+                navigationDestination: destination
+            )
+        }
+    }
+}
+
+private extension NavigationView {
+    
+    var rootView: some View {
         content
             .environmentObject(context)
-        ForEach(context.stack) { destination in
-            destination.view
-                .environmentObject(context)
-        }
     }
 }
 
@@ -78,4 +90,55 @@ struct NavigationBarItemKey: PreferenceKey {
   static func reduce(value: inout NavigationBarItem, nextValue: () -> NavigationBarItem) {
     value = nextValue()
   }
+}
+
+internal protocol AnyNavigation {
+    
+    var navigationContext: NavigationContext { get }
+    
+    var navigationDestination: NavigationDestination { get }
+}
+
+extension NavigationView {
+    
+    struct Item: View, _PrimitiveView, CarPlayPrimitive {
+        
+        let navigationContext: NavigationContext
+        
+        let navigationDestination: NavigationDestination
+        
+        var body: Never {
+            neverBody(String(reflecting: Self.self))
+        }
+        
+        var renderedBody: AnyView {
+            AnyView(
+                NavigationItemView(
+                    navigationContext: navigationContext,
+                    navigationDestination: navigationDestination
+                )
+            )
+        }
+    }
+}
+
+internal struct NavigationItemView: View, _PrimitiveView, AnyNavigation {
+    
+    let navigationContext: NavigationContext
+    
+    let navigationDestination: NavigationDestination
+    
+    var body: Never {
+        neverBody("NavigationItemView")
+    }
+}
+
+extension NavigationItemView: ParentView {
+    
+    var children: [AnyView] {
+        [AnyView(
+            navigationDestination.view
+                .environmentObject(navigationContext)
+        )]
+    }
 }

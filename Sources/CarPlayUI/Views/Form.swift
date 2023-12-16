@@ -86,7 +86,7 @@ extension Form.Template: CarPlayPrimitive {
 @available(iOS 14.0, *)
 internal extension CPInformationTemplate {
     
-    final class Coordinator: TemplateCoordinator {
+    final class Coordinator: NavigationStackTemplateCoordinator {
         
         // must keep original since template copies on demand
         fileprivate(set) var items = [CPInformationItem]()
@@ -96,6 +96,8 @@ internal extension CPInformationTemplate {
         
         var navigationDestination: NavigationDestination?
         
+        var navigationContext: NavigationContext?
+        
         fileprivate init() { }
     }
 }
@@ -103,7 +105,7 @@ internal extension CPInformationTemplate {
 @available(iOS 14.0, *)
 internal extension CPInformationTemplate {
     
-    var _coordinator: Coordinator! {
+    private var _coordinator: Coordinator! {
         userInfo as? Coordinator
     }
     

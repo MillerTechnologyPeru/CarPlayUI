@@ -49,8 +49,8 @@ public struct Annotation<Label, Content> where Label : View, Content : View {
 @available(iOS 14.0, *)
 public extension Map {
     
-    final class Coordinator: NSObject, TemplateCoordinator, CPPointOfInterestTemplateDelegate {
-                
+    final class Coordinator: NSObject, NavigationStackTemplateCoordinator, CPPointOfInterestTemplateDelegate {
+        
         @Binding
         var region: MKCoordinateRegion
         
@@ -58,6 +58,8 @@ public extension Map {
         var selection: Int?
         
         var navigationDestination: NavigationDestination?
+        
+        var navigationContext: NavigationContext?
         
         fileprivate init(region: Binding<MKCoordinateRegion>, selection: Binding<Int?>) {
             _region = region

@@ -9,9 +9,7 @@ import Foundation
 import CarPlay
 
 protocol TemplateCoordinator: AnyObject {
-    
-    var navigationDestination: NavigationDestination? { get set }
-    
+        
     func willAppear(animated: Bool)
     
     func didAppear(animated: Bool)
@@ -19,6 +17,13 @@ protocol TemplateCoordinator: AnyObject {
     func willDisappear(animated: Bool)
     
     func didDisappear(animated: Bool)
+}
+
+protocol NavigationStackTemplateCoordinator: TemplateCoordinator {
+    
+    var navigationDestination: NavigationDestination? { get set }
+    
+    var navigationContext: NavigationContext? { get set }
 }
 
 extension TemplateCoordinator {

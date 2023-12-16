@@ -67,12 +67,10 @@ extension TabView: CarPlayPrimitive {
 internal extension CPTabBarTemplate {
     
     final class Coordinator: NSObject, TemplateCoordinator {
-        
-        var navigationDestination: NavigationDestination?
-        
+                
         fileprivate(set) var selection: Binding<Int>?
         
-        var onAppear: (() -> ())?
+        //var onAppear: (() -> ())?
         
         fileprivate override init() { 
             super.init()
@@ -91,7 +89,6 @@ extension CPTabBarTemplate.Coordinator: CPTabBarTemplateDelegate {
             selection.wrappedValue != index {
             // update value
             selection.wrappedValue = index
-            // inform appearence
         }
     }
 }

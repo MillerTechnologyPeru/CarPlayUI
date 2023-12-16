@@ -24,7 +24,7 @@ internal extension CPTemplate {
 
 /// Template can be embedded in a navigation stack.
 protocol NavigationStackTemplate {
-    
+        
     var navigationTitle: String? { get }
 }
 

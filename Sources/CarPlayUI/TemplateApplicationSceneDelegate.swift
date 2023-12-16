@@ -9,6 +9,7 @@ import Foundation
 import CarPlay
 
 /// Car Play Scene Delegate
+@MainActor
 @objc(CarplayUITemplateApplicationSceneDelegate)
 public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     
@@ -16,24 +17,11 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
     
     private(set) var interfaceController: CPInterfaceController?
     
-    var activeNavigationContext: NavigationContext? {
-        willSet {
-            // clear old navigation stack
-            if self.activeNavigationContext !== newValue {
-                self.activeNavigationContext?.stack.removeAll()
-            }
-        }
-    }
-    
-    static var rootTemplate: CPTemplate? {
-        didSet {
-            Self.shared?.updateControllerRootTemplate()
-        }
-    }
+    static var templates = [CPTemplate]()
     
     // MARK: - Initialization
     
-    public static var shared: TemplateApplicationSceneDelegate? {
+    public nonisolated static var shared: TemplateApplicationSceneDelegate? {
         CarPlayAppCache.sceneDelegate
     }
     
@@ -46,11 +34,27 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
     
     // MARK: - Methods
     
-    private func updateControllerRootTemplate() {
-        
-        if let template = Self.rootTemplate, let controller = interfaceController {
-            controller.setRootTemplate(template, animated: true)
+    static func push(_ template: CPTemplate) async {
+        guard let interfaceController = Self.shared?.interfaceController else {
+            // store for later
+            Self.templates.append(template)
+            return
         }
+        do {
+            // insert directly into interface
+            if interfaceController.templates.isEmpty {
+                try await interfaceController.setRootTemplate(template, animated: false)
+            } else {
+                try await interfaceController.pushTemplate(template, animated: true)
+            }
+            Self.templates = interfaceController.templates
+        } catch {
+            assertionFailure("Unable to push template \(template). \(error)")
+        }
+    }
+    
+    func updateNavigationContext() {
+        
     }
     
     private func didConnect(_ interfaceController: CPInterfaceController, scene: CPTemplateApplicationScene) {
@@ -60,7 +64,15 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
         interfaceController.delegate = self
         
         // remount templates
-        updateControllerRootTemplate()
+        let templates = Self.templates
+        if let rootTemplate = templates.first {
+            interfaceController.setRootTemplate(rootTemplate, animated: false)
+        }
+        if templates.count > 1 {
+            for template in templates.suffix(from: 1) {
+                interfaceController.pushTemplate(template, animated: false)
+            }
+        }
         
         // update renderer with environment
         
@@ -154,25 +166,24 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
 extension TemplateApplicationSceneDelegate: CPInterfaceControllerDelegate {
     
     public func templateWillAppear(_ template: CPTemplate, animated: Bool) {
-        (template.userInfo as? TemplateCoordinator)?.willAppear(animated: animated)
+        template.coordinator.willAppear(animated: animated)
     }
-
+    
     public func templateDidAppear(_ template: CPTemplate, animated: Bool) {
-        (template.userInfo as? TemplateCoordinator)?.didAppear(animated: animated)
-        
+        template.coordinator.didAppear(animated: animated)
     }
-
+    
     public func templateWillDisappear(_ template: CPTemplate, animated: Bool) {
-        (template.userInfo as? TemplateCoordinator)?.willDisappear(animated: animated)
-    }
-
-    public func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
-        (template.userInfo as? TemplateCoordinator)?.didDisappear(animated: animated)
-        // update navigation stack
-        if let destination = template.coordinator.navigationDestination,
-            let context = activeNavigationContext,
-            let index = context.stack.firstIndex(where: { $0 === destination }) {
-            context.stack.remove(at: index)
+        template.coordinator.willDisappear(animated: animated)
+        // remove from navigation context
+        if let coordinator = template.coordinator as? NavigationStackTemplateCoordinator, let navigationContext = coordinator.navigationContext,
+            let destination = coordinator.navigationDestination {
+            // remove from stack
+            navigationContext.stack.removeAll(where: { $0 === destination })
         }
+    }
+    
+    public func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
+        template.coordinator.didDisappear(animated: animated)
     }
 }

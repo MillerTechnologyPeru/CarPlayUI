@@ -12,6 +12,7 @@ import Combine
 
 public extension CarPlayUI.App {
     
+    @MainActor
     static func _launch(_ app: Self, with configuration: _AppConfiguration) {
         // create renderer
         let renderer = CarplayRenderer(app: app)

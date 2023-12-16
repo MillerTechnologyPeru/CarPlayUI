@@ -10,19 +10,10 @@ import Dispatch
 import UIKit
 import CarPlay
 
-
+@MainActor
 final class CarplayRenderer: Renderer {
     
     private(set) var reconciler: StackReconciler<CarplayRenderer>!
-        
-    private static var rootTemplate: CPTemplate? {
-        get {
-            TemplateApplicationSceneDelegate.rootTemplate
-        }
-        set {
-            TemplateApplicationSceneDelegate.rootTemplate = newValue
-        }
-    }
     
     private var interfaceController: CPInterfaceController? {
         TemplateApplicationSceneDelegate.shared?.interfaceController
@@ -59,19 +50,53 @@ final class CarplayRenderer: Renderer {
       with host: MountedHost
     ) -> CarPlayTarget? {
         
-        // handle template view
-        if let anyTemplate = mapAnyView(
+        let sceneDelegate = TemplateApplicationSceneDelegate.self
+        
+        // handle navigation item
+        if let anyNavigation = mapAnyView(
+            host.view,
+            transform: { (navigation: AnyNavigation) in navigation }
+        ) {
+            return CarPlayTarget(
+                navigation: anyNavigation.navigationDestination,
+                context: anyNavigation.navigationContext
+            )
+        } else if let anyTemplate = mapAnyView(
             host.view,
             transform: { (template: AnyTemplate) in template }
         ) {
+            // build new template
+            let newTemplate = anyTemplate.build()
+            // add to parent
             switch parent.storage {
             case .application:
                 // initialize template
-                let newTemplate = anyTemplate.build()
-                Self.rootTemplate = newTemplate // set root template on Scene delegate
-                return CarPlayTarget(host.view, template: newTemplate)
+                if newTemplate is ModalTemplate {
+                    // can only be presented modally
+                    guard let interfaceController else {
+                        assertionFailure("Missing interface controller")
+                        return nil
+                    }
+                    interfaceController.presentTemplate(newTemplate, animated: true)
+                } else {
+                    // push view controller
+                    Task {
+                        await sceneDelegate.push(newTemplate)
+                    }
+                }
+            case let .navigation(destination, navigationContext):
+                // template is the child of a navigation stack item
+                guard let coordinator = newTemplate.coordinator as? NavigationStackTemplateCoordinator else {
+                    assertionFailure("Invalid template \(newTemplate) as navigation item")
+                    return nil
+                }
+                coordinator.navigationDestination = destination
+                coordinator.navigationContext = navigationContext
+                // push view controller
+                Task {
+                    await sceneDelegate.push(newTemplate)
+                }
             case .template(let parentTemplate):
-                let newTemplate = anyTemplate.build()
                 if newTemplate is ModalTemplate {
                     // can only be presented modally
                     guard let interfaceController else {
@@ -84,24 +109,18 @@ final class CarplayRenderer: Renderer {
                     // add as tab view child
                     tabBar.insert(newTemplate, before: sibling?.template)
                 } else if newTemplate is NavigationStackTemplate {
-                    // push to navigation stack
-                    guard let interfaceController else {
-                        assertionFailure("Missing interface controller")
-                        return nil
+                    Task {
+                        await sceneDelegate.push(newTemplate)
                     }
-                    // associate destination with template
-                    newTemplate.coordinator.navigationDestination = TemplateApplicationSceneDelegate.shared?.activeNavigationContext?.stack.last
-                    // push controller
-                    interfaceController.pushTemplate(newTemplate, animated: true)
                 } else {
                     assertionFailure("Invalid parent \(parentTemplate) for \(newTemplate)")
                     return nil
                 }
-                return CarPlayTarget(host.view, template: newTemplate)
             case .dashboard, .instrumentCluster, .component:
                 assertionFailure("Templates can only be mounted to an CPTemplateApplicationScene or CPTabBarTemplate")
                 return nil
             }
+            return CarPlayTarget(host.view, template: newTemplate)
         } else if let anyComponent = mapAnyView(
             host.view,
             transform: { (component: AnyComponent) in component }
@@ -112,8 +131,17 @@ final class CarplayRenderer: Renderer {
                     return nil
                 }
                 return CarPlayTarget(host.view, component: newComponent)
-            case .dashboard, .instrumentCluster, .application, .component:
-                assertionFailure("Template components can only be a child of a CPTemplateApplicationScene")
+            case let .component(component):
+                assertionFailure("Not implemented")
+                return nil
+            case let .dashboard:
+                assertionFailure("Not implemented")
+                return nil
+            case let .instrumentCluster:
+                assertionFailure("Not implemented")
+                return nil
+            case .application, .navigation:
+                assertionFailure("Invalid parent \(parent.storage) for component \(anyComponent)")
                 return nil
             }
             
@@ -158,8 +186,8 @@ final class CarplayRenderer: Renderer {
                 parentObject = template
             case let .component(component):
                 parentObject = component
-            case .application:
-                assertionFailure("Invalid parent")
+            case .application, .navigation:
+                assertionFailure("Invalid parent \(host.parentTarget.storage) for component \(componentView)")
                 return
             case .dashboard, .instrumentCluster:
                 assertionFailure("Not implemented")
@@ -168,6 +196,10 @@ final class CarplayRenderer: Renderer {
             // Update component
             componentView.update(component: &component, parent: parentObject)
             target.update(component: component) // might be new instance
+            return
+        case let .navigation(destination, _):
+            // update stored view?
+            //destination.view = host.view
             return
         case .dashboard:
             return
@@ -219,8 +251,19 @@ final class CarplayRenderer: Renderer {
                     interfaceController.pop(to: parentTemplate, animated: true)
                 }
             } else if case .application = parent.storage {
+                if template is ModalTemplate,
+                    let interfaceController,
+                    interfaceController.presentedTemplate == template {
+                    // dismiss modal template
+                    interfaceController.dismissTemplate(animated: true)
+                } else if template is NavigationStackTemplate,
+                    let interfaceController,
+                    interfaceController.templates.contains(where: { $0 === template }) {
+                    // attempt to pop to parent programatically
+                    interfaceController.popTemplate(animated: true)
+                }
                 // remove from root view
-                Self.rootTemplate = nil // set root template on Scene delegate
+                //Self.templates.removeAll(where: { $0 === template })
             }
             return
         case .component(let component):
@@ -234,8 +277,8 @@ final class CarplayRenderer: Renderer {
                 parentObject = template
             case let .component(component):
                 parentObject = component
-            case .application:
-                assertionFailure("Invalid parent")
+            case .application, .navigation:
+                assertionFailure("Invalid parent \(parent.storage) for component \(componentView)")
                 return
             case .dashboard, .instrumentCluster:
                 assertionFailure("Not implemented")
@@ -244,6 +287,8 @@ final class CarplayRenderer: Renderer {
             // unmount
             componentView.remove(component: component, parent: parentObject)
             return
+        case let .navigation(destination, context):
+            context.stack.removeAll(where: { $0 === destination })
         case .dashboard:
             return
         case .instrumentCluster:
@@ -291,7 +336,7 @@ internal final class CarPlayTarget: Target {
         case instrumentCluster
         
         /// Navigation Destination and Context
-        //case navigation(NavigationDestination, NavigationContext)
+        case navigation(NavigationDestination, NavigationContext)
     }
     
     private(set) var storage: Storage
@@ -316,12 +361,12 @@ internal final class CarPlayTarget: Target {
         self.storage = .component(component)
         self.view = view
     }
-    /*
+    
     init(navigation destination: NavigationDestination, context: NavigationContext) {
         self.storage = .navigation(destination, context)
         self.view = destination.view
     }
-    */
+    
     static var application: CarPlayTarget {
         .init(EmptyView(), .application)
     }
