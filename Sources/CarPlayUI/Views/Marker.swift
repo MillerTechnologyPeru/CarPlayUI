@@ -11,6 +11,7 @@ import MapKit
 import CarPlay
 
 /// A balloon-shaped annotation that marks a map location.
+@available(iOS 14.0, *)
 public struct Marker: View {
     
     public typealias Label = Text
@@ -30,6 +31,7 @@ public struct Marker: View {
     }
 }
 
+@available(iOS 14.0, *)
 public extension Marker {
     
     /// Creates a marker at the given location with the label you provide.

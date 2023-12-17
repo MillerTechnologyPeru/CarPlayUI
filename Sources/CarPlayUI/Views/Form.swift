@@ -52,7 +52,6 @@ extension Form {
 @available(iOS 14.0, *)
 extension Form.Template: CarPlayPrimitive {
     
-    
     public var renderedBody: AnyView {
         AnyView(
             TemplateView(
@@ -253,12 +252,8 @@ extension FormItem: AnyComponent {
     func remove(component: NSObject, parent: NSObject) {
         if let item = component as? CPInformationItem,
            let template = parent as? CPInformationTemplate {
-            remove(item, template: template)
+            template.remove(item: item)
         }
-    }
-    
-    func remove(_ item: CPInformationItem, template: CPInformationTemplate) {
-        template.remove(item: item)
     }
 }
 

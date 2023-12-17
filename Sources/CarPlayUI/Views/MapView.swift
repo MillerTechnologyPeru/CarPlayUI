@@ -83,6 +83,7 @@ extension Map.Template: CarPlayPrimitive {
                         selectedIndex: NSNotFound
                     )
                     template.userInfo = coordinator
+                    template.pointOfInterestDelegate = coordinator
                     return template
                 },
                 update: { (template: CPPointOfInterestTemplate) in

@@ -39,7 +39,7 @@ internal extension CPPointOfInterestTemplate {
         setPointsOfInterest(items, selectedIndex: selectedIndex)
     }
     
-    func remove(item: CPInformationItem) {
+    func remove(_ item: CPPointOfInterest) {
         var items = self.pointsOfInterest
         guard let index = items.firstIndex(where: { $0 === item }) else {
             return
