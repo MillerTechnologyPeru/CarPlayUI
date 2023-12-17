@@ -8,54 +8,58 @@
 import Foundation
 import CarPlay
 
-public struct ListSection <Content>: View where Content : View {
+public struct ListSection: View, _PrimitiveView {
     
     let header: String?
     
     let sectionIndexTitle: String?
     
-    let content: Content
+    let items: [ListItem]
+    
+    @Environment(\.self)
+    private var environment
+    
+    @EnvironmentObject
+    var navigationContext: NavigationContext
     
     public init(
         header: String? = nil,
         sectionIndexTitle: String? = nil,
-        @ViewBuilder content: () -> Content
+        items: [ListItem]
     ) {
         self.header = header
         self.sectionIndexTitle = sectionIndexTitle
-        self.content = content()
-    }
-    
-    public var body: Content {
-        content
+        self.items = items
     }
 }
 
 // MARK: - Section Convenience
 
-public extension Section where Parent == EmptyView, Footer == EmptyView, Content == ListSection<AnyView> {
+public extension Section where Parent == EmptyView, Footer == EmptyView, Content == ListSection {
     
-    init<Items: View>(@ViewBuilder content: () -> Items) {
+    init(header: String? = nil,
+         sectionIndexTitle: String? = nil,
+         data: [ListItem]
+    ) {
         self.header = EmptyView()
         self.footer = EmptyView()
-        self.content = ListSection(header: nil, content: { AnyView(content()) })
-    }
-}
-
-public extension Section where Parent == Text, Footer == EmptyView, Content == ListSection<AnyView> {
-    
-    init<Items: View>(
-        header: Text,
-        sectionIndexTitle: String? = nil,
-        @ViewBuilder content: () -> Items
-    ) {
-        self.header = header
-        self.footer = EmptyView()
         self.content = ListSection(
-            header: _TextProxy(header).rawText,
+            header: header,
             sectionIndexTitle: sectionIndexTitle,
-            content: { AnyView(content()) }
+            items: data
         )
+    }
+    
+    init<Content: View>(
+        header: String? = nil,
+        sectionIndexTitle: String? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        let children = (content as? ParentView)?.children ?? []
+        let items = children.compactMap {
+            mapAnyView($0, transform: { (view: ListItem) in view })
+        }
+        self.init(header: header, sectionIndexTitle: sectionIndexTitle, data: items)
     }
 }
 
@@ -72,7 +76,7 @@ extension ListSection: CarPlayPrimitive {
             }, remove: { (component, parent) in
                 remove(component: component, parent: parent)
             }, content: {
-                body
+                EmptyView()
             })
         )
     }
@@ -90,7 +94,7 @@ extension ListSection {
     func update(component: inout NSObject, parent: NSObject) {
         if let section = component as? CPListSection,
            let template = parent as? CPListTemplate {
-            update(section, template: template)
+            component = update(section, template: template)
         }
     }
     
@@ -104,21 +108,56 @@ extension ListSection {
 
 private extension ListSection {
     
-    func buildItem() -> CPListSection {
+    func buildSection() -> CPListSection {
         CPListSection(
-            items: [],
+            items: items.map { buildItem(for: $0) },
             header: header,
             sectionIndexTitle: sectionIndexTitle
         )
     }
     
+    func buildItem(for item: ListItem) -> CPListItem {
+        let listItem = CPListItem(item)
+        let action = task(for: item.action)
+        if #available(iOS 14.0, *) {
+            listItem.handler = { (item, completion) in
+                Task(priority: .userInitiated) {
+                    await action()
+                    await MainActor.run {
+                        completion()
+                    }
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+            
+        }
+        return listItem
+    }
+    
+    func task(for action: ListItem.Action) -> () async -> () {
+        switch action {
+        case let .task(task):
+            return task
+        case let .navigate(destination):
+            let destination = NavigationDestination(destination)
+            // read environment
+            let context: NavigationContext? = self.navigationContext
+            return {
+                context?.push(destination)
+            }
+        }
+    }
+    
     func build(template: CPListTemplate, before sibling: CPListSection?) -> CPListSection {
-        let newValue = buildItem()
+        let newValue = buildSection()
         template.insert(newValue, before: sibling)
         return newValue
     }
     
-    func update(_ section: CPListSection, template: CPListTemplate) -> CPListSection {
-        
+    func update(_ oldValue: CPListSection, template: CPListTemplate) -> CPListSection {
+        let newValue = buildSection()
+        template.update(oldValue: oldValue, newValue: newValue)
+        return newValue
     }
 }

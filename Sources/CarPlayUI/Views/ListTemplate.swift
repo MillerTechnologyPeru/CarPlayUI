@@ -8,13 +8,13 @@
 import Foundation
 import CarPlay
 
-extension List: View where SelectionValue == Int {
+extension List: View { //where SelectionValue == Int {
     
     public var body: some View {
         ToolbarReader { (title, toolbar) in
             Template(
                 title: title.flatMap { mapAnyView($0, transform: { (view: Text) in _TextProxy(view).rawText }) },
-                selection: selection.single,
+                selection: nil,//selection.single,
                 content: content
             )
         }
@@ -135,6 +135,15 @@ internal extension CPListTemplate {
             // append to end
             _sections.append(section)
         }
+    }
+    
+    func update(oldValue: CPListSection, newValue: CPListSection) {
+        guard let index = _sections.firstIndex(where: { $0 === oldValue }) else {
+            assertionFailure("Unable to find item in graph")
+            return
+        }
+        // update with new instance at index
+        _sections[index] = newValue
     }
     
     func remove(_ section: CPListSection) {

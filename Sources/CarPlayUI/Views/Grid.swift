@@ -180,7 +180,7 @@ internal extension CPGridTemplate {
             assertionFailure("Unable to find item in graph")
             return
         }
-        // update with new instance at
+        // update with new instance at index
         _gridButtons[index] = newValue
     }
     
