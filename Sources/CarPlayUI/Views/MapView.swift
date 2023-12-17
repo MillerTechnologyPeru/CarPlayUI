@@ -93,8 +93,7 @@ extension Map.Template: CarPlayPrimitive {
                     }
                     // update selection
                     if let selection,
-                       selection.wrappedValue.toFoundation() != template.selectedIndex,
-                       selection.wrappedValue.toFoundation() < template.pointsOfInterest.count {
+                       selection.wrappedValue != template._coordinator.lastSelection {
                         let newIndex = selection.wrappedValue.toFoundation()
                         template.setPointsOfInterest(template.pointsOfInterest, selectedIndex: newIndex)
                     }
@@ -120,6 +119,8 @@ public extension CPPointOfInterestTemplate {
         
         var navigationContext: NavigationContext?
         
+        fileprivate var lastSelection: Int?
+        
         fileprivate init(
             region: Binding<MKCoordinateRegion>?,
             selection: Binding<Int?>?
@@ -128,6 +129,14 @@ public extension CPPointOfInterestTemplate {
             self.selection = selection
             super.init()
         }
+    }
+}
+
+@available(iOS 14.0, *)
+private extension CPPointOfInterestTemplate {
+    
+    var _coordinator: Coordinator! {
+        userInfo as? Coordinator
     }
 }
 
@@ -158,11 +167,7 @@ extension CPPointOfInterestTemplate.Coordinator: CPPointOfInterestTemplateDelega
             return
         }
         guard selection.wrappedValue != index else { return }
-        Task(priority: .userInitiated) {
-            if #available(iOS 16.0, *) {
-                try? await Task.sleep(for: .seconds(1))
-            }
-            selection.wrappedValue = index
-        }
+        lastSelection = index
+        selection.wrappedValue = index
     }
 }
