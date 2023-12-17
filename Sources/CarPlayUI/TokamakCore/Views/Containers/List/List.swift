@@ -15,7 +15,7 @@
 //  Created by Carson Katri on 7/2/20.
 //
 
-public struct List<SelectionValue, Content>: View
+public struct List<SelectionValue, Content>
   where SelectionValue: Hashable, Content: View
 {
   public enum _Selection {
@@ -37,68 +37,6 @@ public struct List<SelectionValue, Content>: View
   public init(selection: Binding<SelectionValue?>?, @ViewBuilder content: () -> Content) {
     self.selection = .one(selection)
     self.content = content()
-  }
-
-  func stackContent() -> AnyView {
-    if let contentContainer = content as? ParentView {
-      var sections = [AnyView]()
-      var currentSection = [AnyView]()
-      for child in contentContainer.children {
-        if child.view is SectionView {
-          if currentSection.count > 0 {
-            sections.append(AnyView(Section {
-              ForEach(Array(currentSection.enumerated()), id: \.offset) { _, view in view }
-            }))
-            currentSection = []
-          }
-          sections.append(child)
-        } else {
-          if child.children.count > 0 {
-            currentSection.append(contentsOf: child.children)
-          } else {
-            currentSection.append(child)
-          }
-        }
-      }
-      if currentSection.count > 0 {
-        sections.append(AnyView(Section {
-          ForEach(Array(currentSection.enumerated()), id: \.offset) { _, view in view }
-        }))
-      }
-      return AnyView(_ListRow.buildItems(sections) { view, isLast in
-        if let section = view.view as? SectionView {
-          section.listRow(style)
-        } else {
-          _ListRow.listRow(view, style, isLast: isLast)
-        }
-      })
-    } else {
-      return AnyView(content)
-    }
-  }
-
-  var listStack: some View {
-    VStack(alignment: .leading, spacing: 0, content: stackContent)
-  }
-
-  
-  public var body: some View {
-    if let style = style as? ListStyleDeferredToRenderer {
-      ScrollView {
-        style.listBody(Group {
-          HStack { Spacer() }
-          listStack
-            .environment(\._outlineGroupStyle, _ListOutlineGroupStyle())
-        })
-      }
-      .frame(maxHeight: .infinity, alignment: .topLeading)
-    } else {
-      ScrollView {
-        HStack { Spacer() }
-        listStack
-          .environment(\._outlineGroupStyle, _ListOutlineGroupStyle())
-      }
-    }
   }
 }
 
@@ -123,18 +61,4 @@ public enum _ListRow {
       Divider()
     }
   }
-}
-
-/// This is a helper type that works around absence of "package private" access control in Swift
-public struct _ListProxy<SelectionValue, Content>
-  where SelectionValue: Hashable, Content: View
-{
-  public let subject: List<SelectionValue, Content>
-
-  public init(_ subject: List<SelectionValue, Content>) {
-    self.subject = subject
-  }
-
-  public var content: Content { subject.content }
-  public var selection: List<SelectionValue, Content>._Selection { subject.selection }
 }

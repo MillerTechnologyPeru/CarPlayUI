@@ -123,7 +123,7 @@ public extension PointOfInterest {
     }
 }
 
-// MARK: - AnyComponent
+// MARK: - CarPlayPrimitive
 
 @available(iOS 14.0, *)
 extension PointOfInterest: CarPlayPrimitive {
