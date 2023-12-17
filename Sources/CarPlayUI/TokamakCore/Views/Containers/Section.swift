@@ -28,11 +28,12 @@ public struct Section<Parent, Content, Footer> {
 }
 
 extension Section: View, SectionView where Parent: View, Content: View, Footer: View {
+    /*
   public init(header: Parent, footer: Footer, @ViewBuilder content: () -> Content) {
     self.header = header
     self.footer = footer
     self.content = content()
-  }
+  }*/
 
   @ViewBuilder
   
@@ -90,7 +91,7 @@ extension Section: View, SectionView where Parent: View, Content: View, Footer: 
     )
   }
 }
-
+/*
 public extension Section where Parent == EmptyView, Content: View, Footer: View {
   init(footer: Footer, @ViewBuilder content: () -> Content) {
     self.init(header: EmptyView(), footer: footer, content: content)
@@ -108,7 +109,7 @@ public extension Section where Parent == EmptyView, Content: View, Footer == Emp
     self.init(header: EmptyView(), footer: EmptyView(), content: content)
   }
 }
-
+*/
 // FIXME: Implement IsCollapsibleTraitKey (and TraitKeys)
 // extension Section where Parent : View, Content : View, Footer : View {
 //  public func collapsible(_ collapsible: Bool) -> some View
