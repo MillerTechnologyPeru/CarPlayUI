@@ -45,6 +45,7 @@ internal final class NavigationContext: ObservableObject {
     @Published
     var stack = [NavigationDestination]()
     
+    @MainActor
     func push(_ destination: NavigationDestination) {
         guard stack.firstIndex(where: { $0 === destination }) == nil else {
             assertionFailure("View already in stack")
@@ -53,6 +54,7 @@ internal final class NavigationContext: ObservableObject {
         stack.append(destination)
     }
     
+    @MainActor
     func pop() {
         guard stack.isEmpty == false else {
             return

@@ -37,7 +37,10 @@ private extension NavigationLink {
     func navigationActivated() {
         // update context
         let destination = NavigationDestination(self.destination)
-        navigationContext.push(destination)
+        let context = self.navigationContext
+        Task(priority: .userInitiated) {
+            await context.push(destination)
+        }
     }
 }
 

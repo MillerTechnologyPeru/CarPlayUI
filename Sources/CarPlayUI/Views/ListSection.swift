@@ -144,7 +144,7 @@ private extension ListSection {
             // read environment
             let context: NavigationContext? = self.navigationContext
             return {
-                context?.push(destination)
+                await context?.push(destination)
             }
         }
     }
