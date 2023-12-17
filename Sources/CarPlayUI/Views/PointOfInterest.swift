@@ -40,7 +40,6 @@ public struct PointOfInterest <Content>: View where Content : View {
     let content: Content
     
     /// Creates a point of interest for a specific location.
-    @available(iOS 16, *)
     public init(_ title: String,
         subtitle: String? = nil,
         location: MKMapItem,
@@ -48,8 +47,8 @@ public struct PointOfInterest <Content>: View where Content : View {
         detailTitle: String? = nil,
         detailSubtitle: String? = nil,
         detailSummary: String? = nil,
-        pinImage: Image,
-        selectedPinImage: Image,
+        pinImage: Image?,
+        selectedPinImage: Image?,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
@@ -60,30 +59,7 @@ public struct PointOfInterest <Content>: View where Content : View {
         self.detailSubtitle = detailSubtitle
         self.detailSummary = detailSummary
         self.pinImage = pinImage
-        self.selectedPinImage = selectedPinImage
-        self.content = content()
-    }
-    
-    /// Creates a point of interest for a specific location.
-    public init(_ title: String,
-        subtitle: String? = nil,
-        location: MKMapItem,
-        summary: String? = nil,
-        detailTitle: String? = nil,
-        detailSubtitle: String? = nil,
-        detailSummary: String? = nil,
-        pinImage: Image? = nil,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.title = title
-        self.location = location
-        self.subtitle = subtitle
-        self.summary = summary
-        self.detailTitle = detailTitle
-        self.detailSubtitle = detailSubtitle
-        self.detailSummary = detailSummary
-        self.pinImage = pinImage
-        self.selectedPinImage = nil
+        self.selectedPinImage = selectedPinImage ?? pinImage
         self.content = content()
     }
     
@@ -102,7 +78,8 @@ public extension PointOfInterest where Content == EmptyView {
         detailTitle: String? = nil,
         detailSubtitle: String? = nil,
         detailSummary: String? = nil,
-        pinImage: Image? = nil
+        pinImage: Image? = nil,
+        selectedPinImage: Image? = nil
     ) {
         self.init(
             title,
@@ -113,6 +90,7 @@ public extension PointOfInterest where Content == EmptyView {
             detailSubtitle: detailSubtitle,
             detailSummary: detailSummary,
             pinImage: pinImage,
+            selectedPinImage: selectedPinImage ?? pinImage,
             content: { EmptyView() })
     }
 }
@@ -132,7 +110,7 @@ extension PointOfInterest: AnyComponent {
     func update(component: inout NSObject, parent: NSObject) {
         if let item = component as? CPPointOfInterest,
            let template = parent as? CPPointOfInterestTemplate {
-            component = update(item, template: template)
+            update(item, template: template)
         }
     }
     
@@ -180,10 +158,18 @@ private extension PointOfInterest {
         return newValue
     }
     
-    func update(_ oldValue: CPPointOfInterest, template: CPPointOfInterestTemplate) -> CPPointOfInterest {
-        let newValue = buildItem()
-        template.update(oldValue: oldValue, newValue: newValue)
-        return newValue
+    func update(_ pointOfInterest: CPPointOfInterest, template: CPPointOfInterestTemplate) {
+        pointOfInterest.title = self.title
+        pointOfInterest.subtitle = self.subtitle
+        pointOfInterest.summary = self.summary
+        pointOfInterest.detailTitle = self.detailTitle
+        pointOfInterest.detailSubtitle = self.detailSubtitle
+        pointOfInterest.detailSummary = self.detailSummary
+        pointOfInterest.location = self.location
+        pointOfInterest.pinImage = self.pinImage.flatMap { .unsafe(_ImageProxy($0)) }
+        if #available(iOS 16.0, *) {
+            pointOfInterest.selectedPinImage = self.selectedPinImage.flatMap { .unsafe(_ImageProxy($0)) }
+        }
     }
 }
 

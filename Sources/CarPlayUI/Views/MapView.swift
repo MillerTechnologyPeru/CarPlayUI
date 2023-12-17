@@ -152,6 +152,17 @@ extension CPPointOfInterestTemplate.Coordinator: CPPointOfInterestTemplateDelega
     public func pointOfInterestTemplate(_ pointOfInterestTemplate: CPPointOfInterestTemplate, didSelectPointOfInterest pointOfInterest: CPPointOfInterest) {
         
         // update selection index
-        self.selection?.wrappedValue = pointOfInterestTemplate.selectedIndex.filterNSNotFound()
+        guard let selection else { return }
+        guard let index = pointOfInterestTemplate.pointsOfInterest.firstIndex(where: { $0 === pointOfInterest }) else {
+            assertionFailure()
+            return
+        }
+        guard selection.wrappedValue != index else { return }
+        Task(priority: .userInitiated) {
+            if #available(iOS 16.0, *) {
+                try? await Task.sleep(for: .seconds(1))
+            }
+            selection.wrappedValue = index
+        }
     }
 }
