@@ -177,7 +177,7 @@ public extension Image {
 }
 
 /// This is a helper type that works around absence of "package private" access control in Swift
-public struct _ImageProxy {
+internal struct _ImageProxy {
   public let subject: Image
 
   public init(_ subject: Image) { self.subject = subject }
