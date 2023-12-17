@@ -42,13 +42,13 @@ public struct PointOfInterest <Content>: View where Content : View {
     /// Creates a point of interest for a specific location.
     public init(_ title: String,
         subtitle: String? = nil,
-        location: MKMapItem,
         summary: String? = nil,
         detailTitle: String? = nil,
         detailSubtitle: String? = nil,
         detailSummary: String? = nil,
         pinImage: Image?,
         selectedPinImage: Image?,
+        location: MKMapItem,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
@@ -73,25 +73,53 @@ public extension PointOfInterest where Content == EmptyView {
     
     init(_ title: String,
         subtitle: String? = nil,
-        location: MKMapItem,
         summary: String? = nil,
         detailTitle: String? = nil,
         detailSubtitle: String? = nil,
         detailSummary: String? = nil,
         pinImage: Image? = nil,
-        selectedPinImage: Image? = nil
+        selectedPinImage: Image? = nil,
+        location: MKMapItem
     ) {
         self.init(
             title,
             subtitle: subtitle,
-            location: location,
             summary: summary,
             detailTitle: detailTitle,
             detailSubtitle: detailSubtitle,
             detailSummary: detailSummary,
             pinImage: pinImage,
             selectedPinImage: selectedPinImage ?? pinImage,
+            location: location,
             content: { EmptyView() })
+    }
+}
+
+@available(iOS 14.0, *)
+public extension PointOfInterest {
+    
+    init(
+        item: MKMapItem,
+        @ViewBuilder row: () -> TupleView<(Text, Text?, Text?)>,
+        @ViewBuilder detail: () -> TupleView<(Text, Text?, Text?)>,
+        @ViewBuilder pin: () -> TupleView<(Image, Image?)>,
+        @ViewBuilder content: () -> Content
+    ) {
+        let row = row().value
+        let detail = detail().value
+        let pinImage = pin().value
+        self.init(
+            _TextProxy(row.0).rawText,
+            subtitle: row.1.flatMap{ _TextProxy($0).rawText },
+            summary: row.2.flatMap{ _TextProxy($0).rawText },
+            detailTitle: _TextProxy(detail.0).rawText,
+            detailSubtitle: detail.1.flatMap{ _TextProxy($0).rawText },
+            detailSummary: detail.2.flatMap{ _TextProxy($0).rawText },
+            pinImage: pinImage.0,
+            selectedPinImage: pinImage.1,
+            location: item,
+            content: content
+        )
     }
 }
 

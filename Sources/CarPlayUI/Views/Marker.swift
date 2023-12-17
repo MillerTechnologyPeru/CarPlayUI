@@ -25,8 +25,8 @@ public struct Marker: View {
     public var body: some View {
         PointOfInterest(
             title,
-            location: item,
-            pinImage: image
+            pinImage: image,
+            location: item
         )
     }
 }
