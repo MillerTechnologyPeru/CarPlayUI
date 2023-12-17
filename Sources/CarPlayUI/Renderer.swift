@@ -132,8 +132,10 @@ final class CarplayRenderer: Renderer {
                 }
                 return CarPlayTarget(host.view, component: newComponent)
             case let .component(component):
-                assertionFailure("Not implemented")
-                return nil
+                guard let newComponent = anyComponent.build(parent: component, before: sibling?.component) else {
+                    return nil
+                }
+                return CarPlayTarget(host.view, component: newComponent)
             case let .dashboard:
                 assertionFailure("Not implemented")
                 return nil

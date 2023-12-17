@@ -38,6 +38,10 @@ extension Button: CarPlayPrimitive {
             let button = self as? Button<Text>,
             let template = parent as? CPInformationTemplate {
             return button.build(template: template, before: sibling as? CPTextButton)
+        } else if #available(iOS 14.0, *),
+            let button = self as? Button<Text>,
+            let pointOfInterest = parent as? CPPointOfInterest {
+            return button.build(pointOfInterest: pointOfInterest, before: sibling as? CPTextButton)
         } else if let template = parent as? CPGridTemplate {
             return build(template: template, before: sibling as? CPGridButton)
         } else {
@@ -51,6 +55,11 @@ extension Button: CarPlayPrimitive {
            let action = component as? CPTextButton,
            let template = parent as? CPInformationTemplate {
             component = button.update(action, template: template)
+        } else if #available(iOS 14.0, *),
+            let button = self as? Button<Text>,
+            let action = component as? CPTextButton,
+            let pointOfInterest = parent as? CPPointOfInterest {
+            component = button.update(action, pointOfInterest: pointOfInterest)
         } else if let gridButton = component as? CPGridButton,
            let template = parent as? CPGridTemplate {
             component = self.update(gridButton, template: template)
@@ -62,6 +71,10 @@ extension Button: CarPlayPrimitive {
            let action = component as? CPTextButton,
            let template = parent as? CPInformationTemplate {
             template.remove(action: action)
+        } else if #available(iOS 14, *),
+            let action = component as? CPTextButton,
+            let pointOfInterest = parent as? CPPointOfInterest {
+            pointOfInterest.remove(button: action)
         } else if let gridButton = component as? CPGridButton,
             let template = parent as? CPGridTemplate {
             template.remove(button: gridButton)

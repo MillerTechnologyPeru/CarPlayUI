@@ -46,8 +46,8 @@ public struct PointOfInterest <Content>: View where Content : View {
         detailTitle: String? = nil,
         detailSubtitle: String? = nil,
         detailSummary: String? = nil,
-        pinImage: Image?,
-        selectedPinImage: Image?,
+        pinImage: Image? = nil,
+        selectedPinImage: Image? = nil,
         location: MKMapItem,
         @ViewBuilder content: () -> Content
     ) {
@@ -63,8 +63,8 @@ public struct PointOfInterest <Content>: View where Content : View {
         self.content = content()
     }
     
-    public var body: Never {
-        neverBody(String(reflecting: Self.self))
+    public var body: Content {
+        content
     }
 }
 
@@ -126,7 +126,25 @@ public extension PointOfInterest {
 // MARK: - AnyComponent
 
 @available(iOS 14.0, *)
-extension PointOfInterest: AnyComponent {
+extension PointOfInterest: CarPlayPrimitive {
+    
+    var renderedBody: AnyView {
+        AnyView(
+            ComponentView(build: { parent, sibling in
+                build(parent: parent, before: sibling)
+            }, update: { (component, parent) in
+                update(component: &component, parent: parent)
+            }, remove: { (component, parent) in
+                remove(component: component, parent: parent)
+            }, content: {
+                body
+            })
+        )
+    }
+}
+
+@available(iOS 14.0, *)
+extension PointOfInterest {
     
     func build(parent: NSObject, before sibling: NSObject?) -> NSObject? {
         if let template = parent as? CPPointOfInterestTemplate {
