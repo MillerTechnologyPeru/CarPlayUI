@@ -49,18 +49,6 @@ public extension Section where Parent == EmptyView, Footer == EmptyView, Content
             items: data
         )
     }
-    
-    init<Content: View>(
-        header: String? = nil,
-        sectionIndexTitle: String? = nil,
-        @ViewBuilder content: () -> Content
-    ) {
-        let children = (content as? ParentView)?.children ?? []
-        let items = children.compactMap {
-            mapAnyView($0, transform: { (view: ListItem) in view })
-        }
-        self.init(header: header, sectionIndexTitle: sectionIndexTitle, data: items)
-    }
 }
 
 // MARK: - CarPlayPrimitive
@@ -108,33 +96,6 @@ extension ListSection {
 
 private extension ListSection {
     
-    func buildSection() -> CPListSection {
-        CPListSection(
-            items: items.map { buildItem(for: $0) },
-            header: header,
-            sectionIndexTitle: sectionIndexTitle
-        )
-    }
-    
-    func buildItem(for item: ListItem) -> CPListItem {
-        let listItem = CPListItem(item)
-        let action = task(for: item.action)
-        if #available(iOS 14.0, *) {
-            listItem.handler = { (item, completion) in
-                Task(priority: .userInitiated) {
-                    await action()
-                    await MainActor.run {
-                        completion()
-                    }
-                }
-            }
-        } else {
-            // Fallback on earlier versions
-            
-        }
-        return listItem
-    }
-    
     func task(for action: ListItem.Action) -> () async -> () {
         switch action {
         case let .task(task):
@@ -150,14 +111,30 @@ private extension ListSection {
     }
     
     func build(template: CPListTemplate, before sibling: CPListSection?) -> CPListSection {
-        let newValue = buildSection()
+        let newValue = CPListSection(self, userInfo: { item in
+            CPListItem.Coordinator(item: item, task: self.task(for: item.action))
+        })
+        assert(newValue.items.count == self.items.count)
         template.insert(newValue, before: sibling)
         return newValue
     }
     
     func update(_ oldValue: CPListSection, template: CPListTemplate) -> CPListSection {
-        let newValue = buildSection()
-        template.update(oldValue: oldValue, newValue: newValue)
+        let newValue = CPListSection(self, userInfo: { item in
+            CPListItem.Coordinator(item: item, task: self.task(for: item.action))
+        })
+        // only update sections if changed
+        if oldValue._isEqual(to: newValue) {
+            for (index, item) in items.enumerated() {
+                let coordinator = oldValue.items[index].userInfo as! CPListItem.Coordinator
+                coordinator.item = item
+                coordinator.task = self.task(for: item.action)
+            }
+            return oldValue
+        } else {
+            template.update(oldValue: oldValue, newValue: newValue)
+            return newValue
+        }
         return newValue
     }
 }

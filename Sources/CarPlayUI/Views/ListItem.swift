@@ -123,3 +123,23 @@ public extension ListItem {
         self.accessory = accessory
     }
 }
+
+// MARK: - Coordinator
+
+extension CPListItem {
+    
+    final class Coordinator {
+        
+        init(
+            item: ListItem,
+            task: @escaping () async -> ()
+        ) {
+            self.item = item
+            self.task = task
+        }
+        
+        var item: ListItem
+        
+        var task: () async -> ()
+    }
+}

@@ -10,8 +10,7 @@ import CarPlay
 
 internal extension CPListItem {
     
-    convenience init(_ item: ListItem) {
-        // create item
+    convenience init(_ item: ListItem, userInfo: Any? = nil) {
         if #available(iOS 14, *) {
             self.init(
                 text: item.text,
@@ -27,18 +26,23 @@ internal extension CPListItem {
                 image: item.image.flatMap { .unsafe(_ImageProxy($0)) }
             )
         }
-        /*
-        // set action handler
-        if #available(iOS 14.0, *) {
-            self.handler = { (item, completion) in
-                Task(priority: .userInitiated) {
-                    await action()
-                    await MainActor.run {
-                        completion()
-                    }
-                }
-            }
+        self.userInfo = userInfo
+    }
+}
+
+internal extension CPListItem {
+    
+    func _isEqual(to other: CPListItem) -> Bool {
+        if #available(iOS 14, *) {
+            return self.text == other.text
+                && self.detailText == other.detailText
+                && self.image == other.image
+                && self.accessoryType == other.accessoryType
+                && self.accessoryImage == other.accessoryImage
+        } else {
+            return self.text == other.text
+                && self.detailText == other.detailText
+                && self.image == other.image
         }
-        */
     }
 }

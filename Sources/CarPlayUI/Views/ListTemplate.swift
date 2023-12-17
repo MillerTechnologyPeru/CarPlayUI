@@ -96,9 +96,7 @@ public extension CPListTemplate {
         fileprivate var lastSelection: Int?
         
         var sections = [CPListSection]()
-        
-        var actions = [CPListItem: () async -> ()]()
-        
+                
         fileprivate init(
             selection: Binding<Int?>?
         ) {
@@ -160,7 +158,11 @@ extension CPListTemplate.Coordinator: CPListTemplateDelegate {
     
     @MainActor
     public func listTemplate(_ listTemplate: CPListTemplate, didSelect item: CPListItem) async {
-        
-        await actions[item]?()
+        guard let coordinator = item.userInfo as? CPListItem.Coordinator else {
+            assertionFailure()
+            return
+        }
+        // action
+        await coordinator.task()
     }
 }
