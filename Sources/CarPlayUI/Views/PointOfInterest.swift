@@ -171,9 +171,10 @@ extension PointOfInterest {
 @available(iOS 14.0, *)
 private extension PointOfInterest {
     
-    func buildItem() -> CPPointOfInterest {
+    func buildItem(template: CPPointOfInterestTemplate) -> CPPointOfInterest {
+        let pointOfInterest: CPPointOfInterest
         if #available(iOS 16.0, *) {
-            return CPPointOfInterest(
+            pointOfInterest = CPPointOfInterest(
                 location: location,
                 title: title,
                 subtitle: subtitle,
@@ -185,7 +186,7 @@ private extension PointOfInterest {
                 selectedPinImage: selectedPinImage.flatMap { .unsafe(_ImageProxy($0)) }
             )
         } else {
-            return CPPointOfInterest(
+            pointOfInterest = CPPointOfInterest(
                 location: location,
                 title: title,
                 subtitle: subtitle,
@@ -196,15 +197,23 @@ private extension PointOfInterest {
                 pinImage: pinImage.flatMap { .unsafe(_ImageProxy($0)) }
             )
         }
+        pointOfInterest.userInfo = CPPointOfInterest.Coordinator(template: template)
+        return pointOfInterest
     }
     
     func build(template: CPPointOfInterestTemplate, before sibling: CPPointOfInterest?) -> CPPointOfInterest {
-        let newValue = buildItem()
+        let newValue = buildItem(template: template)
         template.insert(newValue, before: sibling)
         return newValue
     }
     
     func update(_ pointOfInterest: CPPointOfInterest, template: CPPointOfInterestTemplate) {
+        // dont update if nothing changed
+        
+        // guard pointOfInterest.isEqual(to: self) == false else {
+        //     return
+        // }
+        
         pointOfInterest.title = self.title
         pointOfInterest.subtitle = self.subtitle
         pointOfInterest.summary = self.summary
@@ -216,6 +225,7 @@ private extension PointOfInterest {
         if #available(iOS 16.0, *) {
             pointOfInterest.selectedPinImage = self.selectedPinImage.flatMap { .unsafe(_ImageProxy($0)) }
         }
+        template.update(pointOfInterest)
     }
 }
 
@@ -227,12 +237,14 @@ internal extension Button where Label == Text {
     func build(pointOfInterest: CPPointOfInterest, before sibling: CPTextButton? = nil) -> CPTextButton {
         let newButton = buildTextButton()
         pointOfInterest.insert(newButton, before: sibling)
+        pointOfInterest.coordinator.template?.update(pointOfInterest)
         return newButton
     }
     
     func update(_ oldValue: CPTextButton, pointOfInterest: CPPointOfInterest) -> CPTextButton {
         let newValue = buildTextButton()
         pointOfInterest.update(oldValue: oldValue, newValue: newValue)
+        pointOfInterest.coordinator.template?.update(pointOfInterest)
         return newValue
     }
 }
@@ -275,5 +287,24 @@ internal extension CPPointOfInterest {
             return
         }
         buttons.remove(at: index)
+    }
+}
+
+// MARK: - Coordinator
+
+@available(iOS 14.0, *)
+internal extension CPPointOfInterest {
+    
+    var coordinator: Coordinator {
+        userInfo as! Coordinator
+    }
+    
+    final class Coordinator {
+        
+        init(template: CPPointOfInterestTemplate) {
+            self.template = template
+        }
+        
+        weak var template: CPPointOfInterestTemplate?
     }
 }

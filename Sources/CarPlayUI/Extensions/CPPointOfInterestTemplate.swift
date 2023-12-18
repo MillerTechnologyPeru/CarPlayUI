@@ -24,6 +24,18 @@ internal extension CPPointOfInterestTemplate {
         setPointsOfInterest(items, selectedIndex: selectedIndex)
     }
     
+    func update(_ pointOfInterest: CPPointOfInterest) {
+        var items = self.pointsOfInterest
+        guard let index = items.firstIndex(where: { $0 === pointOfInterest }) else {
+            assertionFailure("Unable to find item in graph")
+            return
+        }
+        // update with new instance at index
+        items[index] = pointOfInterest
+        // update points of interest
+        setPointsOfInterest(items, selectedIndex: selectedIndex)
+    }
+    
     func remove(_ item: CPPointOfInterest) {
         var items = self.pointsOfInterest
         guard let index = items.firstIndex(where: { $0 === item }) else {
