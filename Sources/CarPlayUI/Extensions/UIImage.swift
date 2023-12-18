@@ -33,6 +33,15 @@ internal extension UIImage {
     }
     
     static func unsafe(
+        _ image: Image,
+        environment: EnvironmentValues = .defaultEnvironment,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> UIImage {
+        unsafe(_ImageProxy(image), environment: environment, file: file, line: line)
+    }
+    
+    static func unsafe(
         _ image: _ImageProxy,
         environment: EnvironmentValues = .defaultEnvironment,
         file: StaticString = #file,

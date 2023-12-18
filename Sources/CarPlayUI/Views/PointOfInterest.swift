@@ -148,22 +148,22 @@ extension PointOfInterest {
     
     func build(parent: NSObject, before sibling: NSObject?) -> NSObject? {
         if let template = parent as? CPPointOfInterestTemplate {
-            return build(template: template, before: sibling as? CPPointOfInterest)
+            return build(template: template, before: sibling as? CPPointOfInterest.ViewObject)
         }
         return nil
     }
     
     func update(component: inout NSObject, parent: NSObject) {
-        if let item = component as? CPPointOfInterest,
+        if let item = component as? CPPointOfInterest.ViewObject,
            let template = parent as? CPPointOfInterestTemplate {
             update(item, template: template)
         }
     }
     
     func remove(component: NSObject, parent: NSObject) {
-        if let item = component as? CPPointOfInterest,
+        if let viewObject = component as? CPPointOfInterest.ViewObject,
            let template = parent as? CPPointOfInterestTemplate {
-            template.remove(item)
+            template.remove(viewObject.view)
         }
     }
 }
@@ -171,61 +171,46 @@ extension PointOfInterest {
 @available(iOS 14.0, *)
 private extension PointOfInterest {
     
-    func buildItem(template: CPPointOfInterestTemplate) -> CPPointOfInterest {
-        let pointOfInterest: CPPointOfInterest
-        if #available(iOS 16.0, *) {
-            pointOfInterest = CPPointOfInterest(
-                location: location,
-                title: title,
-                subtitle: subtitle,
-                summary: summary,
-                detailTitle: detailTitle,
-                detailSubtitle: detailSubtitle,
-                detailSummary: detailSummary,
-                pinImage: pinImage.flatMap { .unsafe(_ImageProxy($0)) },
-                selectedPinImage: selectedPinImage.flatMap { .unsafe(_ImageProxy($0)) }
-            )
-        } else {
-            pointOfInterest = CPPointOfInterest(
-                location: location,
-                title: title,
-                subtitle: subtitle,
-                summary: summary,
-                detailTitle: detailTitle,
-                detailSubtitle: detailSubtitle,
-                detailSummary: detailSummary,
-                pinImage: pinImage.flatMap { .unsafe(_ImageProxy($0)) }
-            )
-        }
-        pointOfInterest.userInfo = CPPointOfInterest.Coordinator(template: template)
-        return pointOfInterest
+    func build(template: CPPointOfInterestTemplate, before sibling: CPPointOfInterest.ViewObject?) -> CPPointOfInterest.ViewObject {
+        let viewObject = CPPointOfInterest.ViewObject(
+            title: title,
+            location: location,
+            subtitle: subtitle,
+            summary: summary,
+            detailTitle: detailTitle,
+            detailSubtitle: detailSubtitle,
+            detailSummary: detailSummary,
+            pinImage: pinImage,
+            selectedPinImage: selectedPinImage,
+            template: template
+        )
+        template.insert(viewObject.view)
+        return viewObject
     }
     
-    func build(template: CPPointOfInterestTemplate, before sibling: CPPointOfInterest?) -> CPPointOfInterest {
-        let newValue = buildItem(template: template)
-        template.insert(newValue, before: sibling)
-        return newValue
-    }
-    
-    func update(_ pointOfInterest: CPPointOfInterest, template: CPPointOfInterestTemplate) {
-        // dont update if nothing changed
-        
-        // guard pointOfInterest.isEqual(to: self) == false else {
-        //     return
-        // }
-        
-        pointOfInterest.title = self.title
-        pointOfInterest.subtitle = self.subtitle
-        pointOfInterest.summary = self.summary
-        pointOfInterest.detailTitle = self.detailTitle
-        pointOfInterest.detailSubtitle = self.detailSubtitle
-        pointOfInterest.detailSummary = self.detailSummary
-        pointOfInterest.location = self.location
-        pointOfInterest.pinImage = self.pinImage.flatMap { .unsafe(_ImageProxy($0)) }
-        if #available(iOS 16.0, *) {
-            pointOfInterest.selectedPinImage = self.selectedPinImage.flatMap { .unsafe(_ImageProxy($0)) }
+    func update(
+        _ viewObject: CPPointOfInterest.ViewObject,
+        template: CPPointOfInterestTemplate
+    ) {
+        // recreate POI if changed
+        let oldView = viewObject.view
+        // apply changes
+        viewObject.title = self.title
+        viewObject.subtitle = self.subtitle
+        viewObject.summary = self.summary
+        viewObject.detailTitle = self.detailTitle
+        viewObject.detailSubtitle = self.detailSubtitle
+        viewObject.detailSummary = self.detailSummary
+        viewObject.location = self.location
+        viewObject.pinImage = self.pinImage
+        viewObject.selectedPinImage = self.selectedPinImage
+        // get new view if changed
+        let newValue = viewObject.view
+        guard oldView !== viewObject.view else {
+            return // no changes
         }
-        template.update(pointOfInterest)
+        // update template if new view was created
+        template.update(oldValue: oldView, newValue: newValue)
     }
 }
 
@@ -234,17 +219,17 @@ private extension PointOfInterest {
 @available(iOS 14.0, *)
 internal extension Button where Label == Text {
     
-    func build(pointOfInterest: CPPointOfInterest, before sibling: CPTextButton? = nil) -> CPTextButton {
+    func build(pointOfInterest: CPPointOfInterest.ViewObject, before sibling: CPTextButton? = nil) -> CPTextButton {
         let newButton = buildTextButton()
-        pointOfInterest.insert(newButton, before: sibling)
-        pointOfInterest.coordinator.template?.update(pointOfInterest)
+        //pointOfInterest.insert(newButton, before: sibling)
+        //pointOfInterest.coordinator.template?.update(pointOfInterest)
         return newButton
     }
     
-    func update(_ oldValue: CPTextButton, pointOfInterest: CPPointOfInterest) -> CPTextButton {
+    func update(_ oldValue: CPTextButton, pointOfInterest: CPPointOfInterest.ViewObject) -> CPTextButton {
         let newValue = buildTextButton()
-        pointOfInterest.update(oldValue: oldValue, newValue: newValue)
-        pointOfInterest.coordinator.template?.update(pointOfInterest)
+        //pointOfInterest.update(oldValue: oldValue, newValue: newValue)
+        //pointOfInterest.coordinator.template?.update(pointOfInterest)
         return newValue
     }
 }
@@ -306,5 +291,125 @@ internal extension CPPointOfInterest {
         }
         
         weak var template: CPPointOfInterestTemplate?
+    }
+}
+
+@available(iOS 14.0, *)
+internal extension CPPointOfInterest {
+    
+    // represents a POI in the object graph
+    final class ViewObject: NSObject {
+        
+        var title: String {
+            didSet {
+                if oldValue != self.title {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var location: MKMapItem {
+            didSet {
+                if oldValue != self.location {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var subtitle: String? {
+            didSet {
+                if oldValue != self.subtitle {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var summary: String? {
+            didSet {
+                if oldValue != self.summary {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var detailTitle: String? {
+            didSet {
+                if oldValue != self.detailTitle {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var detailSubtitle: String? {
+            didSet {
+                if oldValue != self.detailSubtitle {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var detailSummary: String? {
+            didSet {
+                if oldValue != self.detailSummary {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var pinImage: Image? {
+            didSet {
+                if oldValue != self.pinImage {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        var selectedPinImage: Image? {
+            didSet {
+                if oldValue != self.selectedPinImage {
+                    viewDidChange = true
+                }
+            }
+        }
+        
+        unowned let template: CPPointOfInterestTemplate
+        
+        private var _view: CPPointOfInterest!
+        
+        var view: CPPointOfInterest {
+            guard viewDidChange else {
+                return _view
+            }
+            viewDidChange = false
+            _view = CPPointOfInterest(self)
+            return _view
+        }
+        
+        private var viewDidChange = false
+        
+        init(title: String, 
+             location: MKMapItem,
+             subtitle: String?,
+             summary: String?,
+             detailTitle: String?,
+             detailSubtitle: String?,
+             detailSummary: String?,
+             pinImage: Image?,
+             selectedPinImage: Image?,
+             template: CPPointOfInterestTemplate
+        ) {
+            self.title = title
+            self.location = location
+            self.subtitle = subtitle
+            self.summary = summary
+            self.detailTitle = detailTitle
+            self.detailSubtitle = detailSubtitle
+            self.detailSummary = detailSummary
+            self.pinImage = pinImage
+            self.selectedPinImage = selectedPinImage
+            self.template = template
+            super.init()
+            self._view = CPPointOfInterest(self)
+        }
     }
 }
