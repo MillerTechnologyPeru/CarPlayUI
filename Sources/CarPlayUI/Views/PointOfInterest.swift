@@ -219,80 +219,38 @@ private extension PointOfInterest {
 @available(iOS 14.0, *)
 internal extension Button where Label == Text {
     
-    func build(pointOfInterest: CPPointOfInterest.ViewObject, before sibling: CPTextButton? = nil) -> CPTextButton {
-        let newButton = buildTextButton()
-        //pointOfInterest.insert(newButton, before: sibling)
-        //pointOfInterest.coordinator.template?.update(pointOfInterest)
-        return newButton
+    func build(pointOfInterest: CPPointOfInterest.ViewObject) -> CPPointOfInterest.ViewObject.TextButton {
+        let title = _TextProxy(label).rawText
+        let viewObject = CPPointOfInterest.ViewObject.TextButton(
+            title: title,
+            role: self.role,
+            action: self.action,
+            pointOfInterest: pointOfInterest
+        )
+        // update template
+        pointOfInterest.buttons.append(viewObject)
+        pointOfInterest.updateTemplate()
+        return viewObject
     }
     
-    func update(_ oldValue: CPTextButton, pointOfInterest: CPPointOfInterest.ViewObject) -> CPTextButton {
-        let newValue = buildTextButton()
-        //pointOfInterest.update(oldValue: oldValue, newValue: newValue)
-        //pointOfInterest.coordinator.template?.update(pointOfInterest)
-        return newValue
-    }
-}
-
-@available(iOS 14.0, *)
-internal extension CPPointOfInterest {
-    
-    var buttons: [CPTextButton] {
-        get {
-            [primaryButton, secondaryButton].compactMap { $0 }
-        }
-        set {
-            assert(newValue.count <= 2, "Can add a maximum of 2 buttons")
-            primaryButton = newValue.count > 0 ? newValue[0] : nil
-            secondaryButton = newValue.count > 1 ? newValue[1] : nil
-        }
-    }
-    
-    func insert(_ button: CPTextButton, before sibling: CPTextButton? = nil) {
-        // move to before sibling
-        if let sibling, let index = buttons.firstIndex(of: sibling) {
-            buttons.insert(button, before: index)
-        } else {
-            // append to end
-            buttons.append(button)
-        }
-    }
-    
-    func update(oldValue: CPTextButton, newValue: CPTextButton) {
-        guard let index = buttons.firstIndex(where: { $0 === oldValue }) else {
-            assertionFailure("Unable to find item in graph")
+    func update(
+        _ viewObject: CPPointOfInterest.ViewObject.TextButton,
+        pointOfInterest: CPPointOfInterest.ViewObject
+    ) {
+        // update action via proxy
+        viewObject.action = self.action
+        // recreate POI if button text or role changed
+        let title = _TextProxy(label).rawText
+        viewObject.title = title
+        viewObject.role = self.role
+        guard viewObject.pointOfInterest.viewDidChange else {
             return
         }
-        // update with new instance at index
-        buttons[index] = newValue
-    }
-    
-    func remove(button: CPTextButton) {
-        guard let index = buttons.firstIndex(where: { $0 === button }) else {
-            return
-        }
-        buttons.remove(at: index)
+        pointOfInterest.updateTemplate()
     }
 }
 
-// MARK: - Coordinator
-
-@available(iOS 14.0, *)
-internal extension CPPointOfInterest {
-    
-    var coordinator: Coordinator {
-        userInfo as! Coordinator
-    }
-    
-    final class Coordinator {
-        
-        init(template: CPPointOfInterestTemplate) {
-            self.template = template
-        }
-        
-        weak var template: CPPointOfInterestTemplate?
-    }
-}
+// MARK: - View Object
 
 @available(iOS 14.0, *)
 internal extension CPPointOfInterest {
@@ -372,6 +330,12 @@ internal extension CPPointOfInterest {
             }
         }
         
+        var buttons = [TextButton]() {
+            didSet {
+                viewDidChange = true
+            }
+        }
+        
         unowned let template: CPPointOfInterestTemplate
         
         private var _view: CPPointOfInterest!
@@ -385,7 +349,7 @@ internal extension CPPointOfInterest {
             return _view
         }
         
-        private var viewDidChange = false
+        var viewDidChange = false
         
         init(title: String, 
              location: MKMapItem,
@@ -410,6 +374,59 @@ internal extension CPPointOfInterest {
             self.template = template
             super.init()
             self._view = CPPointOfInterest(self)
+        }
+        
+        func updateTemplate() {
+            let oldValue = _view!
+            let newValue = view
+            template.update(
+                oldValue: oldValue,
+                newValue: newValue
+            )
+        }
+        
+        func remove(button: TextButton) {
+            self.buttons.removeAll(where: { $0 === button })
+        }
+    }
+}
+
+@available(iOS 14.0, *)
+internal extension CPPointOfInterest.ViewObject {
+    
+    final class TextButton: NSObject {
+        
+        var title: String {
+            didSet {
+                if oldValue != self.title {
+                    pointOfInterest.viewDidChange = true
+                }
+            }
+        }
+        
+        var role: ButtonRole? {
+            didSet {
+                if oldValue != self.role {
+                    pointOfInterest.viewDidChange = true
+                }
+            }
+        }
+        
+        var action: () -> ()
+        
+        unowned let pointOfInterest: CPPointOfInterest.ViewObject
+        
+        init(
+            title: String,
+            role: ButtonRole?,
+            action: @escaping () -> (),
+            pointOfInterest: CPPointOfInterest.ViewObject
+        ) {
+            self.title = title
+            self.role = role
+            self.action = action
+            self.pointOfInterest = pointOfInterest
+            super.init()
         }
     }
 }

@@ -40,9 +40,8 @@ extension Button: CarPlayPrimitive {
             return button.build(template: template, before: sibling as? CPTextButton)
         } else if #available(iOS 14.0, *),
             let button = self as? Button<Text>,
-                  let pointOfInterest = parent as? CPPointOfInterest.ViewObject {
-            //return button.build(pointOfInterest: pointOfInterest, before: sibling as? CPTextButton)
-            return nil
+            let pointOfInterest = parent as? CPPointOfInterest.ViewObject {
+            return button.build(pointOfInterest: pointOfInterest)
         } else if let template = parent as? CPGridTemplate {
             return build(template: template, before: sibling as? CPGridButton)
         } else {
@@ -58,10 +57,9 @@ extension Button: CarPlayPrimitive {
             component = button.update(action, template: template)
         } else if #available(iOS 14.0, *),
             let button = self as? Button<Text>,
-            let action = component as? CPTextButton,
+            let action = component as? CPPointOfInterest.ViewObject.TextButton,
             let pointOfInterest = parent as? CPPointOfInterest.ViewObject {
-            //component = button.update(action, pointOfInterest: pointOfInterest)
-            
+            button.update(action, pointOfInterest: pointOfInterest)
         } else if let gridButton = component as? CPGridButton,
            let template = parent as? CPGridTemplate {
             component = self.update(gridButton, template: template)
@@ -74,8 +72,8 @@ extension Button: CarPlayPrimitive {
            let template = parent as? CPInformationTemplate {
             template.remove(action: action)
         } else if #available(iOS 14, *),
-            let action = component as? CPTextButton,
-            let pointOfInterest = parent as? CPPointOfInterest {
+            let action = component as? CPPointOfInterest.ViewObject.TextButton,
+            let pointOfInterest = parent as? CPPointOfInterest.ViewObject {
             pointOfInterest.remove(button: action)
         } else if let gridButton = component as? CPGridButton,
             let template = parent as? CPGridTemplate {

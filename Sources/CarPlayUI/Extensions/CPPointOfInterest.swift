@@ -36,16 +36,51 @@ internal extension CPPointOfInterest {
                 pinImage: view.pinImage.flatMap { .unsafe($0) }
             )
         }
+        // set buttons
+        self.buttons = view.buttons.prefix(2).enumerated().map { (index, buttonView) in
+            CPTextButton(
+                title: buttonView.title,
+                textStyle: .init(role: buttonView.role),
+                handler: { [weak buttonView] _ in
+                    buttonView?.action()
+            })
+        }
     }
     
-    func isEqual<Content: View>(to view: PointOfInterest<Content>) -> Bool {
-        return self.title == view.title
-            && self.subtitle == view.subtitle
-            && self.summary == view.summary
-            && self.location == view.location
-            && self.detailTitle == view.detailTitle
-            && self.detailSubtitle == view.detailSubtitle
-            && self.detailSummary == view.detailSummary
-            //&& self.pinImage == view.pinImage // TODO: Compare images
+    var buttons: [CPTextButton] {
+        get {
+            [primaryButton, secondaryButton].compactMap { $0 }
+        }
+        set {
+            assert(newValue.count <= 2, "Can add a maximum of 2 buttons")
+            primaryButton = newValue.count > 0 ? newValue[0] : nil
+            secondaryButton = newValue.count > 1 ? newValue[1] : nil
+        }
+    }
+    
+    func insert(_ button: CPTextButton, before sibling: CPTextButton? = nil) {
+        // move to before sibling
+        if let sibling, let index = buttons.firstIndex(of: sibling) {
+            buttons.insert(button, before: index)
+        } else {
+            // append to end
+            buttons.append(button)
+        }
+    }
+    
+    func update(oldValue: CPTextButton, newValue: CPTextButton) {
+        guard let index = buttons.firstIndex(where: { $0 === oldValue }) else {
+            assertionFailure("Unable to find item in graph")
+            return
+        }
+        // update with new instance at index
+        buttons[index] = newValue
+    }
+    
+    func remove(button: CPTextButton) {
+        guard let index = buttons.firstIndex(where: { $0 === button }) else {
+            return
+        }
+        buttons.remove(at: index)
     }
 }

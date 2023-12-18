@@ -15,10 +15,16 @@ internal extension UIImage {
         _ image: _ImageProxy,
         environment: EnvironmentValues = .defaultEnvironment
     ) {
-        self.init(image.provider.resolve(in: environment), traitCollection: nil)
+        self.init(
+            image.provider.resolve(in: environment),
+            traitCollection: .carPlayInterface
+        )
     }
     
-    convenience init?(_ image: _AnyImageProviderBox._Image, traitCollection: UITraitCollection? = nil) {
+    convenience init?(
+        _ image: _AnyImageProviderBox._Image,
+        traitCollection: UITraitCollection? = .carPlayInterface
+    ) {
         switch image.storage {
         case let .named(imageName, bundle: bundle):
             self.init(named: imageName, in: bundle, compatibleWith: traitCollection)
