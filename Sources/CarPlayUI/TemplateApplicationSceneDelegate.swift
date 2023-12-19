@@ -10,7 +10,7 @@ import CarPlay
 
 /// Car Play Scene Delegate
 @MainActor
-@objc(CarplayUITemplateApplicationSceneDelegate)
+@objc(CarPlayUITemplateApplicationSceneDelegate)
 public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     
     // MARK: - Properties
