@@ -12,6 +12,9 @@ import CarPlayUI
 struct CarInformationView: CarPlayUI.View {
     
     @State
+    var date = Date()
+    
+    @State
     var showButton = false
     
     @State
@@ -23,40 +26,34 @@ struct CarInformationView: CarPlayUI.View {
     var body: some CarPlayUI.View {
         Form {
             // Items
-            HStack {
-                Text("Counter")
-                Text("\(counter.description)")
+            if counter == 0 {
+                Text("Use the increment button to increase the counter")
             }
+            
+            CounterView(counter: counter)
             
             if #available(iOS 15.0, *) {
-                HStack {
-                    Text("Date")
-                    Text("\(Date().formatted().description)")
-                }
+                DateView(date: date)
             }
             
-            HStack {
-                Text("Rating")
-                Rating(rating: rating, maximum: 5.0)
+            Rating(
+                title: Text("Rating"),
+                rating: rating,
+                maximum: 5.0
+            )
+            
+            if counter == 0 {
+                FormItem(title: nil, detail: "Detail Text")
+                Rating()
             }
-            
-            Text("Single Line")
-            
-            Rating()
             
             // Buttons
-            Button {
-                increment()
-            } label: {
-                Text("Increment")
-            }
+            Button("Increment") { increment() }
             
-            if counter > 0 {
-                Button(role: .confirm) {
-                    reset()
-                } label: {
-                    Text("Reset")
-                }
+            Button(role: .confirm) {
+                reset()
+            } label: {
+                Text("Reset")
             }
             
             NavigationLink("Next", destination: CarInformationView())
@@ -66,7 +63,47 @@ struct CarInformationView: CarPlayUI.View {
             print("Show Information View")
         }
         .onDisappear {
+            print("Information View Disappear")
             reset()
+        }
+    }
+}
+
+internal extension CarInformationView {
+    
+    struct CounterView: View {
+        
+        let counter: Int
+        
+        var body: some View {
+            FormItem(
+                title: "Counter",
+                detail: "\(counter.description)"
+            )
+        }
+    }
+    
+    struct DateView: View {
+        
+        let date: Date
+        
+        init(date: Date = Date()) {
+            self.date = date
+        }
+        
+        var body: some View {
+            FormItem(
+                title: "Date",
+                detail: detail
+            )
+        }
+        
+        private var detail: String {
+            if #available(iOS 15.0, *) {
+                return date.formatted()
+            } else {
+                return "\(date)"
+            }
         }
     }
 }
@@ -77,6 +114,7 @@ private extension CarInformationView {
         print("Reset")
         counter = 0
         rating = 0.5
+        date = Date()
     }
     
     func increment() {

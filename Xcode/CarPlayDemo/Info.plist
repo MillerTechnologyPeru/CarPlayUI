@@ -14,7 +14,7 @@
 					<key>UISceneConfigurationName</key>
 					<string>Template Configuration</string>
 					<key>UISceneDelegateClassName</key>
-					<string>CarPlayUI.CarplaySceneDelegate</string>
+					<string>CarPlayUITemplateApplicationSceneDelegate</string>
 				</dict>
 			</array>
 		</dict>

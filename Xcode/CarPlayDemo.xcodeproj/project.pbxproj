@@ -17,6 +17,7 @@
 		6E0EF99E2B27BF0900402A9F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E0EF99D2B27BF0900402A9F /* Assets.xcassets */; };
 		6E0EF9A12B27BF0900402A9F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E0EF9A02B27BF0900402A9F /* Preview Assets.xcassets */; };
 		6E0EF9AA2B27BF4B00402A9F /* CarPlayUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6E0EF9A92B27BF4B00402A9F /* CarPlayUI */; };
+		6E79D8EE2B30B054009082A7 /* CarPointsOfInterestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E79D8ED2B30B054009082A7 /* CarPointsOfInterestView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		6E0EF99D2B27BF0900402A9F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6E0EF9A02B27BF0900402A9F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6E0EF9A72B27BF2600402A9F /* CarPlayUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CarPlayUI; path = ..; sourceTree = "<group>"; };
+		6E79D8ED2B30B054009082A7 /* CarPointsOfInterestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CarPointsOfInterestView.swift; path = "../../../../../Downloads/CarPlaySample-master/CarPlaySample/Car/CarPointsOfInterestView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +55,7 @@
 				6E01D6BC2B2B3F1A001B7F97 /* CarPlayApp.swift */,
 				6E01D6BF2B2B3F7F001B7F97 /* CarGridView.swift */,
 				6E01D6C02B2B3F7F001B7F97 /* CarInformationView.swift */,
+				6E79D8ED2B30B054009082A7 /* CarPointsOfInterestView.swift */,
 				6E01D6C12B2B3F7F001B7F97 /* CarListView.swift */,
 				6E01D6BE2B2B3F7F001B7F97 /* CarTabView.swift */,
 			);
@@ -180,6 +183,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E01D6BD2B2B3F1A001B7F97 /* CarPlayApp.swift in Sources */,
+				6E79D8EE2B30B054009082A7 /* CarPointsOfInterestView.swift in Sources */,
 				6E01D6C32B2B3F7F001B7F97 /* CarGridView.swift in Sources */,
 				6E0EF99C2B27BF0800402A9F /* ContentView.swift in Sources */,
 				6E0EF99A2B27BF0800402A9F /* App.swift in Sources */,

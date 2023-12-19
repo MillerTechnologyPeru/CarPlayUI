@@ -13,7 +13,9 @@ struct CarPlayApp: CarPlayUI.App {
     
     var body: some Scene {
         WindowGroup() {
-            CarTabView()
+            NavigationView {
+                CarListView()
+            }
         }
     }
 }
