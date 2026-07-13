@@ -13,7 +13,7 @@ extension List: View { //where SelectionValue == Int {
     public var body: some View {
         ToolbarReader { (title, toolbar) in
             Template(
-                title: title.flatMap { mapAnyView($0, transform: { (view: Text) in _TextProxy(view).rawText }) },
+                title: title.map { _TextProxy($0).rawText },
                 selection: nil,//selection.single,
                 content: content
             )
