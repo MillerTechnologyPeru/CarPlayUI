@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@MainActor
 public protocol EnvironmentKey {
   associatedtype Value
   static var defaultValue: Value { get }
@@ -22,6 +23,7 @@ public protocol EnvironmentKey {
 /// create a `ViewModifier`.
 ///
 /// It can be applied to a `View` or `ViewModifier`.
+@MainActor
 public protocol _EnvironmentModifier {
   func modifyEnvironment(_ values: inout EnvironmentValues)
 }

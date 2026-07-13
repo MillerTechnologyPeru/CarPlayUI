@@ -23,6 +23,7 @@ public struct EnvironmentValues: CustomStringConvertible {
 
   public init() {}
 
+  @MainActor
   public subscript<K>(key: K.Type) -> K.Value where K: EnvironmentKey {
     get {
       if let val = values[ObjectIdentifier(key)] as? K.Value {
@@ -66,6 +67,7 @@ struct IsEnabledKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var isEnabled: Bool {
     get {
       self[IsEnabledKey.self]
@@ -95,8 +97,9 @@ public extension View {
 }
 
 internal extension EnvironmentValues {
-    
+
     /// Returns default settings for the environment
+    @MainActor
     static var defaultEnvironment: Self {
         var environment = EnvironmentValues()
         environment[_ColorSchemeKey.self] = .light

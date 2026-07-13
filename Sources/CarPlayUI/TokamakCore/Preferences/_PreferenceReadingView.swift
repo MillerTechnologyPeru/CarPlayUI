@@ -21,7 +21,7 @@ public struct _DelayedPreferenceView<Key, Content>: View, _PreferenceReadingView
   where Key: PreferenceKey, Content: View
 {
   @State
-  private var resolvedValue: _PreferenceValue<Key> = _PreferenceValue(storage: .init(Key.self))
+  nonisolated(unsafe) private var resolvedValue: _PreferenceValue<Key> = _PreferenceValue(storage: .init(Key.self))
   public let transform: (_PreferenceValue<Key>) -> Content
 
   private var valueReference: _PreferenceValue<Key>?

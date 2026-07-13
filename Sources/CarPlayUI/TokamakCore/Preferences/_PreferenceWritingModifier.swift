@@ -18,7 +18,7 @@
 public struct _PreferenceWritingModifier<Key>: _PreferenceWritingModifierProtocol
   where Key: PreferenceKey
 {
-  public let value: Key.Value
+  public nonisolated(unsafe) let value: Key.Value
   public init(key: Key.Type = Key.self, value: Key.Value) {
     self.value = value
   }
@@ -38,7 +38,7 @@ public struct _PreferenceWritingModifier<Key>: _PreferenceWritingModifierProtoco
 }
 
 extension _PreferenceWritingModifier: Equatable where Key.Value: Equatable {
-  public static func == (a: Self, b: Self) -> Bool {
+  public nonisolated static func == (a: Self, b: Self) -> Bool {
     a.value == b.value
   }
 }

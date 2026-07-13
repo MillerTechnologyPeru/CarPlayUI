@@ -16,6 +16,7 @@
 //
 
 /// A modifier that resolves to a concrete modifier in an environment.
+@MainActor
 public protocol EnvironmentalModifier: ViewModifier {
   associatedtype ResolvedModifier: ViewModifier
   func resolve(in environment: EnvironmentValues) -> ResolvedModifier

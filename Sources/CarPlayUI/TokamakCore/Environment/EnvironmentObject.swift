@@ -24,6 +24,7 @@ public struct EnvironmentObject<ObjectType>: DynamicProperty
   @dynamicMemberLookup
   public struct Wrapper {
     internal let root: ObjectType
+    @MainActor
     public subscript<Subject>(
       dynamicMember keyPath: ReferenceWritableKeyPath<ObjectType, Subject>
     ) -> Binding<Subject> {

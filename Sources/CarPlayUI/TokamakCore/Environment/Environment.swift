@@ -19,6 +19,7 @@
 /// 1. `View.makeMountedView`
 /// 2. `MountedHostView.update` when reconciling
 ///
+@MainActor
 protocol EnvironmentReader {
   mutating func setContent(from values: EnvironmentValues)
 }

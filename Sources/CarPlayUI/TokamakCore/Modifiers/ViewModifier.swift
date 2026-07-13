@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@MainActor
 public protocol ViewModifier {
   typealias Content = _ViewModifier_Content<Self>
   associatedtype Body: View

@@ -15,6 +15,7 @@
 //  Created by Carson Katri on 11/26/20.
 //
 
+@MainActor
 public protocol PreferenceKey {
   associatedtype Value
   static var defaultValue: Value { get }
@@ -58,10 +59,12 @@ public struct _PreferenceValue<Key> where Key: PreferenceKey {
   }
 
   /// The latest value.
+  @MainActor
   public var value: Key.Value {
     reduce(storage.valueList.compactMap { $0 as? Key.Value })
   }
 
+  @MainActor
   func reduce(_ values: [Key.Value]) -> Key.Value {
     values.reduce(into: Key.defaultValue) { prev, next in
       Key.reduce(value: &prev) { next }
@@ -70,6 +73,7 @@ public struct _PreferenceValue<Key> where Key: PreferenceKey {
 }
 
 public extension _PreferenceValue {
+  @MainActor
   func _force<V>(
     _ transform: @escaping (Key.Value) -> V
   ) -> _PreferenceReadingView<Key, V> where V: View {
@@ -158,16 +162,19 @@ public final class _PreferenceStore: CustomDebugStringConvertible {
 /// `_PreferenceWritingViewProtocol` is that `_PreferenceReadingViewProtocol`
 /// calls `preferenceStore` during the current render, and `_PreferenceWritingViewProtocol`
 /// waits until the current render finishes.
+@MainActor
 public protocol _PreferenceReadingViewProtocol {
   func preferenceStore(_ preferenceStore: _PreferenceStore)
 }
 
 /// A protocol that allows a `View` to modify values from the current `_PreferenceStore`.
+@MainActor
 public protocol _PreferenceWritingViewProtocol {
   func modifyPreferenceStore(_ preferenceStore: inout _PreferenceStore) -> AnyView
 }
 
 /// A protocol that allows a `ViewModifier` to modify values from the current `_PreferenceStore`.
+@MainActor
 public protocol _PreferenceWritingModifierProtocol: ViewModifier
   where Body == AnyView
 {
