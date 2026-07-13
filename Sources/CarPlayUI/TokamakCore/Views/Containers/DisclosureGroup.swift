@@ -17,7 +17,7 @@
 
 public struct DisclosureGroup<Label, Content>: _PrimitiveView where Label: View, Content: View {
   @State
-  var isExpanded: Bool = false
+  nonisolated(unsafe) var isExpanded: Bool = false
   let isExpandedBinding: Binding<Bool>?
 
   @Environment(\._outlineGroupStyle)
@@ -68,6 +68,7 @@ public extension DisclosureGroup where Label == Text {
   }
 }
 
+@MainActor
 public struct _DisclosureGroupProxy<Label, Content>
   where Label: View, Content: View
 {

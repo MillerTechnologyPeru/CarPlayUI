@@ -40,6 +40,7 @@ public struct List<SelectionValue, Content>
   }
 }
 
+@MainActor
 public enum _ListRow {
   static func buildItems<RowView>(
     _ children: [AnyView],

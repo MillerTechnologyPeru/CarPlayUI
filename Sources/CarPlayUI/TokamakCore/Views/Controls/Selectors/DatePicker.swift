@@ -153,8 +153,8 @@ public extension DatePicker where Label == Text {
 }
 
 public struct DatePickerComponents: OptionSet {
-  public static let hourAndMinute = DatePickerComponents(rawValue: 1 << 0)
-  public static let date = DatePickerComponents(rawValue: 1 << 1)
+  public nonisolated(unsafe) static let hourAndMinute = DatePickerComponents(rawValue: 1 << 0)
+  public nonisolated(unsafe) static let date = DatePickerComponents(rawValue: 1 << 1)
 
   public let rawValue: UInt
 

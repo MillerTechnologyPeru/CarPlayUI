@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@MainActor
 public protocol _PickerContainerProtocol {
   var elements: [_AnyIDView] { get }
 }

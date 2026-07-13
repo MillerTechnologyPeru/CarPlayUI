@@ -64,6 +64,6 @@ public struct PinnedScrollableViews: OptionSet {
     self.rawValue = rawValue
   }
 
-  public static let sectionHeaders: Self = .init(rawValue: 1 << 0)
-  public static let sectionFooters: Self = .init(rawValue: 1 << 1)
+  public nonisolated(unsafe) static let sectionHeaders: Self = .init(rawValue: 1 << 0)
+  public nonisolated(unsafe) static let sectionFooters: Self = .init(rawValue: 1 << 1)
 }

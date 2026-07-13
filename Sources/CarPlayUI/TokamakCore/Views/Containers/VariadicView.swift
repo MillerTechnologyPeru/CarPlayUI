@@ -42,6 +42,7 @@ public enum _VariadicView {
   }
 }
 
+@MainActor
 public protocol _VariadicView_ViewRoot {
   associatedtype Body: View
   @ViewBuilder
@@ -105,6 +106,7 @@ extension _VariadicView_Children: View {
   }
 }
 
+@MainActor
 public protocol _VariadicView_AnyTree {
   var anyContent: AnyView { get }
   var children: _VariadicView.Children? { get set }

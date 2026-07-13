@@ -17,6 +17,7 @@
 
 import Foundation
 
+@MainActor
 protocol SectionView {
   func listRow(_ style: ListStyle) -> AnyView
 }

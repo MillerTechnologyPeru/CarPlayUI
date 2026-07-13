@@ -13,6 +13,7 @@
 // limitations under the License.
 
 /// A protocol that allows matching against type-erased `ForEach` at run time.
+@MainActor
 protocol ForEachProtocol: GroupView {
   var elementType: Any.Type { get }
   func element(at: Int) -> Any
@@ -95,6 +96,7 @@ struct _IDKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var _id: AnyHashable? {
     get {
       self[_IDKey.self]
@@ -105,6 +107,7 @@ public extension EnvironmentValues {
   }
 }
 
+@MainActor
 public protocol _AnyIDView {
   var anyId: AnyHashable { get }
   var anyContent: AnyView { get }

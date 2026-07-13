@@ -15,6 +15,7 @@
 //  Created by Max Desiatov on 06/06/2021.
 //
 
+@MainActor
 public extension List {
   // - MARK: Collection initializers
   init<Data, RowContent>(
