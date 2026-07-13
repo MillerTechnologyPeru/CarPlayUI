@@ -32,12 +32,37 @@ extension ModifiedContent: AppearanceActionType
   var disappear: (() -> ())? { modifier.disappear }
 }
 
+struct OnAppearActionKey: EnvironmentKey {
+  static let defaultValue: (() -> ())? = nil
+}
+
+struct OnDisappearActionKey: EnvironmentKey {
+  static let defaultValue: (() -> ())? = nil
+}
+
+extension EnvironmentValues {
+  /// Exposes the closure passed to `.onAppear(perform:)` to ancestors that
+  /// render a native CarPlay template (e.g. `List`, `Grid`, `Form`, `Map`),
+  /// so it can also be invoked when that template re-appears on screen.
+  var onAppearAction: (() -> ())? {
+    get { self[OnAppearActionKey.self] }
+    set { self[OnAppearActionKey.self] = newValue }
+  }
+
+  var onDisappearAction: (() -> ())? {
+    get { self[OnDisappearActionKey.self] }
+    set { self[OnDisappearActionKey.self] = newValue }
+  }
+}
+
 public extension View {
   func onAppear(perform action: (() -> ())? = nil) -> some View {
     modifier(_AppearanceActionModifier(appear: action))
+      .environment(\.onAppearAction, action)
   }
 
   func onDisappear(perform action: (() -> ())? = nil) -> some View {
     modifier(_AppearanceActionModifier(disappear: action))
+      .environment(\.onDisappearAction, action)
   }
 }
