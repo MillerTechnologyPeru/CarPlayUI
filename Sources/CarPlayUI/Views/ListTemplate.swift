@@ -11,10 +11,12 @@ import CarPlay
 extension List: View { //where SelectionValue == Int {
     
     public var body: some View {
-        ToolbarReader { (title, toolbar) in
+        ToolbarReader { (title, toolbar, onAppear, onDisappear) in
             Template(
                 title: title.map { _TextProxy($0).rawText },
                 selection: nil,//selection.single,
+                onAppear: onAppear,
+                onDisappear: onDisappear,
                 content: content
             )
         }
@@ -38,13 +40,17 @@ private extension List._Selection {
 extension List {
     
     struct Template: View {
-        
+
         let title: String?
-        
+
         let selection: Binding<Int?>?
-        
+
+        let onAppear: (() -> ())?
+
+        let onDisappear: (() -> ())?
+
         let content: Content
-        
+
         var body: Content {
             content
         }
@@ -60,6 +66,8 @@ extension List.Template: CarPlayPrimitive {
                     let coordinator = CPListTemplate.Coordinator(
                         selection: self.selection
                     )
+                    coordinator.appearAction = onAppear
+                    coordinator.disappearAction = onDisappear
                     let template = CPListTemplate(
                         title: title,
                         sections: []
@@ -73,7 +81,8 @@ extension List.Template: CarPlayPrimitive {
                     if template.title != title {
                         assertionFailure("Cannot dynamically change title")
                     }
-                    
+                    template._coordinator.appearAction = onAppear
+                    template._coordinator.disappearAction = onDisappear
                 },
                 content: { content }
             )
@@ -86,15 +95,21 @@ extension List.Template: CarPlayPrimitive {
 public extension CPListTemplate {
     
     final class Coordinator: NSObject, NavigationStackTemplateCoordinator {
-                
+
         let selection: Binding<Int?>?
-        
+
         var navigationDestination: NavigationDestination?
-        
+
         var navigationContext: NavigationContext?
-        
+
+        var appearAction: (() -> Void)?
+
+        var disappearAction: (() -> Void)?
+
+        var hasAppeared = false
+
         fileprivate var lastSelection: Int?
-        
+
         var sections = [CPListSection]()
                 
         fileprivate init(
