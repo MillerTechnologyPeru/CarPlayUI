@@ -18,6 +18,7 @@
 import Foundation
 
 // FIXME: Make `Animatable`
+@MainActor
 public protocol GeometryEffect: Animatable, ViewModifier {
   func effectValue(size: CGSize) -> ProjectionTransform
 }

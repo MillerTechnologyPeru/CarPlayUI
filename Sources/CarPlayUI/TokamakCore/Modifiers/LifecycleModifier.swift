@@ -30,6 +30,7 @@ public extension View {
   }
 }
 
+@MainActor
 protocol LifecycleActionType {
   var update: (() -> ())? { get }
 }

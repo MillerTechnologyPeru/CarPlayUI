@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@MainActor
 protocol AppearanceActionType {
   var appear: (() -> ())? { get }
   var disappear: (() -> ())? { get }
@@ -44,11 +45,13 @@ extension EnvironmentValues {
   /// Exposes the closure passed to `.onAppear(perform:)` to ancestors that
   /// render a native CarPlay template (e.g. `List`, `Grid`, `Form`, `Map`),
   /// so it can also be invoked when that template re-appears on screen.
+  @MainActor
   var onAppearAction: (() -> ())? {
     get { self[OnAppearActionKey.self] }
     set { self[OnAppearActionKey.self] = newValue }
   }
 
+  @MainActor
   var onDisappearAction: (() -> ())? {
     get { self[OnDisappearActionKey.self] }
     set { self[OnDisappearActionKey.self] = newValue }

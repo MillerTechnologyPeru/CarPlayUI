@@ -42,7 +42,7 @@ public struct _BackgroundModifier<Background>: ViewModifier, EnvironmentReader
   where Background: View
 {
   public var environment: EnvironmentValues!
-  public var background: Background
+  public nonisolated(unsafe) var background: Background
   public var alignment: Alignment
 
   public init(background: Background, alignment: Alignment = .center) {
@@ -64,7 +64,7 @@ public struct _BackgroundModifier<Background>: ViewModifier, EnvironmentReader
 }
 
 extension _BackgroundModifier: Equatable where Background: Equatable {
-  public static func == (
+  public nonisolated static func == (
     lhs: _BackgroundModifier<Background>,
     rhs: _BackgroundModifier<Background>
   ) -> Bool {
@@ -153,7 +153,7 @@ public struct _OverlayModifier<Overlay>: ViewModifier, EnvironmentReader
   where Overlay: View
 {
   public var environment: EnvironmentValues!
-  public var overlay: Overlay
+  public nonisolated(unsafe) var overlay: Overlay
   public var alignment: Alignment
 
   public init(overlay: Overlay, alignment: Alignment = .center) {
@@ -175,7 +175,7 @@ public struct _OverlayModifier<Overlay>: ViewModifier, EnvironmentReader
 }
 
 extension _OverlayModifier: Equatable where Overlay: Equatable {
-  public static func == (lhs: _OverlayModifier<Overlay>, rhs: _OverlayModifier<Overlay>) -> Bool {
+  public nonisolated static func == (lhs: _OverlayModifier<Overlay>, rhs: _OverlayModifier<Overlay>) -> Bool {
     lhs.overlay == rhs.overlay
   }
 }

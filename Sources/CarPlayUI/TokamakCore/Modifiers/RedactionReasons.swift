@@ -21,7 +21,7 @@ public struct RedactionReasons: OptionSet {
     self.rawValue = rawValue
   }
 
-  public static let placeholder: Self = .init(rawValue: 1 << 0)
+  public nonisolated(unsafe) static let placeholder: Self = .init(rawValue: 1 << 0)
 }
 
 public extension View {
@@ -35,10 +35,11 @@ public extension View {
 }
 
 private struct RedactionReasonsKey: EnvironmentKey {
-  static let defaultValue: RedactionReasons = []
+  nonisolated(unsafe) static let defaultValue: RedactionReasons = []
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var redactionReasons: RedactionReasons {
     get {
       self[RedactionReasonsKey.self]
