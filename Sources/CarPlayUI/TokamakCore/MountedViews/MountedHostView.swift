@@ -60,6 +60,14 @@ public final class MountedHostView<R: Renderer>: MountedElement<R> {
 
     self.target = target
 
+    reconciler.afterCurrentRender(perform: { [weak self] in
+      guard let self = self else { return }
+
+      if let appearanceAction = self.view.view as? AppearanceActionType {
+        appearanceAction.appear?()
+      }
+    })
+
     guard !view.children.isEmpty else { return }
 
     let isGroupView = view.type is GroupView.Type
@@ -100,6 +108,10 @@ public final class MountedHostView<R: Renderer>: MountedElement<R> {
     let task = UnmountHostTask(self, in: reconciler) {
       self.mountedChildren.forEach {
         $0.unmount(in: reconciler, with: transaction, parentTask: self.unmountTask)
+      }
+
+      if let appearanceAction = self.view.view as? AppearanceActionType {
+        appearanceAction.disappear?()
       }
     }
     task.isCancelled = parentTask?.isCancelled ?? false
