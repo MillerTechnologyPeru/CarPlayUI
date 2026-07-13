@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import CarPlay
 
+@MainActor
 internal protocol AnyTemplate {
     
     func build() -> CPTemplate

@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import CarPlay
 
+@MainActor
 internal protocol AnyComponent {
     
     func build(parent: NSObject, before sibling: NSObject?) -> NSObject?
@@ -65,6 +66,7 @@ extension ComponentView: ParentView {
 }
 
 /// CarPlay native types that are used as components
+@MainActor
 internal protocol ComponentObject: NSObjectProtocol {
     
     func build(parent: NSObject, before sibling: NSObject?) -> NSObject?

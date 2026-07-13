@@ -23,6 +23,7 @@ internal extension CPTemplate {
 // MARK: - NavigationStack Template
 
 /// Template can be embedded in a navigation stack.
+@MainActor
 protocol NavigationStackTemplate {
         
     var navigationTitle: String? { get }
@@ -61,6 +62,7 @@ extension CPPointOfInterestTemplate: NavigationStackTemplate {
 // MARK: - Modal Template
 
 /// Template can only be presented modally.
+@MainActor
 protocol ModalTemplate { }
 
 extension CPAlertTemplate: ModalTemplate { }

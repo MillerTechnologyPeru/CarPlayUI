@@ -313,6 +313,7 @@ final class CarplayRenderer: Renderer {
     }
 }
 
+@MainActor
 protocol CarPlayPrimitive {
     
     var renderedBody: AnyView { get }

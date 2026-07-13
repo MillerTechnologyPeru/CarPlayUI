@@ -8,6 +8,7 @@
 import Foundation
 import CarPlay
 
+@MainActor
 protocol TemplateCoordinator: AnyObject {
 
     /// Mirrors the `.onAppear(perform:)` closure attached to the template's root view.
@@ -28,6 +29,7 @@ protocol TemplateCoordinator: AnyObject {
     func didDisappear(animated: Bool)
 }
 
+@MainActor
 protocol NavigationStackTemplateCoordinator: TemplateCoordinator {
 
     var navigationDestination: NavigationDestination? { get set }

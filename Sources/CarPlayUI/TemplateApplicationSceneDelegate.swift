@@ -21,7 +21,7 @@ public final class TemplateApplicationSceneDelegate: UIResponder, CPTemplateAppl
     
     // MARK: - Initialization
     
-    public nonisolated static var shared: TemplateApplicationSceneDelegate? {
+    public static var shared: TemplateApplicationSceneDelegate? {
         CarPlayAppCache.sceneDelegate
     }
     
