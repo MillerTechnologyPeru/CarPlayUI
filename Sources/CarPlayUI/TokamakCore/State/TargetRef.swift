@@ -13,6 +13,7 @@
 // limitations under the License.
 
 /// A helper protocol for erasing generic parameters of the `_TargetRef` type.
+@MainActor
 protocol TargetRefType {
   var target: Target? { get set }
 }

@@ -21,7 +21,7 @@
  */
 @propertyWrapper
 @dynamicMemberLookup
-public struct Binding<Value>: DynamicProperty {
+public nonisolated struct Binding<Value>: DynamicProperty {
   public var wrappedValue: Value {
     get { get() }
     nonmutating set { set(newValue, transaction) }

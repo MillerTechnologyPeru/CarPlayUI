@@ -15,7 +15,7 @@
 import Combine
 
 @propertyWrapper
-public struct StateObject<ObjectType: ObservableObject>: DynamicProperty {
+public nonisolated struct StateObject<ObjectType: ObservableObject>: DynamicProperty {
   public var wrappedValue: ObjectType { (getter?() as? ObservedObject.Wrapper)?.root ?? initial() }
 
   let initial: () -> ObjectType

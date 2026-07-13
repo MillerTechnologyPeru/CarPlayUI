@@ -24,7 +24,7 @@ protocol WritableValueStorage: ValueStorage {
 }
 
 @propertyWrapper
-public struct State<Value>: DynamicProperty {
+public nonisolated struct State<Value>: DynamicProperty {
   private let initialValue: Value
 
   var anyInitialValue: Any { initialValue }

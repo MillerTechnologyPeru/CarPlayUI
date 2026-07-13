@@ -17,6 +17,7 @@ import Combine
 public typealias ObservableObject = Combine.ObservableObject
 public typealias Published = Combine.Published
 
+@MainActor
 protocol ObservedProperty: DynamicProperty {
   var objectWillChange: AnyPublisher<(), Never> { get }
 }

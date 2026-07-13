@@ -15,6 +15,7 @@
 //  Created by Carson Katri on 7/17/20.
 //
 
+@MainActor
 public protocol DynamicProperty {
   mutating func update()
 }
