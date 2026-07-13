@@ -30,6 +30,7 @@ private enum MountedElementKind {
   }
 }
 
+@MainActor
 public class MountedElement<R: Renderer> {
   private var element: MountedElementKind
   var type: Any.Type { element.type }
@@ -231,6 +232,7 @@ public class MountedElement<R: Renderer> {
 }
 
 extension EnvironmentValues {
+  @MainActor
   mutating func inject(into element: inout Any, _ type: Any.Type) {
     guard let info = typeInfo(of: type) else { return }
 
@@ -266,6 +268,7 @@ extension TypeInfo {
   /// Extract all `DynamicProperty` from a type, recursively.
   /// This is necessary as a `DynamicProperty` can be nested.
   /// `EnvironmentValues` can also be injected at this point.
+  @MainActor
   func dynamicProperties(
     _ environment: inout EnvironmentValues,
     source: inout Any

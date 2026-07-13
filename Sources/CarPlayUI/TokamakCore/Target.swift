@@ -15,6 +15,7 @@
 //  Created by Max Desiatov on 10/02/2019.
 //
 
+@MainActor
 public protocol Target: AnyObject {
   var view: AnyView { get set }
 }

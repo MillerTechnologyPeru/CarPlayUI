@@ -29,6 +29,7 @@ import Combine
  implemented in the future to improve UI responsiveness under heavy load and potentially even
  support multi-threading when it's supported in WebAssembly.
  */
+@MainActor
 public final class StackReconciler<R: Renderer> {
   /** A set of mounted elements that triggered a re-render. These are stored in a `Set` instead of
    an array to avoid duplicate re-renders. The actual performance benefits of such de-duplication

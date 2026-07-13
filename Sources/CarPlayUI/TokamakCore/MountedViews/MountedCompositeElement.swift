@@ -70,11 +70,11 @@ class MountedCompositeElement<R: Renderer>: MountedElement<R> {
 }
 
 extension MountedCompositeElement: Hashable {
-  static func == (lhs: MountedCompositeElement<R>, rhs: MountedCompositeElement<R>) -> Bool {
+  nonisolated static func == (lhs: MountedCompositeElement<R>, rhs: MountedCompositeElement<R>) -> Bool {
     lhs === rhs
   }
 
-  func hash(into hasher: inout Hasher) {
+  nonisolated func hash(into hasher: inout Hasher) {
     hasher.combine(ObjectIdentifier(self))
   }
 }

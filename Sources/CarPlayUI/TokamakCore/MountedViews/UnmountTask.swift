@@ -16,6 +16,7 @@
 //
 
 /// A tree of cancellable in-progress unmounts.
+@MainActor
 public class UnmountTask<R> where R: Renderer {
   public internal(set) var isCancelled = false
   var childTasks = [UnmountTask<R>]()

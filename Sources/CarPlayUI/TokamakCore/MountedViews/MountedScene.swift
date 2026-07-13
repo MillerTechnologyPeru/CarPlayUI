@@ -89,6 +89,7 @@ extension _AnyScene.BodyResult {
     }
   }
 
+  @MainActor
   func makeMountedElement<R: Renderer>(
     _ renderer: R,
     _ parentTarget: R.TargetType,
