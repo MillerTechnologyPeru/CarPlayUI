@@ -22,7 +22,7 @@ public struct Form <Content: View> : View {
     public var body: some View {
         ToolbarReader { (title, toolbar) in
             return Template(
-                title: title.flatMap { mapAnyView($0, transform: { (view: Text) in _TextProxy(view).rawText }) } ?? "",
+                title: title.map { _TextProxy($0).rawText } ?? "",
                 layout: .leading,
                 content: content
             )
