@@ -52,6 +52,7 @@ private struct MeasuredSubview {
 /// The protocol all built-in stacks conform to.
 /// Provides a shared implementation for stack layout logic.
 
+@MainActor
 public protocol StackLayout: Layout where Cache == StackLayoutCache {
   /// The direction of this stack. `vertical` for `VStack`, `horizontal` for `HStack`.
   static var orientation: Axis { get }

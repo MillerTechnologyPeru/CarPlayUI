@@ -42,6 +42,7 @@ import Foundation
 ///         .alignmentGuide(.myAlignmentGuide) { $0[.trailing] }
 ///     }
 ///     .border(.green)
+@MainActor
 public protocol AlignmentID {
   /// The default value for this alignment guide
   /// when not set via the `alignmentGuide` modifier.

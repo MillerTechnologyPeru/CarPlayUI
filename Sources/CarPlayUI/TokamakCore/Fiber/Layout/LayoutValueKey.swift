@@ -16,6 +16,7 @@
 //
 
 /// A key that stores a value that can be accessed via a `LayoutSubview`.
+@MainActor
 public protocol LayoutValueKey {
   associatedtype Value
   static var defaultValue: Self.Value { get }

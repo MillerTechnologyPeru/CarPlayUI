@@ -19,6 +19,7 @@ import Foundation
 import Combine
 
 /// A renderer capable of performing mutations specified by a `FiberReconciler`.
+@MainActor
 public protocol FiberRenderer {
   /// The element class this renderer uses.
   associatedtype ElementType: FiberElement

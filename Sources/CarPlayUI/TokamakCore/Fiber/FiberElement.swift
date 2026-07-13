@@ -17,6 +17,7 @@
 
 /// A reference type that points to a `Renderer`-specific element that has been mounted.
 /// For instance, a DOM node in the `DOMFiberRenderer`.
+@MainActor
 public protocol FiberElement: AnyObject {
   associatedtype Content: FiberElementContent
   var content: Content { get }

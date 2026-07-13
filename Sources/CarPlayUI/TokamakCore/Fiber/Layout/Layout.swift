@@ -20,6 +20,7 @@ import Foundation
 /// Erase a `Layout` conformance to an `AnyLayout`.
 ///
 /// This could potentially be removed in Swift 5.7 in favor of `any Layout`.
+@MainActor
 public protocol _AnyLayout {
   func _erased() -> AnyLayout
 }
@@ -28,6 +29,7 @@ public protocol _AnyLayout {
 ///
 /// Any `View` or `Scene` that implements this protocol will be used to compute layout in
 /// a `FiberRenderer` with `useDynamicLayout` set to `true`.
+@MainActor
 public protocol Layout: Animatable, _AnyLayout {
   static var layoutProperties: LayoutProperties { get }
 
@@ -242,6 +244,7 @@ struct DefaultLayout: Layout {
 ///
 /// Matches the `Layout` protocol with `Cache` erased to `Any`.
 @usableFromInline
+@MainActor
 protocol AnyLayoutBox: AnyObject {
   var layoutProperties: LayoutProperties { get }
 

@@ -33,7 +33,7 @@ public struct ViewSpacing {
   private var bottom: (ViewSpacing) -> CGFloat
   private var trailing: (ViewSpacing) -> CGFloat
 
-  public static let zero: ViewSpacing = .init(
+  public nonisolated(unsafe) static let zero: ViewSpacing = .init(
     viewType: nil,
     top: { _ in 0 },
     leading: { _ in 0 },
@@ -47,7 +47,7 @@ public struct ViewSpacing {
   }
 
   
-  public static let defaultValue: CGFloat = 8
+  public nonisolated(unsafe) static let defaultValue: CGFloat = 8
 
   
   public init(

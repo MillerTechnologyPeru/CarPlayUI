@@ -28,6 +28,7 @@ public struct ContainedZLayoutCache {
 ///
 /// Used to implement `_BackgroundLayout` and `_OverlayLayout`.
 
+@MainActor
 public protocol ContainedZLayout: Layout where Cache == ContainedZLayoutCache {
   var alignment: Alignment { get }
   /// An accessor for the primary subview from a `LayoutSubviews` collection.

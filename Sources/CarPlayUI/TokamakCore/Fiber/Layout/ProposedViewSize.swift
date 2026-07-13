@@ -16,6 +16,7 @@
 //
 
 import Foundation
+import CoreGraphics
 
 @frozen
 public struct ProposedViewSize: Equatable {

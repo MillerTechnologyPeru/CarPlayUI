@@ -116,6 +116,7 @@ extension FiberReconciler {
   }
 }
 
+@MainActor
 protocol FiberReconcilerPass {
   /// Run this pass with the given inputs.
   ///
