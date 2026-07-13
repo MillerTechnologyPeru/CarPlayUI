@@ -15,6 +15,7 @@
 //  Created by Max Desiatov on 07/04/2020.
 //
 
+@MainActor
 public protocol View {
   associatedtype Body: View
 
@@ -40,6 +41,7 @@ public extension Never {
 extension Never: View {}
 
 /// A `View` that offers primitive functionality, which renders its `body` inaccessible.
+@MainActor
 public protocol _PrimitiveView: View where Body == Never {}
 
 public extension _PrimitiveView {
@@ -52,11 +54,13 @@ public extension _PrimitiveView {
 }
 
 /// A `View` type that renders with subviews, usually specified in the `Content` type argument
+@MainActor
 public protocol ParentView {
   var children: [AnyView] { get }
 }
 
 /// A `View` type that is not rendered but "flattened", rendering all its children instead.
+@MainActor
 protocol GroupView: ParentView {}
 
 /// Calls `fatalError` with an explanation that a given `type` is a primitive `View`

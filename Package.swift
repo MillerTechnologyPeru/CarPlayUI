@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 import PackageDescription
 
 let package = Package(
@@ -12,11 +12,17 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "CarPlayUI"
+            name: "CarPlayUI",
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
         ),
         .testTarget(
             name: "CarPlayUITests",
-            dependencies: ["CarPlayUI"]
+            dependencies: ["CarPlayUI"],
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
         )
     ]
 )
