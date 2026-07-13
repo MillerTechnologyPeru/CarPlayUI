@@ -17,6 +17,7 @@
 
 import Foundation
 
+@MainActor
 public protocol ControlGroupStyle {
   associatedtype Body: View
   @ViewBuilder
@@ -85,6 +86,7 @@ extension EnvironmentValues {
     static let defaultValue = _AnyControlGroupStyle(AutomaticControlGroupStyle())
   }
 
+  @MainActor
   var controlGroupStyle: _AnyControlGroupStyle {
     get {
       self[ControlGroupStyleKey.self]

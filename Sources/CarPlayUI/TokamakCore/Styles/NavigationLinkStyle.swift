@@ -20,6 +20,7 @@ public struct _NavigationLinkStyleConfiguration: View {
   public let isSelected: Bool
 }
 
+@MainActor
 public protocol _NavigationLinkStyle {
   associatedtype Body: View
   typealias Configuration = _NavigationLinkStyleConfiguration
@@ -57,6 +58,7 @@ public enum _NavigationLinkStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+  @MainActor
   var _navigationLinkStyle: _AnyNavigationLinkStyle {
     get {
       self[_NavigationLinkStyleKey.self]

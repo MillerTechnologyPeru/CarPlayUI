@@ -19,6 +19,7 @@ public struct _TextFieldStyleLabel: View {
   public let body: AnyView
 }
 
+@MainActor
 public protocol TextFieldStyle: _AnyTextFieldStyle {
   associatedtype _Body: View
   typealias _Label = _TextFieldStyleLabel
@@ -53,6 +54,7 @@ public struct SquareBorderTextFieldStyle: TextFieldStyle {
   }
 }
 
+@MainActor
 public protocol _AnyTextFieldStyle {
   func _anyBody(configuration: TextField<_TextFieldStyleLabel>) -> AnyView
 }
@@ -68,6 +70,7 @@ enum TextFieldStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+  @MainActor
   var textFieldStyle: _AnyTextFieldStyle {
     get {
       self[TextFieldStyleKey.self]

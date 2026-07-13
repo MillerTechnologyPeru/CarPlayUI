@@ -15,6 +15,7 @@
 //  Created by Carson Katri on 7/12/21.
 //
 
+@MainActor
 public protocol PrimitiveButtonStyle {
   associatedtype Body: View
   @ViewBuilder
@@ -120,6 +121,7 @@ extension EnvironmentValues {
     )
   }
 
+  @MainActor
   var buttonStyle: ButtonStyleKey.ButtonStyleKeyValue {
     get {
       self[ButtonStyleKey.self]

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@MainActor
 public protocol PickerStyle {}
 
 public struct PopUpButtonPickerStyle: PickerStyle {}
@@ -29,6 +30,7 @@ enum PickerStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+  @MainActor
   var pickerStyle: PickerStyle {
     get {
       self[PickerStyleKey.self]

@@ -17,6 +17,7 @@
 
 import Foundation
 
+@MainActor
 public protocol ProgressViewStyle {
   associatedtype Body: View
   typealias Configuration = ProgressViewStyleConfiguration
@@ -82,6 +83,7 @@ extension EnvironmentValues {
     static let defaultValue = _AnyProgressViewStyle(DefaultProgressViewStyle())
   }
 
+  @MainActor
   var progressViewStyle: _AnyProgressViewStyle {
     get {
       self[ProgressViewStyleKey.self]

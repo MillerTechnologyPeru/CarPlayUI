@@ -15,11 +15,13 @@
 //  Created by Carson Katri on 7/5/20.
 //
 
+@MainActor
 public protocol ListStyle {
   var hasDividers: Bool { get }
 }
 
 /// A protocol implemented on the renderer to create platform-specific list styles.
+@MainActor
 public protocol ListStyleDeferredToRenderer {
   func listBody<ListBody>(_ content: ListBody) -> AnyView where ListBody: View
   func listRow<Row>(_ row: Row) -> AnyView where Row: View
@@ -82,6 +84,7 @@ enum ListStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+  @MainActor
   var listStyle: ListStyle {
     get {
       self[ListStyleKey.self]

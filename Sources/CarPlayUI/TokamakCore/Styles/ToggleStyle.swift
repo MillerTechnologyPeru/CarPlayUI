@@ -29,6 +29,7 @@ public struct ToggleStyleConfiguration {
   public var isOn: Swift.Bool
 }
 
+@MainActor
 public protocol ToggleStyle {
   associatedtype Body: View
 
@@ -60,6 +61,7 @@ public enum _ToggleStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+  @MainActor
   var toggleStyle: _AnyToggleStyle {
     get {
       self[_ToggleStyleKey.self]

@@ -15,6 +15,7 @@
 //  Created by Carson Katri on 7/4/20.
 //
 
+@MainActor
 public protocol _OutlineGroupStyle {}
 
 public struct _DefaultOutlineGroupStyle: _OutlineGroupStyle {
@@ -30,6 +31,7 @@ enum _OutlineGroupStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+  @MainActor
   var _outlineGroupStyle: _OutlineGroupStyle {
     get {
       self[_OutlineGroupStyleKey.self]
