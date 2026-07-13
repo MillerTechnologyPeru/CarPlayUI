@@ -30,10 +30,12 @@ public struct Grid <Content: View> : View {
     }
     
     public var body: some View {
-        ToolbarReader { (title, toolbar) in
+        ToolbarReader { (title, toolbar, onAppear, onDisappear) in
             return Template(
                 title: title.map { _TextProxy($0).rawText } ?? "",
-                storage: storage
+                storage: storage,
+                onAppear: onAppear,
+                onDisappear: onDisappear
             )
         }
     }
@@ -48,11 +50,15 @@ extension Grid {
     }
     
     struct Template: View {
-        
+
         let title: String
-        
+
         let storage: Storage
-                
+
+        let onAppear: (() -> ())?
+
+        let onDisappear: (() -> ())?
+
         var body: AnyView {
             storage.view
         }
@@ -93,6 +99,8 @@ extension Grid.Template: CarPlayPrimitive {
                     let coordinator = CPGridTemplate.Coordinator()
                     let initialButtons = storage.buttons
                     coordinator.isImmutable = !initialButtons.isEmpty
+                    coordinator.appearAction = onAppear
+                    coordinator.disappearAction = onDisappear
                     let template = CPGridTemplate(
                         title: title,
                         gridButtons: initialButtons // load initial buttons
@@ -101,7 +109,7 @@ extension Grid.Template: CarPlayPrimitive {
                     return template
                 },
                 update: { (gridTemplate: CPGridTemplate) in
-                    
+
                     // update title
                     if gridTemplate.title != title {
                         guard #available(iOS 15.0, *) else {
@@ -110,6 +118,8 @@ extension Grid.Template: CarPlayPrimitive {
                         }
                         gridTemplate.updateTitle(title)
                     }
+                    gridTemplate._coordinator.appearAction = onAppear
+                    gridTemplate._coordinator.disappearAction = onDisappear
                 },
                 content: {
                     storage.view
@@ -124,15 +134,21 @@ extension Grid.Template: CarPlayPrimitive {
 internal extension CPGridTemplate {
     
     final class Coordinator: NavigationStackTemplateCoordinator {
-        
+
         var navigationDestination: NavigationDestination?
-        
+
         var navigationContext: NavigationContext?
-        
+
+        var appearAction: (() -> Void)?
+
+        var disappearAction: (() -> Void)?
+
+        var hasAppeared = false
+
         fileprivate(set) var isImmutable = false
-        
+
         fileprivate(set) var gridButtons = [CPGridButton]()
-        
+
         fileprivate init() { }
     }
 }
