@@ -64,26 +64,28 @@ internal final class NavigationContext: ObservableObject {
 }
 
 internal struct ToolbarReader<Content>: View where Content: View {
-  let content: (_ title: AnyView?, _ toolbarContent: [AnyToolbarItem]?) -> Content
+  @Environment(\.navigationTitle)
+  var navigationTitle: Text?
+
+  let content: (_ title: Text?, _ toolbarContent: [AnyToolbarItem]?) -> Content
 
   var body: some View {
     ToolbarKey._delay {
       $0._force { bar in
-        NavigationTitleKey._delay {
-          $0
-            ._force {
-              content($0, bar.items.isEmpty && $0 == nil ? nil : bar.items)
-            }
-        }
+        content(navigationTitle, bar.items.isEmpty && navigationTitle == nil ? nil : bar.items)
       }
     }
   }
 }
 
-struct NavigationTitleKey: PreferenceKey {
-  typealias Value = AnyView?
-  static func reduce(value: inout AnyView?, nextValue: () -> AnyView?) {
-    value = nextValue()
+struct NavigationTitleKey: EnvironmentKey {
+  static let defaultValue: Text? = nil
+}
+
+extension EnvironmentValues {
+  var navigationTitle: Text? {
+    get { self[NavigationTitleKey.self] }
+    set { self[NavigationTitleKey.self] = newValue }
   }
 }
 
