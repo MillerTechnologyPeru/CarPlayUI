@@ -67,12 +67,28 @@ internal struct ToolbarReader<Content>: View where Content: View {
   @Environment(\.navigationTitle)
   var navigationTitle: Text?
 
-  let content: (_ title: Text?, _ toolbarContent: [AnyToolbarItem]?) -> Content
+  @Environment(\.onAppearAction)
+  var onAppearAction: (() -> ())?
+
+  @Environment(\.onDisappearAction)
+  var onDisappearAction: (() -> ())?
+
+  let content: (
+    _ title: Text?,
+    _ toolbarContent: [AnyToolbarItem]?,
+    _ onAppear: (() -> ())?,
+    _ onDisappear: (() -> ())?
+  ) -> Content
 
   var body: some View {
     ToolbarKey._delay {
       $0._force { bar in
-        content(navigationTitle, bar.items.isEmpty && navigationTitle == nil ? nil : bar.items)
+        content(
+          navigationTitle,
+          bar.items.isEmpty && navigationTitle == nil ? nil : bar.items,
+          onAppearAction,
+          onDisappearAction
+        )
       }
     }
   }
