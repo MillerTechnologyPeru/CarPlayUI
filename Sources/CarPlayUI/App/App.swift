@@ -31,11 +31,12 @@ public extension CarPlayUI.App {
     }
 }
 
+@MainActor
 internal enum CarPlayAppCache {
-    
+
     static var renderer: CarplayRenderer!
-    
+
     static var sceneDelegate: TemplateApplicationSceneDelegate?
-    
+
     static var configuration: _AppConfiguration?
 }

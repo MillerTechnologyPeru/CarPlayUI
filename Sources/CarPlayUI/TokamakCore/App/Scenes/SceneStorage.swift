@@ -20,7 +20,7 @@ import Combine
 /// The renderer must specify a default `_StorageProvider` before any `SceneStorage`
 /// values are accessed.
 public enum _DefaultSceneStorageProvider {
-  public static var `default`: _StorageProvider!
+  public nonisolated(unsafe) static var `default`: _StorageProvider!
 }
 
 @propertyWrapper

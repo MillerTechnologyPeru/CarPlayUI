@@ -15,6 +15,7 @@
 import Foundation
 
 /// This protocol has no functionality currently, and is only provided for compatibility purposes.
+@MainActor
 public protocol PreviewProvider {
   associatedtype Previews: View
 
@@ -33,11 +34,13 @@ public struct PreviewDevice: RawRepresentable, ExpressibleByStringLiteral {
   }
 }
 
+@MainActor
 public protocol PreviewContextKey {
   associatedtype Value
   static var defaultValue: Self.Value { get }
 }
 
+@MainActor
 public protocol PreviewContext {
   subscript<Key>(key: Key.Type) -> Key.Value where Key: PreviewContextKey { get }
 }

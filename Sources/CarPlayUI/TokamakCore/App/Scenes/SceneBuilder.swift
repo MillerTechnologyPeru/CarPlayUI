@@ -16,6 +16,7 @@
 //
 
 @resultBuilder
+@MainActor
 public enum SceneBuilder {
   public static func buildBlock<Content: Scene>(_ content: Content) -> some Scene {
     content

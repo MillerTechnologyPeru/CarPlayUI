@@ -15,6 +15,7 @@
 //  Created by Carson Katri on 7/16/20.
 //
 
+@MainActor
 public protocol Scene {
   associatedtype Body: Scene
 
@@ -38,16 +39,20 @@ public protocol Scene {
 public typealias SceneInputs<S: Scene> = ViewInputs<S>
 public typealias SceneOutputs = ViewOutputs
 
+@MainActor
 protocol TitledScene {
   var title: Text? { get }
 }
 
+@MainActor
 protocol ParentScene {
   var children: [_AnyScene] { get }
 }
 
+@MainActor
 protocol GroupScene: ParentScene {}
 
+@MainActor
 public protocol SceneDeferredToRenderer {
   var deferredBody: AnyView { get }
 }

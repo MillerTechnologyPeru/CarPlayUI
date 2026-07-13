@@ -26,6 +26,7 @@ struct ScenePhaseKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var scenePhase: ScenePhase {
     get {
       self[ScenePhaseKey.self]

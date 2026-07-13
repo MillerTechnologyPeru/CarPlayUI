@@ -177,7 +177,8 @@ struct DefaultAppStorageEnvironmentKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
-  
+
+  @MainActor
   var _defaultAppStorage: _StorageProvider? {
     get {
       self[DefaultAppStorageEnvironmentKey.self]

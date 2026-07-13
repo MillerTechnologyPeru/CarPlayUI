@@ -17,6 +17,7 @@
 
 import Combine
 
+@MainActor
 public protocol _StorageProvider {
   func store(key: String, value: Bool?)
   func store(key: String, value: Int?)

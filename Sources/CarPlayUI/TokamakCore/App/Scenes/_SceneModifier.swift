@@ -15,6 +15,7 @@
 //  Created by Carson Katri on 7/20/20.
 //
 
+@MainActor
 public protocol _SceneModifier {
   associatedtype Body: Scene
   typealias SceneContent = _SceneModifier_Content<Self>
