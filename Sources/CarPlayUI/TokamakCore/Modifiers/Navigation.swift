@@ -60,7 +60,7 @@ public extension View {
   func navigationTitle<V>(@ViewBuilder _ title: () -> V) -> some View
     where V: View
   {
-    preference(key: NavigationTitleKey.self, value: AnyView(title()))
+    environment(\.navigationTitle, mapAnyView(AnyView(title()), transform: { (view: Text) in view }))
   }
 
   func navigationBarTitleDisplayMode(
