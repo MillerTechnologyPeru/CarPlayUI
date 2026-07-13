@@ -17,6 +17,7 @@
 
 import Foundation
 
+@MainActor
 public extension GraphicsContext {
   struct ResolvedImage {
     public let _resolved: _AnyImageProviderBox.ResolvedValue

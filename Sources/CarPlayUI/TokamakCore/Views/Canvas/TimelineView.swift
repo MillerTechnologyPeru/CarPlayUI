@@ -59,6 +59,7 @@ public struct _TimelineViewProxy<Schedule, Content> where Schedule: TimelineSche
   }
 }
 
+@MainActor
 public protocol TimelineSchedule {
   typealias Mode = TimelineScheduleMode
   associatedtype Entries: Sequence where Entries.Element == Date

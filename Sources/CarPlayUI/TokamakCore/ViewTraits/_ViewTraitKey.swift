@@ -15,11 +15,13 @@
 //  Created by Carson Katri on 7/10/21.
 //
 
+@MainActor
 public protocol _ViewTraitKey {
   associatedtype Value
   static var defaultValue: Value { get }
 }
 
+@MainActor
 public protocol _TraitWritingModifierProtocol {
   func modifyViewTraitStore(_ viewTraitStore: inout _ViewTraitStore)
 }

@@ -16,7 +16,9 @@
 //
 
 import Foundation
+import CoreGraphics
 
+@MainActor
 public extension GraphicsContext {
   enum _GradientGeometry {
     case axial(CGPoint, CGPoint)
@@ -36,6 +38,7 @@ public extension GraphicsContext {
     )
   }
 
+  @MainActor
   struct Shading {
     public enum _Storage {
       case backdrop

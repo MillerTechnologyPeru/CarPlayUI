@@ -17,6 +17,7 @@
 
 import Foundation
 
+@MainActor
 public struct Canvas<Symbols> where Symbols: View {
   public var symbols: Symbols
   public var renderer: (inout GraphicsContext, CGSize) -> ()

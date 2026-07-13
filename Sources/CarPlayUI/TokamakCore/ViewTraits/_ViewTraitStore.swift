@@ -22,6 +22,7 @@ public struct _ViewTraitStore {
     self.values = values
   }
 
+  @MainActor
   public func value<Key>(forKey key: Key.Type = Key.self) -> Key.Value
     where Key: _ViewTraitKey
   {

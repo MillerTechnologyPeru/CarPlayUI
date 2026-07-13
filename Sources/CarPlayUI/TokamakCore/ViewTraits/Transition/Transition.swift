@@ -18,7 +18,7 @@
 import Foundation
 
 @frozen
-public struct AnyTransition {
+public struct AnyTransition: @unchecked Sendable {
   fileprivate let box: _AnyTransitionBox
 
   private init(_ box: _AnyTransitionBox) {
@@ -29,7 +29,7 @@ public struct AnyTransition {
 @usableFromInline
 struct TransitionTraitKey: _ViewTraitKey {
   @inlinable
-  static var defaultValue: AnyTransition { .opacity }
+  nonisolated(unsafe) static var defaultValue: AnyTransition { .opacity }
 
   @usableFromInline typealias Value = AnyTransition
 }
@@ -37,13 +37,15 @@ struct TransitionTraitKey: _ViewTraitKey {
 @usableFromInline
 struct CanTransitionTraitKey: _ViewTraitKey {
   @inlinable
-  static var defaultValue: Bool { false }
+  nonisolated(unsafe) static var defaultValue: Bool { false }
 
   @usableFromInline typealias Value = Bool
 }
 
 public extension _ViewTraitStore {
+  @MainActor
   var transition: AnyTransition { value(forKey: TransitionTraitKey.self) }
+  @MainActor
   var canTransition: Bool { value(forKey: CanTransitionTraitKey.self) }
 }
 
@@ -61,6 +63,7 @@ public extension View {
 }
 
 /// A `ViewModifier` used to apply a primitive transition to a `View`.
+@MainActor
 public protocol _AnyTransitionModifier: AnimatableModifier
   where Body == Content
 {
@@ -79,8 +82,9 @@ public struct _MoveTransition: _AnyTransitionModifier {
   public typealias Body = Self.Content
 }
 
+@MainActor
 public extension AnyTransition {
-  static let identity: AnyTransition = .init(IdentityTransitionBox())
+  nonisolated(unsafe) static let identity: AnyTransition = .init(IdentityTransitionBox())
 
   static func move(edge: Edge) -> AnyTransition {
     modifier(
@@ -110,7 +114,7 @@ public extension AnyTransition {
     offset(.init(width: x, height: y))
   }
 
-  static var scale: AnyTransition { scale(scale: 0) }
+  nonisolated(unsafe) static var scale: AnyTransition { MainActor.assumeIsolated { scale(scale: 0) } }
   static func scale(scale: CGFloat, anchor: UnitPoint = .center) -> AnyTransition {
     modifier(
       active: _ScaleEffect(scale: .init(width: scale, height: scale), anchor: anchor),
@@ -118,15 +122,19 @@ public extension AnyTransition {
     )
   }
 
-  static let opacity: AnyTransition = modifier(
-    active: _OpacityEffect(opacity: 0),
-    identity: _OpacityEffect(opacity: 1)
-  )
+  nonisolated(unsafe) static let opacity: AnyTransition = MainActor.assumeIsolated {
+    modifier(
+      active: _OpacityEffect(opacity: 0),
+      identity: _OpacityEffect(opacity: 1)
+    )
+  }
 
-  static let slide: AnyTransition = asymmetric(
-    insertion: .move(edge: .leading),
-    removal: .move(edge: .trailing)
-  )
+  nonisolated(unsafe) static let slide: AnyTransition = MainActor.assumeIsolated {
+    asymmetric(
+      insertion: .move(edge: .leading),
+      removal: .move(edge: .trailing)
+    )
+  }
 
   static func modifier<E>(
     active: E,
