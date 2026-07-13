@@ -68,12 +68,16 @@ extension TabView: CarPlayPrimitive {
 internal extension CPTabBarTemplate {
     
     final class Coordinator: NSObject, TemplateCoordinator {
-                
+
         fileprivate(set) var selection: Binding<Int?>?
-        
-        //var onAppear: (() -> ())?
-        
-        fileprivate override init() { 
+
+        var appearAction: (() -> Void)?
+
+        var disappearAction: (() -> Void)?
+
+        var hasAppeared = false
+
+        fileprivate override init() {
             super.init()
         }
     }
