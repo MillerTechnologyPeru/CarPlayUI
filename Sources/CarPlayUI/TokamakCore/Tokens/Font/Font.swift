@@ -26,15 +26,15 @@ public extension Font {
   struct Weight: Hashable {
     public let value: Int
 
-    public static let ultraLight: Self = .init(value: 100)
-    public static let thin: Self = .init(value: 200)
-    public static let light: Self = .init(value: 300)
-    public static let regular: Self = .init(value: 400)
-    public static let medium: Self = .init(value: 500)
-    public static let semibold: Self = .init(value: 600)
-    public static let bold: Self = .init(value: 700)
-    public static let heavy: Self = .init(value: 800)
-    public static let black: Self = .init(value: 900)
+    public nonisolated(unsafe) static let ultraLight: Self = .init(value: 100)
+    public nonisolated(unsafe) static let thin: Self = .init(value: 200)
+    public nonisolated(unsafe) static let light: Self = .init(value: 300)
+    public nonisolated(unsafe) static let regular: Self = .init(value: 400)
+    public nonisolated(unsafe) static let medium: Self = .init(value: 500)
+    public nonisolated(unsafe) static let semibold: Self = .init(value: 600)
+    public nonisolated(unsafe) static let bold: Self = .init(value: 700)
+    public nonisolated(unsafe) static let heavy: Self = .init(value: 800)
+    public nonisolated(unsafe) static let black: Self = .init(value: 900)
   }
 }
 
@@ -83,17 +83,17 @@ public extension Font {
 }
 
 public extension Font {
-  static let largeTitle: Self = .init(_SystemFontBox(.largeTitle))
-  static let title: Self = .init(_SystemFontBox(.title))
-  static let title2: Self = .init(_SystemFontBox(.title2))
-  static let title3: Self = .init(_SystemFontBox(.title3))
-  static let headline: Font = .init(_SystemFontBox(.headline))
-  static let subheadline: Self = .init(_SystemFontBox(.subheadline))
-  static let body: Self = .init(_SystemFontBox(.body))
-  static let callout: Self = .init(_SystemFontBox(.callout))
-  static let footnote: Self = .init(_SystemFontBox(.footnote))
-  static let caption: Self = .init(_SystemFontBox(.caption))
-  static let caption2: Self = .init(_SystemFontBox(.caption2))
+  nonisolated(unsafe) static let largeTitle: Self = .init(_SystemFontBox(.largeTitle))
+  nonisolated(unsafe) static let title: Self = .init(_SystemFontBox(.title))
+  nonisolated(unsafe) static let title2: Self = .init(_SystemFontBox(.title2))
+  nonisolated(unsafe) static let title3: Self = .init(_SystemFontBox(.title3))
+  nonisolated(unsafe) static let headline: Font = .init(_SystemFontBox(.headline))
+  nonisolated(unsafe) static let subheadline: Self = .init(_SystemFontBox(.subheadline))
+  nonisolated(unsafe) static let body: Self = .init(_SystemFontBox(.body))
+  nonisolated(unsafe) static let callout: Self = .init(_SystemFontBox(.callout))
+  nonisolated(unsafe) static let footnote: Self = .init(_SystemFontBox(.footnote))
+  nonisolated(unsafe) static let caption: Self = .init(_SystemFontBox(.caption))
+  nonisolated(unsafe) static let caption2: Self = .init(_SystemFontBox(.caption2))
 
   static func system(_ style: TextStyle, design: Design = .default) -> Self {
     .init(_ModifiedFontBox(previously: style.font.provider) {
@@ -152,6 +152,7 @@ public struct _FontProxy {
 
   public var provider: AnyFontBox { subject.provider }
 
+  @MainActor
   public func resolve(in environment: EnvironmentValues) -> AnyFontBox.ResolvedValue {
     if let deferred = subject.provider as? AnyFontBoxDeferredToRenderer {
       return deferred.deferredResolve(in: environment)
@@ -162,10 +163,11 @@ public struct _FontProxy {
 }
 
 enum FontPathKey: EnvironmentKey {
-  static let defaultValue: [Font] = []
+  nonisolated(unsafe) static let defaultValue: [Font] = []
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var _fontPath: [Font] {
     get {
       self[FontPathKey.self]
@@ -175,6 +177,7 @@ public extension EnvironmentValues {
     }
   }
 
+  @MainActor
   var font: Font? {
     get {
       _fontPath.first

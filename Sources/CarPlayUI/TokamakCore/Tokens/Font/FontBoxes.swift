@@ -30,6 +30,7 @@ import Foundation
 ///       }
 ///     }
 ///
+@MainActor
 public protocol AnyFontBoxDeferredToRenderer: AnyFontBox {
   func deferredResolve(in environment: EnvironmentValues) -> AnyFontBox.ResolvedValue
 }

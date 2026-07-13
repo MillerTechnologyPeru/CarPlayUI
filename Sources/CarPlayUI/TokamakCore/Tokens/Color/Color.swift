@@ -15,7 +15,7 @@
 //  Created by Max Desiatov on 16/10/2018.
 //
 
-public struct Color: Hashable, Equatable {
+public struct Color: Hashable, Equatable, Sendable {
   public static func == (lhs: Self, rhs: Self) -> Bool {
     lhs.provider == rhs.provider
   }
@@ -60,8 +60,8 @@ public struct Color: Hashable, Equatable {
   /// Create a `Color` dependent on the current `ColorScheme`.
   
   public static func _withScheme(_ resolver: @escaping (ColorScheme) -> Self) -> Self {
-    .init(_EnvironmentDependentColorBox {
-      resolver($0.colorScheme)
+    .init(_EnvironmentDependentColorBox { environment in
+      MainActor.assumeIsolated { resolver(environment.colorScheme) }
     })
   }
 }
@@ -75,6 +75,7 @@ public extension Color {
 public struct _ColorProxy {
   let subject: Color
   public init(_ subject: Color) { self.subject = subject }
+  @MainActor
   public func resolve(in environment: EnvironmentValues) -> AnyColorBox.ResolvedValue {
     if let deferred = subject.provider as? AnyColorBoxDeferredToRenderer {
       return deferred.deferredResolve(in: environment)
@@ -85,7 +86,7 @@ public struct _ColorProxy {
 }
 
 public extension Color {
-  enum RGBColorSpace {
+  enum RGBColorSpace: Sendable {
     case sRGB
     case sRGBLinear
     case displayP3
@@ -107,22 +108,22 @@ public extension Color {
     self.init(_SystemColorBox(systemColor))
   }
 
-  static let clear: Self = .init(systemColor: .clear)
-  static let black: Self = .init(systemColor: .black)
-  static let white: Self = .init(systemColor: .white)
-  static let gray: Self = .init(systemColor: .gray)
-  static let red: Self = .init(systemColor: .red)
-  static let green: Self = .init(systemColor: .green)
-  static let blue: Self = .init(systemColor: .blue)
-  static let orange: Self = .init(systemColor: .orange)
-  static let yellow: Self = .init(systemColor: .yellow)
-  static let pink: Self = .init(systemColor: .pink)
-  static let purple: Self = .init(systemColor: .purple)
-  static let primary: Self = .init(systemColor: .primary)
+  nonisolated(unsafe) static let clear: Self = .init(systemColor: .clear)
+  nonisolated(unsafe) static let black: Self = .init(systemColor: .black)
+  nonisolated(unsafe) static let white: Self = .init(systemColor: .white)
+  nonisolated(unsafe) static let gray: Self = .init(systemColor: .gray)
+  nonisolated(unsafe) static let red: Self = .init(systemColor: .red)
+  nonisolated(unsafe) static let green: Self = .init(systemColor: .green)
+  nonisolated(unsafe) static let blue: Self = .init(systemColor: .blue)
+  nonisolated(unsafe) static let orange: Self = .init(systemColor: .orange)
+  nonisolated(unsafe) static let yellow: Self = .init(systemColor: .yellow)
+  nonisolated(unsafe) static let pink: Self = .init(systemColor: .pink)
+  nonisolated(unsafe) static let purple: Self = .init(systemColor: .purple)
+  nonisolated(unsafe) static let primary: Self = .init(systemColor: .primary)
 
-  static let secondary: Self = .init(systemColor: .secondary)
-  static let accentColor: Self = .init(_EnvironmentDependentColorBox {
-    $0.accentColor ?? Self.blue
+  nonisolated(unsafe) static let secondary: Self = .init(systemColor: .secondary)
+  nonisolated(unsafe) static let accentColor: Self = .init(_EnvironmentDependentColorBox { environment in
+    MainActor.assumeIsolated { environment.accentColor ?? Self.blue }
   })
 
   init(_ color: UIColor) {
@@ -131,17 +132,17 @@ public extension Color {
 }
 
 public extension ShapeStyle where Self == Color {
-  static var clear: Self { .clear }
-  static var black: Self { .black }
-  static var white: Self { .white }
-  static var gray: Self { .gray }
-  static var red: Self { .red }
-  static var green: Self { .green }
-  static var blue: Self { .blue }
-  static var orange: Self { .orange }
-  static var yellow: Self { .yellow }
-  static var pink: Self { .pink }
-  static var purple: Self { .purple }
+  nonisolated(unsafe) static var clear: Self { .clear }
+  nonisolated(unsafe) static var black: Self { .black }
+  nonisolated(unsafe) static var white: Self { .white }
+  nonisolated(unsafe) static var gray: Self { .gray }
+  nonisolated(unsafe) static var red: Self { .red }
+  nonisolated(unsafe) static var green: Self { .green }
+  nonisolated(unsafe) static var blue: Self { .blue }
+  nonisolated(unsafe) static var orange: Self { .orange }
+  nonisolated(unsafe) static var yellow: Self { .yellow }
+  nonisolated(unsafe) static var pink: Self { .pink }
+  nonisolated(unsafe) static var purple: Self { .purple }
 }
 
 extension Color: ExpressibleByIntegerLiteral {

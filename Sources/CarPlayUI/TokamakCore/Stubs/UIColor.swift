@@ -15,15 +15,15 @@
 public struct UIColor {
   let color: Color
 
-  public static let clear: Self = .init(color: .clear)
-  public static let black: Self = .init(color: .black)
-  public static let white: Self = .init(color: .white)
-  public static let gray: Self = .init(color: .gray)
-  public static let red: Self = .init(color: .red)
-  public static let green: Self = .init(color: .green)
-  public static let blue: Self = .init(color: .blue)
-  public static let orange: Self = .init(color: .orange)
-  public static let yellow: Self = .init(color: .yellow)
-  public static let pink: Self = .init(color: .pink)
-  public static let purple: Self = .init(color: .purple)
+  public nonisolated(unsafe) static let clear: Self = .init(color: .clear)
+  public nonisolated(unsafe) static let black: Self = .init(color: .black)
+  public nonisolated(unsafe) static let white: Self = .init(color: .white)
+  public nonisolated(unsafe) static let gray: Self = .init(color: .gray)
+  public nonisolated(unsafe) static let red: Self = .init(color: .red)
+  public nonisolated(unsafe) static let green: Self = .init(color: .green)
+  public nonisolated(unsafe) static let blue: Self = .init(color: .blue)
+  public nonisolated(unsafe) static let orange: Self = .init(color: .orange)
+  public nonisolated(unsafe) static let yellow: Self = .init(color: .yellow)
+  public nonisolated(unsafe) static let pink: Self = .init(color: .pink)
+  public nonisolated(unsafe) static let purple: Self = .init(color: .purple)
 }

@@ -26,6 +26,7 @@ extension EnvironmentValues {
     static var defaultValue: TextAlignment = .leading
   }
 
+  @MainActor
   public var multilineTextAlignment: TextAlignment {
     get {
       self[_MultilineTextAlignmentKey.self]

@@ -25,7 +25,7 @@ public enum Axis: Int8, CaseIterable {
       self.rawValue = rawValue
     }
 
-    public static let horizontal: Axis.Set = .init(rawValue: 1 << 0)
-    public static let vertical: Axis.Set = .init(rawValue: 1 << 1)
+    public nonisolated(unsafe) static let horizontal: Axis.Set = .init(rawValue: 1 << 0)
+    public nonisolated(unsafe) static let vertical: Axis.Set = .init(rawValue: 1 << 1)
   }
 }

@@ -25,6 +25,7 @@ extension EnvironmentValues {
     static var defaultValue: Prominence = .standard
   }
 
+  @MainActor
   public var headerProminence: Prominence {
     get {
       self[HeaderProminenceKey.self]

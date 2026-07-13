@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-public enum ColorScheme: CaseIterable, Equatable {
+public enum ColorScheme: CaseIterable, Equatable, Sendable {
   case dark
   case light
 }
@@ -24,6 +24,7 @@ public struct _ColorSchemeKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var colorScheme: ColorScheme {
     get { self[_ColorSchemeKey.self] }
     set { self[_ColorSchemeKey.self] = newValue }

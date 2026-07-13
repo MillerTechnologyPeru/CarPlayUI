@@ -24,14 +24,14 @@ public enum Edge: Int8, CaseIterable {
       self.rawValue = rawValue
     }
 
-    public static let top: Edge.Set = .init(rawValue: 1 << 0)
-    public static let leading: Edge.Set = .init(rawValue: 1 << 1)
-    public static let bottom: Edge.Set = .init(rawValue: 1 << 2)
-    public static let trailing: Edge.Set = .init(rawValue: 1 << 3)
+    public nonisolated(unsafe) static let top: Edge.Set = .init(rawValue: 1 << 0)
+    public nonisolated(unsafe) static let leading: Edge.Set = .init(rawValue: 1 << 1)
+    public nonisolated(unsafe) static let bottom: Edge.Set = .init(rawValue: 1 << 2)
+    public nonisolated(unsafe) static let trailing: Edge.Set = .init(rawValue: 1 << 3)
 
-    public static let all: Edge.Set = [.top, .leading, .bottom, .trailing]
-    public static let horizontal: Edge.Set = [.leading, .trailing]
-    public static let vertical: Edge.Set = [.top, .bottom]
+    public nonisolated(unsafe) static let all: Edge.Set = [.top, .leading, .bottom, .trailing]
+    public nonisolated(unsafe) static let horizontal: Edge.Set = [.leading, .trailing]
+    public nonisolated(unsafe) static let vertical: Edge.Set = [.top, .bottom]
 
     public init(_ e: Edge) {
       switch e {

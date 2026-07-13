@@ -27,6 +27,7 @@ extension EnvironmentValues {
     static var defaultValue: ControlSize = .regular
   }
 
+  @MainActor
   public var controlSize: ControlSize {
     get {
       self[ControlSizeKey.self]

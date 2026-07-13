@@ -42,7 +42,7 @@ public struct Angle: AdditiveArithmetic {
     Angle(degrees: degrees)
   }
 
-  public static let zero: Angle = .radians(0)
+  public nonisolated(unsafe) static let zero: Angle = .radians(0)
 
   public static func + (lhs: Self, rhs: Self) -> Self {
     .radians(lhs.radians + rhs.radians)

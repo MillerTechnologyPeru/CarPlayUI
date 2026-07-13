@@ -22,6 +22,7 @@ struct AccentColorKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var accentColor: Color? {
     get {
       self[AccentColorKey.self]
@@ -43,6 +44,7 @@ struct ForegroundColorKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+  @MainActor
   var foregroundColor: Color? {
     get {
       self[ForegroundColorKey.self]

@@ -15,7 +15,7 @@
 public struct Transaction {
   /// The overridden transaction for a state change in a `withTransaction` block.
   /// Is always set back to `nil` when the block exits.
-  static var _active: Self?
+  nonisolated(unsafe) static var _active: Self?
 
   public var animation: Animation?
 
@@ -46,6 +46,7 @@ public func withAnimation<Result>(
   try withTransaction(.init(animation: animation), body)
 }
 
+@MainActor
 protocol _TransactionModifierProtocol {
   func modifyTransaction(_ transaction: inout Transaction)
 }

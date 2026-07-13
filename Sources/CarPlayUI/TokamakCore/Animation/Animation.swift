@@ -24,7 +24,7 @@ public struct Animation: Equatable {
     self.box = box
   }
 
-  public static let `default` = Self.easeInOut
+  public nonisolated(unsafe) static let `default` = Self.easeInOut
 
   public func delay(_ delay: Double) -> Animation {
     .init(DelayedAnimationBox(delay: delay, parent: box))
@@ -92,7 +92,7 @@ public struct Animation: Equatable {
     timingCurve(0.42, 0, 0.58, 1.0, duration: duration)
   }
 
-  public static var easeInOut: Animation {
+  public nonisolated(unsafe) static var easeInOut: Animation {
     easeInOut(duration: defaultDuration)
   }
 
@@ -100,7 +100,7 @@ public struct Animation: Equatable {
     timingCurve(0.42, 0, 1.0, 1.0, duration: duration)
   }
 
-  public static var easeIn: Animation {
+  public nonisolated(unsafe) static var easeIn: Animation {
     easeIn(duration: defaultDuration)
   }
 
@@ -108,7 +108,7 @@ public struct Animation: Equatable {
     timingCurve(0, 0, 0.58, 1.0, duration: duration)
   }
 
-  public static var easeOut: Animation {
+  public nonisolated(unsafe) static var easeOut: Animation {
     easeOut(duration: defaultDuration)
   }
 
@@ -116,7 +116,7 @@ public struct Animation: Equatable {
     timingCurve(0, 0, 1, 1, duration: duration)
   }
 
-  public static var linear: Animation {
+  public nonisolated(unsafe) static var linear: Animation {
     timingCurve(0, 0, 1, 1)
   }
 

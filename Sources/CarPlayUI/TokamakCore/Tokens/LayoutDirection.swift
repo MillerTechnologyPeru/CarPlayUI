@@ -25,6 +25,7 @@ extension EnvironmentValues {
     static var defaultValue: LayoutDirection = .leftToRight
   }
 
+  @MainActor
   public var layoutDirection: LayoutDirection {
     get { self[LayoutDirectionKey.self] }
     set { self[LayoutDirectionKey.self] = newValue }

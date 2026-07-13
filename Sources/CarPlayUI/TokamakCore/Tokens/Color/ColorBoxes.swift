@@ -35,12 +35,13 @@
 ///       }
 ///     }
 ///
+@MainActor
 public protocol AnyColorBoxDeferredToRenderer: AnyColorBox {
   func deferredResolve(in environment: EnvironmentValues) -> AnyColorBox.ResolvedValue
 }
 
-public class AnyColorBox: AnyTokenBox, Hashable {
-  public struct _RGBA: Hashable, Equatable {
+public class AnyColorBox: AnyTokenBox, Hashable, @unchecked Sendable {
+  public struct _RGBA: Hashable, Equatable, Sendable {
     public let red: Double
     public let green: Double
     public let blue: Double
@@ -107,11 +108,13 @@ public final class _EnvironmentDependentColorBox: AnyColorBox {
   override public func equals(_ other: AnyColorBox) -> Bool {
     guard let other = other as? _EnvironmentDependentColorBox
     else { return false }
-    return resolver(EnvironmentValues()) == other.resolver(EnvironmentValues())
+    return MainActor.assumeIsolated {
+      resolver(EnvironmentValues()) == other.resolver(EnvironmentValues())
+    }
   }
 
   override public func hash(into hasher: inout Hasher) {
-    hasher.combine(resolver(EnvironmentValues()))
+    hasher.combine(MainActor.assumeIsolated { resolver(EnvironmentValues()) })
   }
 
   init(_ resolver: @escaping (EnvironmentValues) -> Color) {
@@ -119,7 +122,9 @@ public final class _EnvironmentDependentColorBox: AnyColorBox {
   }
 
   override public func resolve(in environment: EnvironmentValues) -> ResolvedValue {
-    resolver(environment).provider.resolve(in: environment)
+    MainActor.assumeIsolated {
+      resolver(environment).provider.resolve(in: environment)
+    }
   }
 }
 
@@ -193,7 +198,7 @@ public final class _SystemColorBox: AnyColorBox, CustomStringConvertible {
   }
 
   override public func resolve(in environment: EnvironmentValues) -> ResolvedValue {
-    switch environment.colorScheme {
+    switch MainActor.assumeIsolated({ environment.colorScheme }) {
     case .light:
       switch value {
       case .clear: return .init(red: 0, green: 0, blue: 0, opacity: 0, space: .sRGB)
