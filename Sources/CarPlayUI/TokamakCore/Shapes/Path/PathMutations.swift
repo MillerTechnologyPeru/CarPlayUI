@@ -16,6 +16,7 @@
 //
 
 import Foundation
+import CoreGraphics
 
 public extension Path {
   private mutating func append(_ other: Storage, transform: CGAffineTransform = .identity) {

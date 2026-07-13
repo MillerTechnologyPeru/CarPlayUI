@@ -15,17 +15,17 @@
 import Foundation
 
 protocol AnyShapeBox {
-  var animatableDataBox: _AnyAnimatableData { get set }
+  nonisolated var animatableDataBox: _AnyAnimatableData { get set }
 
-  func path(in rect: CGRect) -> Path
+  @MainActor func path(in rect: CGRect) -> Path
 
-  func sizeThatFits(_ proposal: ProposedViewSize) -> CGSize
+  @MainActor func sizeThatFits(_ proposal: ProposedViewSize) -> CGSize
 }
 
 private struct ConcreteAnyShapeBox<Base: Shape>: AnyShapeBox {
   var base: Base
 
-  var animatableDataBox: _AnyAnimatableData {
+  nonisolated var animatableDataBox: _AnyAnimatableData {
     get {
       _AnyAnimatableData(base.animatableData)
     }
@@ -49,7 +49,7 @@ private struct ConcreteAnyShapeBox<Base: Shape>: AnyShapeBox {
 }
 
 public struct AnyShape: Shape {
-  var box: AnyShapeBox
+  nonisolated(unsafe) var box: AnyShapeBox
 
   private init(_ box: AnyShapeBox) {
     self.box = box
@@ -69,7 +69,7 @@ public extension AnyShape {
     box.sizeThatFits(proposal)
   }
 
-  var animatableData: _AnyAnimatableData {
+  nonisolated var animatableData: _AnyAnimatableData {
     get { box.animatableDataBox }
     set { box.animatableDataBox = newValue }
   }

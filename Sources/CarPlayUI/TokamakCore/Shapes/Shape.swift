@@ -17,6 +17,7 @@
 
 import Foundation
 
+@MainActor
 public protocol Shape: Animatable, View {
   func path(in rect: CGRect) -> Path
 
@@ -51,6 +52,7 @@ public extension ShapeStyle where Self: View, Self.Body == _ShapeView<Rectangle,
   }
 }
 
+@MainActor
 public protocol InsettableShape: Shape {
   associatedtype InsetShape: InsettableShape
   func inset(by amount: CGFloat) -> InsetShape

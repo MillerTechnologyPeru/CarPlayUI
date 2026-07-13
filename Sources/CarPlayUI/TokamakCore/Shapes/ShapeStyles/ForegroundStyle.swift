@@ -34,6 +34,7 @@ extension EnvironmentValues {
     static let defaultValue: AnyShapeStyle? = nil
   }
 
+  @MainActor
   public var _foregroundStyle: AnyShapeStyle? {
     get {
       self[ForegroundStyleKey.self]

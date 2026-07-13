@@ -21,8 +21,8 @@ public struct _StrokedShape<S>: Shape, DynamicProperty where S: Shape {
   @Environment(\.self)
   public var environment
 
-  public var shape: S
-  public var style: StrokeStyle
+  public nonisolated(unsafe) var shape: S
+  public nonisolated(unsafe) var style: StrokeStyle
 
   public init(shape: S, style: StrokeStyle) {
     self.shape = shape
@@ -38,7 +38,7 @@ public struct _StrokedShape<S>: Shape, DynamicProperty where S: Shape {
   public static var role: ShapeRole { .stroke }
 
   public typealias AnimatableData = AnimatablePair<S.AnimatableData, StrokeStyle.AnimatableData>
-  public var animatableData: AnimatableData {
+  public nonisolated var animatableData: AnimatableData {
     get {
       .init(shape.animatableData, style.animatableData)
     }
@@ -49,9 +49,9 @@ public struct _StrokedShape<S>: Shape, DynamicProperty where S: Shape {
 }
 
 public struct _TrimmedShape<S>: Shape where S: Shape {
-  public var shape: S
-  public var startFraction: CGFloat
-  public var endFraction: CGFloat
+  public nonisolated(unsafe) var shape: S
+  public nonisolated var startFraction: CGFloat
+  public nonisolated var endFraction: CGFloat
 
   public init(shape: S, startFraction: CGFloat = 0, endFraction: CGFloat = 1) {
     self.shape = shape
@@ -69,7 +69,7 @@ public struct _TrimmedShape<S>: Shape where S: Shape {
     S.AnimatableData,
     AnimatablePair<CGFloat, CGFloat>
   >
-  public var animatableData: AnimatableData {
+  public nonisolated var animatableData: AnimatableData {
     get {
       .init(shape.animatableData, .init(startFraction, endFraction))
     }
@@ -147,9 +147,9 @@ public struct ScaledShape<Content>: Shape where Content: Shape {
 }
 
 public struct RotatedShape<Content>: Shape where Content: Shape {
-  public var shape: Content
-  public var angle: Angle
-  public var anchor: UnitPoint
+  public nonisolated(unsafe) var shape: Content
+  public nonisolated(unsafe) var angle: Angle
+  public nonisolated(unsafe) var anchor: UnitPoint
 
   public init(shape: Content, angle: Angle, anchor: UnitPoint = .center) {
     self.shape = shape
@@ -167,7 +167,7 @@ public struct RotatedShape<Content>: Shape where Content: Shape {
     Content.AnimatableData,
     AnimatablePair<Angle.AnimatableData, UnitPoint.AnimatableData>
   >
-  public var animatableData: AnimatableData {
+  public nonisolated var animatableData: AnimatableData {
     get {
       .init(shape.animatableData, .init(angle.animatableData, anchor.animatableData))
     }
@@ -185,7 +185,7 @@ extension RotatedShape: InsettableShape where Content: InsettableShape {
 }
 
 public struct TransformedShape<Content>: Shape where Content: Shape {
-  public var shape: Content
+  public nonisolated(unsafe) var shape: Content
   public var transform: CGAffineTransform
 
   public init(shape: Content, transform: CGAffineTransform) {
@@ -199,7 +199,7 @@ public struct TransformedShape<Content>: Shape where Content: Shape {
       .applying(transform)
   }
 
-  public var animatableData: Content.AnimatableData {
+  public nonisolated var animatableData: Content.AnimatableData {
     get { shape.animatableData }
     set { shape.animatableData = newValue }
   }

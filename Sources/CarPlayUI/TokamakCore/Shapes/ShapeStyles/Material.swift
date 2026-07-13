@@ -22,11 +22,11 @@ public struct Material {
     self.style = style
   }
 
-  public static let regular = Self(.regular)
-  public static let thick = Self(.thick)
-  public static let thin = Self(.thin)
-  public static let ultraThin = Self(.ultraThin)
-  public static let ultraThick = Self(.ultraThick)
+  public nonisolated(unsafe) static let regular = Self(.regular)
+  public nonisolated(unsafe) static let thick = Self(.thick)
+  public nonisolated(unsafe) static let thin = Self(.thin)
+  public nonisolated(unsafe) static let ultraThin = Self(.ultraThin)
+  public nonisolated(unsafe) static let ultraThick = Self(.ultraThick)
 }
 
 public enum _MaterialStyle {
@@ -53,14 +53,14 @@ extension Material: ShapeStyle {
 }
 
 public extension Material {
-  static let bar = Self.regular
+  nonisolated(unsafe) static let bar = Self.regular
 }
 
 public extension ShapeStyle where Self == Material {
-  static var regularMaterial: Self { .regular }
-  static var thickMaterial: Self { .thick }
-  static var thinMaterial: Self { .thin }
-  static var ultraThinMaterial: Self { .ultraThin }
-  static var ultraThickMaterial: Self { .ultraThick }
-  static var bar: Self { .bar }
+  nonisolated(unsafe) static var regularMaterial: Self { .regular }
+  nonisolated(unsafe) static var thickMaterial: Self { .thick }
+  nonisolated(unsafe) static var thinMaterial: Self { .thin }
+  nonisolated(unsafe) static var ultraThinMaterial: Self { .ultraThin }
+  nonisolated(unsafe) static var ultraThickMaterial: Self { .ultraThick }
+  nonisolated(unsafe) static var bar: Self { .bar }
 }

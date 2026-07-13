@@ -17,6 +17,7 @@
 
 import Foundation
 
+@MainActor
 public protocol ShapeStyle {
   func _apply(to shape: inout _ShapeStyle_Shape)
   static func _apply(to type: inout _ShapeStyle_ShapeType)
@@ -111,6 +112,7 @@ public struct _ShapeStyle_Shape {
     case bool(Bool)
     case none
 
+    @MainActor
     public func resolvedStyle(
       on shape: _ShapeStyle_Shape,
       in environment: EnvironmentValues

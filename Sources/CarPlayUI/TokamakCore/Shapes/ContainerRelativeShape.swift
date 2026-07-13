@@ -67,6 +67,7 @@ private extension EnvironmentValues {
     static let defaultValue: (CGRect, GeometryProxy) -> Path? = { _, _ in nil }
   }
 
+  @MainActor
   var _containerShape: (CGRect, GeometryProxy) -> Path? {
     get {
       self[ContainerShapeKey.self]
