@@ -35,7 +35,7 @@ public struct Map <Content: View>: View {
     public var body: some View {
         ToolbarReader { (title, toolbar) in
             Template(
-                title: title.flatMap { mapAnyView($0, transform: { (view: Text) in _TextProxy(view).rawText }) } ?? "",
+                title: title.map { _TextProxy($0).rawText } ?? "",
                 region: region,
                 selection: selection,
                 content: content
