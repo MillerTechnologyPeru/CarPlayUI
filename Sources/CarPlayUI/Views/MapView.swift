@@ -33,11 +33,13 @@ public struct Map <Content: View>: View {
     }
     
     public var body: some View {
-        ToolbarReader { (title, toolbar) in
+        ToolbarReader { (title, toolbar, onAppear, onDisappear) in
             Template(
                 title: title.map { _TextProxy($0).rawText } ?? "",
                 region: region,
                 selection: selection,
+                onAppear: onAppear,
+                onDisappear: onDisappear,
                 content: content
             )
         }
@@ -50,15 +52,19 @@ public struct Map <Content: View>: View {
 extension Map {
     
     struct Template: View {
-        
+
         let title: String
-        
+
         let region: Binding<MKCoordinateRegion>?
-        
+
         let selection: Binding<Int?>?
-        
+
+        let onAppear: (() -> ())?
+
+        let onDisappear: (() -> ())?
+
         let content: Content
-        
+
         public var body: Content {
             content
         }
@@ -77,6 +83,8 @@ extension Map.Template: CarPlayPrimitive {
                         region: self.region,
                         selection: self.selection
                     )
+                    coordinator.appearAction = onAppear
+                    coordinator.disappearAction = onDisappear
                     let template = CPPointOfInterestTemplate(
                         title: title,
                         pointsOfInterest: [],
@@ -97,6 +105,8 @@ extension Map.Template: CarPlayPrimitive {
                         let newIndex = selection.wrappedValue.toFoundation()
                         template.setPointsOfInterest(template.pointsOfInterest, selectedIndex: newIndex)
                     }
+                    template._coordinator.appearAction = onAppear
+                    template._coordinator.disappearAction = onDisappear
                 },
                 content: { content }
             )
@@ -112,15 +122,21 @@ public extension CPPointOfInterestTemplate {
     final class Coordinator: NSObject, NavigationStackTemplateCoordinator {
         
         let region: Binding<MKCoordinateRegion>?
-        
+
         let selection: Binding<Int?>?
-        
+
         var navigationDestination: NavigationDestination?
-        
+
         var navigationContext: NavigationContext?
-        
+
+        var appearAction: (() -> Void)?
+
+        var disappearAction: (() -> Void)?
+
+        var hasAppeared = false
+
         fileprivate var lastSelection: Int?
-        
+
         fileprivate init(
             region: Binding<MKCoordinateRegion>?,
             selection: Binding<Int?>?
