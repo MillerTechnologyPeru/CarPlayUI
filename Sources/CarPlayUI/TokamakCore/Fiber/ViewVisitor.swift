@@ -16,6 +16,7 @@
 //
 
 /// A type that can visit a `View`.
+@MainActor
 public protocol ViewVisitor {
   func visit<V: View>(_ view: V)
 }
@@ -29,6 +30,7 @@ public extension View {
 public typealias ViewVisitorF<V: ViewVisitor> = (V) -> ()
 
 /// A type that creates a `Result` by visiting multiple `View`s.
+@MainActor
 protocol ViewReducer {
   associatedtype Result
   static func reduce<V: View>(into partialResult: inout Result, nextView: V)

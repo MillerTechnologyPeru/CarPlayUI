@@ -64,6 +64,7 @@ public struct AnyView: _PrimitiveView {
   }
 }
 
+@MainActor
 internal func mapAnyView<T, V>(_ anyView: AnyView, transform: (V) -> T) -> T? {
   guard let view = anyView.view as? V else { return nil }
 
@@ -83,5 +84,6 @@ public struct _AnyViewProxy {
   public init(_ subject: AnyView) { self.subject = subject }
 
   public var type: Any.Type { subject.type }
+  @MainActor
   public var view: Any { subject.view }
 }

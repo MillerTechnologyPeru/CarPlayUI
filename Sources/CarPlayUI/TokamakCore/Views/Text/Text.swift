@@ -31,7 +31,7 @@ import Foundation
 ///       .bold()
 ///       .italic()
 ///       .underline(true, color: .red)
-public struct Text: _PrimitiveView, Equatable {
+public nonisolated struct Text: _PrimitiveView, Equatable {
   let storage: _Storage
   let modifiers: [_Modifier]
 
@@ -110,6 +110,7 @@ public extension Text._Storage {
 }
 
 /// This is a helper type that works around absence of "package private" access control in Swift
+@MainActor
 public struct _TextProxy {
   public let subject: Text
 
@@ -197,6 +198,7 @@ public extension Text {
 }
 
 extension Text: Layout {
+  @MainActor
   public func sizeThatFits(
     proposal: ProposedViewSize,
     subviews: Subviews,

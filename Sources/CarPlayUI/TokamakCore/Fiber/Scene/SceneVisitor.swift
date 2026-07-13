@@ -16,6 +16,7 @@
 //
 
 /// A type that can visit a `Scene`.
+@MainActor
 public protocol SceneVisitor: ViewVisitor {
   func visit<S: Scene>(_ scene: S)
 }
@@ -27,6 +28,7 @@ public extension Scene {
 }
 
 /// A type that creates a `Result` by visiting multiple `Scene`s.
+@MainActor
 protocol SceneReducer: ViewReducer {
   associatedtype Result
   static func reduce<S: Scene>(into partialResult: inout Result, nextScene: S)

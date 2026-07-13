@@ -73,6 +73,7 @@ extension Optional: View where Wrapped: View {
 }
 
 
+@MainActor
 public protocol AnyOptional {
   var value: Any? { get }
 }
