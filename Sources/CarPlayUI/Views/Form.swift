@@ -20,10 +20,12 @@ public struct Form <Content: View> : View {
     }
     
     public var body: some View {
-        ToolbarReader { (title, toolbar) in
+        ToolbarReader { (title, toolbar, onAppear, onDisappear) in
             return Template(
                 title: title.map { _TextProxy($0).rawText } ?? "",
                 layout: .leading,
+                onAppear: onAppear,
+                onDisappear: onDisappear,
                 content: content
             )
         }
@@ -36,13 +38,17 @@ public struct Form <Content: View> : View {
 extension Form {
     
     struct Template: View {
-        
+
         let title: String
-        
+
         let layout: CPInformationTemplateLayout
-        
+
+        let onAppear: (() -> ())?
+
+        let onDisappear: (() -> ())?
+
         let content: Content
-        
+
         public var body: Content {
             content
         }
@@ -57,6 +63,8 @@ extension Form.Template: CarPlayPrimitive {
             TemplateView(
                 build: {
                     let coordinator = CPInformationTemplate.Coordinator()
+                    coordinator.appearAction = onAppear
+                    coordinator.disappearAction = onDisappear
                     let template = CPInformationTemplate(
                         title: title,
                         layout: layout,
@@ -75,6 +83,8 @@ extension Form.Template: CarPlayPrimitive {
                     if informationTemplate.layout != layout {
                         assertionFailure("Cannot change form style dynamically")
                     }
+                    informationTemplate._coordinator.appearAction = onAppear
+                    informationTemplate._coordinator.disappearAction = onDisappear
                 },
                 content: { content }
             )
@@ -92,11 +102,17 @@ internal extension CPInformationTemplate {
         
         // must keep copy original template copies on demand
         fileprivate(set) var actions = [CPTextButton]()
-        
+
         var navigationDestination: NavigationDestination?
-        
+
         var navigationContext: NavigationContext?
-        
+
+        var appearAction: (() -> Void)?
+
+        var disappearAction: (() -> Void)?
+
+        var hasAppeared = false
+
         fileprivate init() { }
     }
 }
@@ -104,7 +120,7 @@ internal extension CPInformationTemplate {
 @available(iOS 14.0, *)
 internal extension CPInformationTemplate {
     
-    private var _coordinator: Coordinator! {
+    var _coordinator: Coordinator! {
         userInfo as? Coordinator
     }
     
