@@ -236,6 +236,7 @@ extension Button {
     }
 }
 
+@MainActor
 protocol GridButton {
     
     func gridButton() -> CPGridButton

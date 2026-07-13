@@ -99,6 +99,7 @@ struct NavigationTitleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+  @MainActor
   var navigationTitle: Text? {
     get { self[NavigationTitleKey.self] }
     set { self[NavigationTitleKey.self] = newValue }
@@ -112,6 +113,7 @@ struct NavigationBarItemKey: PreferenceKey {
   }
 }
 
+@MainActor
 internal protocol AnyNavigation {
     
     var navigationContext: NavigationContext { get }

@@ -31,19 +31,20 @@ public struct _ToolbarItemGroupProxy<ID, Items> {
 
 public struct ToolbarItemPlacement: Hashable {
   let rawValue: Int8
-  public static let automatic: ToolbarItemPlacement = .init(rawValue: 1 << 0)
-  public static let principal: ToolbarItemPlacement = .init(rawValue: 1 << 1)
-  public static let navigation: ToolbarItemPlacement = .init(rawValue: 1 << 2)
-  public static let primaryAction: ToolbarItemPlacement = .init(rawValue: 1 << 3)
-  public static let status: ToolbarItemPlacement = .init(rawValue: 1 << 4)
-  public static let confirmationAction: ToolbarItemPlacement = .init(rawValue: 1 << 5)
-  public static let cancellationAction: ToolbarItemPlacement = .init(rawValue: 1 << 6)
-  public static let destructiveAction: ToolbarItemPlacement = .init(rawValue: 1 << 7)
-  public static let navigationBarLeading: ToolbarItemPlacement = .init(rawValue: 1 << 8)
-  public static let navigationBarTrailing: ToolbarItemPlacement = .init(rawValue: 1 << 9)
-  public static let bottomBar: ToolbarItemPlacement = .init(rawValue: 1 << 10)
+  public nonisolated(unsafe) static let automatic: ToolbarItemPlacement = .init(rawValue: 1 << 0)
+  public nonisolated(unsafe) static let principal: ToolbarItemPlacement = .init(rawValue: 1 << 1)
+  public nonisolated(unsafe) static let navigation: ToolbarItemPlacement = .init(rawValue: 1 << 2)
+  public nonisolated(unsafe) static let primaryAction: ToolbarItemPlacement = .init(rawValue: 1 << 3)
+  public nonisolated(unsafe) static let status: ToolbarItemPlacement = .init(rawValue: 1 << 4)
+  public nonisolated(unsafe) static let confirmationAction: ToolbarItemPlacement = .init(rawValue: 1 << 5)
+  public nonisolated(unsafe) static let cancellationAction: ToolbarItemPlacement = .init(rawValue: 1 << 6)
+  public nonisolated(unsafe) static let destructiveAction: ToolbarItemPlacement = .init(rawValue: 1 << 7)
+  public nonisolated(unsafe) static let navigationBarLeading: ToolbarItemPlacement = .init(rawValue: 1 << 8)
+  public nonisolated(unsafe) static let navigationBarTrailing: ToolbarItemPlacement = .init(rawValue: 1 << 9)
+  public nonisolated(unsafe) static let bottomBar: ToolbarItemPlacement = .init(rawValue: 1 << 10)
 }
 
+@MainActor
 public protocol AnyToolbarItem {
   var placement: ToolbarItemPlacement { get }
   var anyContent: AnyView { get }
