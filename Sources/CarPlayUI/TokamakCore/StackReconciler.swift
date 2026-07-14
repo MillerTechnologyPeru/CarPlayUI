@@ -39,6 +39,7 @@ public final class StackReconciler<R: Renderer> {
    */
   private var queuedRerenders = Set<Rerender>()
 
+  @MainActor
   struct Rerender: Hashable {
     let element: MountedCompositeElement<R>
     let transaction: Transaction
