@@ -78,11 +78,17 @@ public struct _TextFieldProxy<Label: View> {
 
   public init(_ subject: TextField<Label>) { self.subject = subject }
 
+  @MainActor
   public var label: Label { subject.label }
+  @MainActor
   public var textBinding: Binding<String> { subject.textBinding }
+  @MainActor
   public var onCommit: () -> () { subject.onCommit }
+  @MainActor
   public var onEditingChanged: (Bool) -> () { subject.onEditingChanged }
+  @MainActor
   public var textFieldStyle: _AnyTextFieldStyle { subject.environment.textFieldStyle }
+  @MainActor
   public var foregroundColor: AnyColorBox.ResolvedValue? {
     guard let foregroundColor = subject.environment.foregroundColor else {
       return nil
