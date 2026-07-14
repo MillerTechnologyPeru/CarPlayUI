@@ -57,7 +57,7 @@ public struct _FlexFrameLayout: ViewModifier {
 }
 
 extension _FlexFrameLayout: Animatable {
-  public typealias AnimatableData = EmptyAnimatableData
+  public typealias _AnimatableData = EmptyAnimatableData
 }
 
 public extension View {
