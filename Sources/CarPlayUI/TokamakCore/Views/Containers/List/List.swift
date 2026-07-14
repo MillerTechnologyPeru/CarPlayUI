@@ -29,11 +29,13 @@ public struct List<SelectionValue, Content>
   @Environment(\.listStyle)
   var style
 
+  @MainActor
   public init(selection: Binding<Set<SelectionValue>>?, @ViewBuilder content: () -> Content) {
     self.selection = .many(selection)
     self.content = content()
   }
 
+  @MainActor
   public init(selection: Binding<SelectionValue?>?, @ViewBuilder content: () -> Content) {
     self.selection = .one(selection)
     self.content = content()
