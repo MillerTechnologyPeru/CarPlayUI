@@ -30,7 +30,7 @@ private struct ConcreteAnyShapeBox<Base: Shape>: AnyShapeBox {
       _AnyAnimatableData(base.animatableData)
     }
     set {
-      guard let newData = newValue.value as? Base.AnimatableData else {
+      guard let newData = newValue.value as? Base._AnimatableData else {
         // TODO: Should this crash?
         return
       }
