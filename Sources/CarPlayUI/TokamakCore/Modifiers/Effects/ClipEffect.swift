@@ -30,7 +30,7 @@ public struct _ClipEffect<ClipShape>: ViewModifier where ClipShape: Shape {
     content
   }
 
-  public var animatableData: ClipShape.AnimatableData {
+  public var animatableData: ClipShape._AnimatableData {
     get { shape.animatableData }
     set { shape.animatableData = newValue }
   }
