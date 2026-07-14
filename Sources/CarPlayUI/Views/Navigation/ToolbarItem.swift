@@ -52,7 +52,7 @@ public protocol AnyToolbarItem {
 }
 
 public struct ToolbarItem<ID, Content>: View, AnyToolbarItem where Content: View {
-  public let id: ID
+  public nonisolated(unsafe) let id: ID
   public let placement: ToolbarItemPlacement
   public let showsByDefault: Bool
   let content: Content
