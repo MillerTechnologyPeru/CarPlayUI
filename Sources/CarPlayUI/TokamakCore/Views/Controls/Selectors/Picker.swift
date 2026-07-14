@@ -25,7 +25,7 @@ public struct _PickerContainer<
   _PickerContainerProtocol
 {
   @Binding
-  public var selection: SelectionValue
+  nonisolated(unsafe) public var selection: SelectionValue
 
   public let label: Label
   public let content: Content
