@@ -18,6 +18,7 @@
 import Foundation
 
 extension FiberReconciler {
+  @MainActor
   final class Caches {
     var elementIndices = [ObjectIdentifier: Int]()
     var layoutCaches = [ObjectIdentifier: LayoutCache]()
