@@ -44,7 +44,9 @@ public struct _LazyHGridProxy<Content> where Content: View {
 
   public init(_ subject: LazyHGrid<Content>) { self.subject = subject }
 
+  @MainActor
   public var rows: [GridItem] { subject.rows }
+  @MainActor
   public var content: Content { subject.content }
   public var spacing: CGFloat { subject.spacing }
 }
