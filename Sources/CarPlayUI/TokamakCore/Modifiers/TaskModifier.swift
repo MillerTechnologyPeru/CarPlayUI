@@ -24,8 +24,7 @@ internal struct _TaskModifierView<Content>: View where Content: View {
 
   let content: Content
 
-  @State
-  nonisolated(unsafe) private var task: Task<(), Never>?
+  @State private nonisolated(unsafe) var task: Task<(), Never>?
 
   init(priority: TaskPriority, action: @escaping @isolated(any) @Sendable () async -> (), content: Content) {
     self.priority = priority
