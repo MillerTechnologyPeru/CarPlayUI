@@ -39,15 +39,15 @@ public struct _ShadowEffect: EnvironmentalModifier, Equatable {
   }
 
   public struct _Resolved: ViewModifier, Animatable {
-    public var color: AnyColorBox.ResolvedValue
-    public var radius: CGFloat
-    public var offset: CGSize
+    public nonisolated(unsafe) var color: AnyColorBox.ResolvedValue
+    public nonisolated var radius: CGFloat
+    public nonisolated(unsafe) var offset: CGSize
 
     public func body(content: Content) -> some View {
       content
     }
 
-    public typealias AnimatableData = AnimatablePair<
+    public typealias _AnimatableData = AnimatablePair<
       AnimatablePair<
         Float,
         AnimatablePair<
@@ -55,9 +55,9 @@ public struct _ShadowEffect: EnvironmentalModifier, Equatable {
           AnimatablePair<Float, Float>
         >
       >,
-      AnimatablePair<CGFloat, CGSize.AnimatableData>
+      AnimatablePair<CGFloat, AnimatablePair<CGFloat, CGFloat>>
     >
-    public var animatableData: _Resolved.AnimatableData {
+    public nonisolated var animatableData: _Resolved._AnimatableData {
       get {
         .init(
           .init(
