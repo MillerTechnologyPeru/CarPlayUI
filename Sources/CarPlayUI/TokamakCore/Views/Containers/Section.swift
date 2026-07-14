@@ -44,6 +44,7 @@ extension Section: View, SectionView where Parent: View, Content: View, Footer: 
     footer
   }
 
+  @MainActor
   func sectionContent(_ style: ListStyle) -> AnyView {
     if let contentContainer = content as? ParentView {
       let rows = _ListRow.buildItems(contentContainer.children) { view, isLast in
@@ -61,6 +62,7 @@ extension Section: View, SectionView where Parent: View, Content: View, Footer: 
     }
   }
 
+  @MainActor
   func footerView(_ style: ListStyle) -> AnyView {
     if footer is EmptyView {
       return AnyView(EmptyView())
@@ -71,6 +73,7 @@ extension Section: View, SectionView where Parent: View, Content: View, Footer: 
     }
   }
 
+  @MainActor
   func headerView(_ style: ListStyle) -> AnyView {
     if header is EmptyView {
       return AnyView(EmptyView())
