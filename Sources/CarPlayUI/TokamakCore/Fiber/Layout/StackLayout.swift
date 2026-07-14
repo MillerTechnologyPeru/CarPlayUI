@@ -19,6 +19,7 @@ import Foundation
 
 private extension ViewDimensions {
   /// Access the guide value of an `Alignment` for a particular `Axis`.
+  @MainActor
   subscript(alignment alignment: Alignment, in axis: Axis) -> CGFloat {
     switch axis {
     case .horizontal: return self[alignment.vertical]
