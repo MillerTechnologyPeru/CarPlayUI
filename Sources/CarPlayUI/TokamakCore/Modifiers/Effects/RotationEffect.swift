@@ -34,7 +34,7 @@ public struct _RotationEffect: GeometryEffect {
     content
   }
 
-  public nonisolated var animatableData: AnimatablePair<Angle.AnimatableData, UnitPoint.AnimatableData> {
+  public nonisolated var animatableData: AnimatablePair<Angle._AnimatableData, UnitPoint._AnimatableData> {
     get {
       .init(angle.animatableData, anchor.animatableData)
     }
