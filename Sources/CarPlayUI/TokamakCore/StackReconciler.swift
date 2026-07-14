@@ -16,6 +16,7 @@
 //
 
 import Combine
+import Observation
 
 /** A class that reconciles a "raw" tree of element values (such as `App`, `Scene` and `View`,
  all coming from `body` or `renderedBody` properties) with a tree of mounted element instances
@@ -262,7 +263,20 @@ public final class StackReconciler<R: Renderer> {
     let view = body(of: compositeView, keyPath: \.view.view)
 
     guard let renderedBody = renderer.primitiveBody(for: view) else {
-      return compositeView.view.bodyClosure(view)
+      // Track any `@Observable` properties read during `body`, so mutating them later
+      // schedules a re-render the same way a `@State` setter or `ObservableObject`
+      // `objectWillChange` emission does. `render(compositeView:)` re-runs on every
+      // mount and re-render, which naturally re-establishes tracking each time.
+      let reconcilerBox = WeakBox(value: self)
+      let elementBox = WeakBox(value: compositeView)
+      return withObservationTracking {
+        compositeView.view.bodyClosure(view)
+      } onChange: {
+        Task { @MainActor in
+          guard let reconciler = reconcilerBox.value, let element = elementBox.value else { return }
+          reconciler.queueUpdate(for: element, transaction: .init(animation: nil))
+        }
+      }
     }
 
     return renderedBody
@@ -327,4 +341,11 @@ public final class StackReconciler<R: Renderer> {
     queuedPostrenderCallbacks.forEach { $0() }
     queuedPostrenderCallbacks.removeAll()
   }
+}
+
+/// Smuggles a weak reference to a MainActor-isolated, non-`Sendable` object across the
+/// non-isolated `@Sendable` `onChange` closure of `withObservationTracking`. Safe because
+/// `.value` is only read after hopping back onto the main actor via `Task { @MainActor in }`.
+private struct WeakBox<T: AnyObject>: @unchecked Sendable {
+  weak var value: T?
 }
