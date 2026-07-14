@@ -157,8 +157,7 @@ public struct _AnimationModifier<Value>: ViewModifier, Equatable
     let animation: Animation?
     nonisolated(unsafe) let value: Value
 
-    @State
-    nonisolated(unsafe) private var lastValue: Value?
+    @State private nonisolated(unsafe) var lastValue: Value?
 
     var body: some View {
       content.transaction {
