@@ -121,18 +121,18 @@ private class SystemImageProvider: _AnyImageProviderBox {
     }
 }
 
-public struct Image: _PrimitiveView, Equatable {
-  
+public nonisolated struct Image: _PrimitiveView, Equatable {
+
   public let provider: _AnyImageProviderBox
 
   @Environment(\.self)
   var environment
 
-  
-  @State
-  public var _intrinsicSize: CGSize?
 
-  public static func == (lhs: Self, rhs: Self) -> Bool {
+  @State
+  nonisolated(unsafe) public var _intrinsicSize: CGSize?
+
+  public nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
     lhs.provider == rhs.provider
   }
 
