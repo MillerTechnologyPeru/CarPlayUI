@@ -76,6 +76,7 @@ public nonisolated struct Text: _PrimitiveView, Equatable {
     case underline(Bool, Color?) // Note: Not in SwiftUI
   }
 
+  @MainActor
   init(storage: _Storage, modifiers: [_Modifier] = []) {
     if case let .segmentedText(segments) = storage {
       self.storage = .segmentedText(segments.map {
@@ -87,10 +88,12 @@ public nonisolated struct Text: _PrimitiveView, Equatable {
     self.modifiers = modifiers
   }
 
+  @MainActor
   public init(verbatim content: String) {
     self.init(storage: .verbatim(content))
   }
 
+  @MainActor
   public init<S>(_ content: S) where S: StringProtocol {
     self.init(storage: .verbatim(String(content)))
   }
@@ -146,6 +149,7 @@ public struct _TextProxy {
   public var environment: EnvironmentValues { subject.environment }
 }
 
+@MainActor
 public extension Text {
   func font(_ font: Font?) -> Text {
     .init(storage: storage, modifiers: modifiers + [.font(font)])
@@ -189,6 +193,7 @@ public extension Text {
 }
 
 public extension Text {
+  @MainActor
   static func _concatenating(lhs: Self, rhs: Self) -> Self {
     .init(storage: .segmentedText([
       (lhs.storage, lhs.modifiers),
@@ -207,6 +212,7 @@ extension Text: Layout {
     environment.measureText(self, proposal, environment)
   }
 
+  @MainActor
   public func placeSubviews(
     in bounds: CGRect,
     proposal: ProposedViewSize,
