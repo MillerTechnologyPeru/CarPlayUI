@@ -104,7 +104,7 @@ public struct _Button<Label>: View where Label: View {
   public let action: () -> ()
 
   @State
-  public var isPressed = false
+  nonisolated(unsafe) public var isPressed = false
 
   let anyStyle: AnyButtonStyle
   public var style: Any.Type { anyStyle.type }
