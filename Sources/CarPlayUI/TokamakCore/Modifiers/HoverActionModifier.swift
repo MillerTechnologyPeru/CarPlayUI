@@ -21,6 +21,7 @@ public struct _HoverActionModifier: ViewModifier {
 extension ModifiedContent
   where Content: View, Modifier == _HoverActionModifier
 {
+  @MainActor
   var hover: ((Bool) -> ())? { modifier.hover }
 }
 
