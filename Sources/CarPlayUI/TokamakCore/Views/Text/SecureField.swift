@@ -65,7 +65,10 @@ public struct _SecureFieldProxy {
 
   public init(_ subject: SecureField<Text>) { self.subject = subject }
 
+  @MainActor
   public var label: _TextProxy { _TextProxy(subject.label) }
+  @MainActor
   public var textBinding: Binding<String> { subject.textBinding }
+  @MainActor
   public var onCommit: () -> () { subject.onCommit }
 }
