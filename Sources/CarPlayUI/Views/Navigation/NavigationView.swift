@@ -10,7 +10,7 @@ public struct NavigationView<Content>: View where Content: View {
     let content: Content
 
     @StateObject
-    var context = NavigationContext()
+    nonisolated(unsafe) var context = NavigationContext()
 
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
