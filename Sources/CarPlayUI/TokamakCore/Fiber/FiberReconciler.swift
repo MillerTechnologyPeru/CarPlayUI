@@ -20,6 +20,7 @@ import Combine
 
 /// A reconciler modeled after React's
 /// [Fiber reconciler](https://reactjs.org/docs/faq-internals.html#what-is-react-fiber)
+@MainActor
 public final class FiberReconciler<Renderer: FiberRenderer> {
   /// The root node in the `Fiber` tree that represents the `View`s currently rendered on screen.
   
@@ -283,6 +284,7 @@ public extension EnvironmentValues {
     static let defaultValue: (@escaping () -> ()) -> () = { _ in }
   }
 
+  @MainActor
   var afterReconcile: (@escaping () -> ()) -> () {
     get { self[AfterReconcileKey.self] }
     set { self[AfterReconcileKey.self] = newValue }
