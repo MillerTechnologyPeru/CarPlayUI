@@ -77,7 +77,7 @@ public struct _FoundationProgressView: View {
   let progress: Progress
 
   @State
-  private var state: ProgressState?
+  nonisolated(unsafe) private var state: ProgressState?
 
   struct ProgressState {
     var progress: Double
