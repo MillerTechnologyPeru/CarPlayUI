@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "CarPlayUI",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v17)],
     products: [
         .library(
             name: "CarPlayUI",
