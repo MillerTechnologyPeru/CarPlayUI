@@ -66,7 +66,7 @@ public struct _VariadicView_Children {
 extension _VariadicView_Children: RandomAccessCollection {
   public struct Element: View, Identifiable {
     let view: AnyView
-    public var id: AnyHashable
+    public nonisolated(unsafe) var id: AnyHashable
     let viewTraits: _ViewTraitStore
     let onTraitsUpdated: (_ViewTraitStore) -> ()
 
