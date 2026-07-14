@@ -136,27 +136,32 @@ public nonisolated struct Image: _PrimitiveView, Equatable {
     lhs.provider == rhs.provider
   }
 
+  @MainActor
   init(_ provider: _AnyImageProviderBox) {
     self.provider = provider
   }
 }
 
 public extension Image {
+  @MainActor
   init(_ name: String, bundle: Bundle? = nil) {
     self.init(name, bundle: bundle, label: Text(name))
   }
 
+  @MainActor
   init(_ name: String, bundle: Bundle? = nil, label: Text) {
     self.init(NamedImageProvider(name: name, bundle: bundle, label: label))
   }
 
+  @MainActor
   init(decorative name: String, bundle: Bundle? = nil) {
     self.init(NamedImageProvider(name: name, bundle: bundle, label: nil))
   }
 }
 
 public extension Image {
-    
+
+    @MainActor
     init(systemName imageName: String, label: Text? = nil) {
         self.init(SystemImageProvider(systemName: imageName, label: label))
     }
@@ -168,6 +173,7 @@ public extension Image {
     case stretch
   }
 
+  @MainActor
   func resizable(
     capInsets: EdgeInsets = EdgeInsets(),
     resizingMode: ResizingMode = .stretch
@@ -183,10 +189,12 @@ internal struct _ImageProxy {
   public init(_ subject: Image) { self.subject = subject }
 
   public var provider: _AnyImageProviderBox { subject.provider }
+  @MainActor
   public var environment: EnvironmentValues { subject.environment }
 }
 
 extension Image: Layout {
+  @MainActor
   public func sizeThatFits(
     proposal: ProposedViewSize,
     subviews: Subviews,
@@ -195,6 +203,7 @@ extension Image: Layout {
     environment.measureImage(self, proposal, environment)
   }
 
+  @MainActor
   public func placeSubviews(
     in bounds: CGRect,
     proposal: ProposedViewSize,
