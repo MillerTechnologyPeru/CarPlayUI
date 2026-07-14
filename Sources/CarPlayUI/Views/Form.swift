@@ -275,7 +275,8 @@ extension FormItem: AnyComponent {
 
 @available(iOS 14.0, *)
 internal extension Text {
-    
+
+    @MainActor
     func build(template: CPInformationTemplate, before sibling: CPInformationItem?) -> CPInformationItem {
         let title = _TextProxy(self).rawText
         let formItem = FormItem(title: title)
