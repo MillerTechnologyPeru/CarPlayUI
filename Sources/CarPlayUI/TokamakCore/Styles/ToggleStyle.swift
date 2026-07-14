@@ -23,7 +23,7 @@
 // It seems like during the rendering process it’s dynamically replaced with the actual label.
 // That’s complicated so instead we’re providing the label view directly.
 
-public struct ToggleStyleConfiguration {
+public nonisolated struct ToggleStyleConfiguration {
   public let label: AnyView
   @Binding
   public var isOn: Swift.Bool
