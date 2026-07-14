@@ -16,8 +16,7 @@
 //
 
 public struct DisclosureGroup<Label, Content>: _PrimitiveView where Label: View, Content: View {
-  @State
-  nonisolated(unsafe) var isExpanded: Bool = false
+  @State nonisolated(unsafe) var isExpanded: Bool = false
   let isExpandedBinding: Binding<Bool>?
 
   @Environment(\._outlineGroupStyle)
