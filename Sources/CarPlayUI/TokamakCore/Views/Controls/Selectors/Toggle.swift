@@ -17,7 +17,7 @@
 
 public struct Toggle<Label>: View where Label: View {
   @Binding
-  var isOn: Bool
+  nonisolated(unsafe) var isOn: Bool
 
   var label: Label
 
