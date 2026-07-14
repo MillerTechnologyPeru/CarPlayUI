@@ -143,8 +143,8 @@ public struct _AnimationProxy {
 public struct _AnimationModifier<Value>: ViewModifier, Equatable
   where Value: Equatable
 {
-  public var animation: Animation?
-  public var value: Value
+  public nonisolated(unsafe) var animation: Animation?
+  public nonisolated(unsafe) var value: Value
 
   @inlinable
   public init(animation: Animation?, value: Value) {
@@ -155,10 +155,10 @@ public struct _AnimationModifier<Value>: ViewModifier, Equatable
   private struct ContentWrapper: View, Equatable {
     let content: Content
     let animation: Animation?
-    let value: Value
+    nonisolated(unsafe) let value: Value
 
     @State
-    private var lastValue: Value?
+    nonisolated(unsafe) private var lastValue: Value?
 
     var body: some View {
       content.transaction {
@@ -168,7 +168,7 @@ public struct _AnimationModifier<Value>: ViewModifier, Equatable
       }
     }
 
-    static func == (lhs: Self, rhs: Self) -> Bool {
+    nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
       lhs.value == rhs.value
     }
   }
@@ -177,7 +177,7 @@ public struct _AnimationModifier<Value>: ViewModifier, Equatable
     ContentWrapper(content: content, animation: animation, value: value)
   }
 
-  public static func == (lhs: Self, rhs: Self) -> Bool {
+  public nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
     lhs.value == rhs.value
       && lhs.animation == rhs.animation
   }
