@@ -18,8 +18,8 @@
 import Foundation
 
 public struct _RotationEffect: GeometryEffect {
-  public var angle: Angle
-  public var anchor: UnitPoint
+  public nonisolated(unsafe) var angle: Angle
+  public nonisolated(unsafe) var anchor: UnitPoint
 
   public init(angle: Angle, anchor: UnitPoint = .center) {
     self.angle = angle
@@ -34,7 +34,7 @@ public struct _RotationEffect: GeometryEffect {
     content
   }
 
-  public var animatableData: AnimatablePair<Angle.AnimatableData, UnitPoint.AnimatableData> {
+  public nonisolated var animatableData: AnimatablePair<Angle.AnimatableData, UnitPoint.AnimatableData> {
     get {
       .init(angle.animatableData, anchor.animatableData)
     }
