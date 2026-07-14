@@ -89,6 +89,7 @@ extension Optional: AnyOptional {
 }
 
 @resultBuilder
+@MainActor
 public enum ViewBuilder {
   public static func buildBlock() -> EmptyView { EmptyView() }
 
