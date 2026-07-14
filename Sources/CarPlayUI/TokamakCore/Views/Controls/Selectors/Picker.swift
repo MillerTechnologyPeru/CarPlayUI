@@ -24,8 +24,7 @@ public struct _PickerContainer<
 >: _PrimitiveView,
   _PickerContainerProtocol
 {
-  @Binding
-  nonisolated(unsafe) public var selection: SelectionValue
+  @Binding public nonisolated(unsafe) var selection: SelectionValue
 
   public let label: Label
   public let content: Content
