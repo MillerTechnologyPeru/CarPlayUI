@@ -19,7 +19,7 @@ import Foundation
 
 @frozen
 public struct _OffsetEffect: GeometryEffect, Equatable {
-  public var offset: CGSize
+  public nonisolated(unsafe) var offset: CGSize
 
   @inlinable
   public init(offset: CGSize) {
@@ -30,7 +30,7 @@ public struct _OffsetEffect: GeometryEffect, Equatable {
     .init(.init(translationX: offset.width, y: offset.height))
   }
 
-  public var animatableData: CGSize.AnimatableData {
+  public nonisolated var animatableData: AnimatablePair<CGFloat, CGFloat> {
     get {
       offset.animatableData
     }
