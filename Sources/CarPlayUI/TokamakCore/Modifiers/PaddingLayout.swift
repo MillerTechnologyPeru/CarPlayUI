@@ -29,7 +29,7 @@ public struct _PaddingLayout: ViewModifier {
 }
 
 extension _PaddingLayout: Animatable {
-  public typealias AnimatableData = EmptyAnimatableData
+  public typealias _AnimatableData = EmptyAnimatableData
 }
 
 public extension View {
@@ -51,6 +51,7 @@ public extension View {
 }
 
 public extension ModifiedContent where Modifier == _PaddingLayout, Content: View {
+  @MainActor
   func padding(_ length: CGFloat) -> ModifiedContent<Content, _PaddingLayout> {
     var layout = modifier
     layout.insets?.top += length
