@@ -60,6 +60,7 @@ final class NavigationDestination {
     
     let _id: AnyHashable?
     
+    @MainActor
     init<V: View>(
         _ destination: V,
         id: AnyHashable? = nil
