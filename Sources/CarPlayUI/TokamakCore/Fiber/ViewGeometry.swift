@@ -48,10 +48,12 @@ public struct ViewDimensions: Equatable {
   public var width: CGFloat { size.width }
   public var height: CGFloat { size.height }
 
+  @MainActor
   public subscript(guide: HorizontalAlignment) -> CGFloat {
     self[explicit: guide] ?? guide.id.defaultValue(in: self)
   }
 
+  @MainActor
   public subscript(guide: VerticalAlignment) -> CGFloat {
     self[explicit: guide] ?? guide.id.defaultValue(in: self)
   }
