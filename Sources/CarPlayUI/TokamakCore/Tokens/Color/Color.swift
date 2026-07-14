@@ -59,9 +59,9 @@ public struct Color: Hashable, Equatable, Sendable {
 
   /// Create a `Color` dependent on the current `ColorScheme`.
   
-  public static func _withScheme(_ resolver: @escaping (ColorScheme) -> Self) -> Self {
+  public static func _withScheme(_ resolver: @escaping @MainActor (ColorScheme) -> Self) -> Self {
     .init(_EnvironmentDependentColorBox { environment in
-      MainActor.assumeIsolated { resolver(environment.colorScheme) }
+      resolver(environment.colorScheme)
     })
   }
 }
@@ -76,7 +76,7 @@ public struct _ColorProxy {
   let subject: Color
   public init(_ subject: Color) { self.subject = subject }
   @MainActor
-  public func resolve(in environment: EnvironmentValues) -> AnyColorBox.ResolvedValue {
+  public func resolve(in environment: sending EnvironmentValues) -> AnyColorBox.ResolvedValue {
     if let deferred = subject.provider as? AnyColorBoxDeferredToRenderer {
       return deferred.deferredResolve(in: environment)
     } else {
@@ -123,7 +123,7 @@ public extension Color {
 
   nonisolated(unsafe) static let secondary: Self = .init(systemColor: .secondary)
   nonisolated(unsafe) static let accentColor: Self = .init(_EnvironmentDependentColorBox { environment in
-    MainActor.assumeIsolated { environment.accentColor ?? Self.blue }
+    environment.accentColor ?? Self.blue
   })
 
   init(_ color: UIColor) {
