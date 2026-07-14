@@ -91,7 +91,9 @@ public struct _ToolbarItemProxy<ID, Content> where Content: View {
 
   public init(_ subject: ToolbarItem<ID, Content>) { self.subject = subject }
 
+  @MainActor
   public var placement: ToolbarItemPlacement { subject.placement }
   public var showsByDefault: Bool { subject.showsByDefault }
+  @MainActor
   public var content: Content { subject.content }
 }
