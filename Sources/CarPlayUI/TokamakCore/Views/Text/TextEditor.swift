@@ -25,5 +25,6 @@ public struct _TextEditorProxy {
 
   public init(_ subject: TextEditor) { self.subject = subject }
 
+  @MainActor
   public var textBinding: Binding<String> { subject.textBinding }
 }
