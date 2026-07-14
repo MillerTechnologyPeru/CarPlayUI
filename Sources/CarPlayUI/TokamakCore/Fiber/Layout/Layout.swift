@@ -386,7 +386,7 @@ final class ConcreteLayoutBox<L: Layout>: AnyLayoutBox {
       .init(base.animatableData)
     }
     set {
-      guard let newData = newValue.value as? L.AnimatableData else { return }
+      guard let newData = newValue.value as? L._AnimatableData else { return }
       base.animatableData = newData
     }
   }
