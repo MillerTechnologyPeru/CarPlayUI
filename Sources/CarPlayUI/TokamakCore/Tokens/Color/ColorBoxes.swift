@@ -37,7 +37,7 @@
 ///
 @MainActor
 public protocol AnyColorBoxDeferredToRenderer: AnyColorBox {
-  func deferredResolve(in environment: EnvironmentValues) -> AnyColorBox.ResolvedValue
+  func deferredResolve(in environment: sending EnvironmentValues) -> AnyColorBox.ResolvedValue
 }
 
 public class AnyColorBox: AnyTokenBox, Hashable, @unchecked Sendable {
@@ -103,7 +103,7 @@ public final class _ConcreteColorBox: AnyColorBox {
 }
 
 public final class _EnvironmentDependentColorBox: AnyColorBox {
-  public let resolver: (EnvironmentValues) -> Color
+  public let resolver: @MainActor (EnvironmentValues) -> Color
 
   override public func equals(_ other: AnyColorBox) -> Bool {
     guard let other = other as? _EnvironmentDependentColorBox
@@ -117,11 +117,11 @@ public final class _EnvironmentDependentColorBox: AnyColorBox {
     hasher.combine(MainActor.assumeIsolated { resolver(EnvironmentValues()) })
   }
 
-  init(_ resolver: @escaping (EnvironmentValues) -> Color) {
+  init(_ resolver: @escaping @MainActor (EnvironmentValues) -> Color) {
     self.resolver = resolver
   }
 
-  override public func resolve(in environment: EnvironmentValues) -> ResolvedValue {
+  override public func resolve(in environment: sending EnvironmentValues) -> ResolvedValue {
     MainActor.assumeIsolated {
       resolver(environment).provider.resolve(in: environment)
     }
@@ -197,7 +197,7 @@ public final class _SystemColorBox: AnyColorBox, CustomStringConvertible {
     self.value = value
   }
 
-  override public func resolve(in environment: EnvironmentValues) -> ResolvedValue {
+  override public func resolve(in environment: sending EnvironmentValues) -> ResolvedValue {
     switch MainActor.assumeIsolated({ environment.colorScheme }) {
     case .light:
       switch value {
