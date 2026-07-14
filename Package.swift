@@ -14,14 +14,18 @@ let package = Package(
         .target(
             name: "CarPlayUI",
             swiftSettings: [
-                .swiftLanguageMode(.v6)
+                .swiftLanguageMode(.v6),
+                .enableUpcomingFeature("InferIsolatedConformances"),
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault")
             ]
         ),
         .testTarget(
             name: "CarPlayUITests",
             dependencies: ["CarPlayUI"],
             swiftSettings: [
-                .swiftLanguageMode(.v6)
+                .swiftLanguageMode(.v6),
+                .enableUpcomingFeature("InferIsolatedConformances"),
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault")
             ]
         )
     ]
