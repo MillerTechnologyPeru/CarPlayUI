@@ -130,7 +130,7 @@ public nonisolated struct Image: _PrimitiveView, Equatable {
 
 
   @State
-  nonisolated(unsafe) public var _intrinsicSize: CGSize?
+  public var _intrinsicSize: CGSize?
 
   public nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
     lhs.provider == rhs.provider
