@@ -18,8 +18,8 @@
 import Foundation
 
 public protocol Animatable {
-  associatedtype AnimatableData: VectorArithmetic
-  var animatableData: Self.AnimatableData { get set }
+  associatedtype _AnimatableData: VectorArithmetic
+  var animatableData: Self._AnimatableData { get set }
 }
 
 public protocol _PrimitiveAnimatable {}
@@ -32,7 +32,7 @@ public extension Animatable where Self: VectorArithmetic {
   }
 }
 
-public extension Animatable where Self.AnimatableData == EmptyAnimatableData {
+public extension Animatable where Self._AnimatableData == EmptyAnimatableData {
   var animatableData: EmptyAnimatableData {
     @inlinable get { EmptyAnimatableData() }
     // swiftlint:disable:next unused_setter_value
@@ -140,26 +140,34 @@ public struct AnimatablePair<First, Second>: VectorArithmetic
 }
 
 extension CGPoint: Animatable {
-  public var animatableData: AnimatablePair<CGFloat, CGFloat> {
+  public typealias _AnimatableData = AnimatablePair<CGFloat, CGFloat>
+  public var animatableData: _AnimatableData {
     @inlinable get { .init(x, y) }
     @inlinable set { (x, y) = newValue[] }
   }
 }
 
 extension CGSize: Animatable {
-  public var animatableData: AnimatablePair<CGFloat, CGFloat> {
+  public typealias _AnimatableData = AnimatablePair<CGFloat, CGFloat>
+  public var animatableData: _AnimatableData {
     @inlinable get { .init(width, height) }
     @inlinable set { (width, height) = newValue[] }
   }
 }
 
 extension CGRect: Animatable {
-  public var animatableData: AnimatablePair<CGPoint.AnimatableData, CGSize.AnimatableData> {
+  public typealias _AnimatableData = AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<CGFloat, CGFloat>>
+  public var animatableData: _AnimatableData {
     @inlinable get {
-      .init(origin.animatableData, size.animatableData)
+      .init(
+        AnimatablePair(origin.x, origin.y),
+        AnimatablePair(size.width, size.height)
+      )
     }
     @inlinable set {
-      (origin.animatableData, size.animatableData) = newValue[]
+      let value = newValue[]
+      origin = .init(x: value.0[].0, y: value.0[].1)
+      size = .init(width: value.1[].0, height: value.1[].1)
     }
   }
 }

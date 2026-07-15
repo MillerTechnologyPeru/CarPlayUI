@@ -67,7 +67,7 @@ public struct EdgeInsets: Equatable {
 }
 
 extension EdgeInsets: Animatable, _VectorMath {
-  public typealias AnimatableData = AnimatablePair<
+  public typealias _AnimatableData = AnimatablePair<
     CGFloat,
     AnimatablePair<
       CGFloat,
@@ -75,7 +75,7 @@ extension EdgeInsets: Animatable, _VectorMath {
     >
   >
 
-  public var animatableData: AnimatableData {
+  public var animatableData: _AnimatableData {
     @inlinable get {
       .init(top, .init(leading, .init(bottom, trailing)))
     }

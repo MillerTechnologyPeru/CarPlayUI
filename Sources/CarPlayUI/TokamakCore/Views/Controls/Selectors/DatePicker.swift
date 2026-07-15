@@ -169,8 +169,11 @@ public struct _DatePickerProxy<Label> where Label: View {
 
   public init(_ subject: DatePicker<Label>) { self.subject = subject }
 
+  @MainActor
   public var label: Label { subject.label }
+  @MainActor
   public var valueBinding: Binding<Date> { subject.valueBinding }
+  @MainActor
   public var displayedComponents: DatePickerComponents { subject.displayedComponents }
   public var min: Date? { subject.min }
   public var max: Date? { subject.max }

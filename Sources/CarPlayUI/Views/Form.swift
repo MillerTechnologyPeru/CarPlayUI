@@ -152,7 +152,9 @@ internal extension CPInformationTemplate {
     
     func update(oldValue: CPInformationItem, newValue: CPInformationItem) {
         guard let index = _items.firstIndex(where: { $0 === oldValue }) else {
-            assertionFailure("Unable to find item in graph")
+            // Item was removed before this update arrived (e.g., a stale re-render after
+            // a navigation pop). Append so target.storage and _coordinator.items stay in sync.
+            _items.append(newValue)
             return
         }
         // update with new instance at
@@ -191,16 +193,16 @@ internal extension CPInformationTemplate {
             _actions.append(action)
         }
     }
-    
+
     func update(oldValue: CPTextButton, newValue: CPTextButton) {
         guard let index = _actions.firstIndex(where: { $0 === oldValue }) else {
-            assertionFailure("Unable to find item in graph")
+            _actions.append(newValue)
             return
         }
         // update with new instance at
         _actions[index] = newValue
     }
-    
+
     func remove(action: CPTextButton) {
         guard let index = _actions.firstIndex(where: { $0 === action }) else {
             return
@@ -275,7 +277,8 @@ extension FormItem: AnyComponent {
 
 @available(iOS 14.0, *)
 internal extension Text {
-    
+
+    @MainActor
     func build(template: CPInformationTemplate, before sibling: CPInformationItem?) -> CPInformationItem {
         let title = _TextProxy(self).rawText
         let formItem = FormItem(title: title)

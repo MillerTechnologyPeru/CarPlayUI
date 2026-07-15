@@ -37,6 +37,7 @@ public struct _LinkProxy<Label> where Label: View {
 
   public init(_ subject: Link<Label>) { self.subject = subject }
 
+  @MainActor
   public var label: Label { subject.label }
   public var destination: URL {
     subject.destination

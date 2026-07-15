@@ -340,6 +340,7 @@ internal extension CPPointOfInterest {
         
         private var _view: CPPointOfInterest!
         
+        @MainActor
         var view: CPPointOfInterest {
             guard viewDidChange else {
                 return _view
@@ -348,10 +349,11 @@ internal extension CPPointOfInterest {
             _view = CPPointOfInterest(self)
             return _view
         }
-        
+
         var viewDidChange = false
-        
-        init(title: String, 
+
+        @MainActor
+        init(title: String,
              location: MKMapItem,
              subtitle: String?,
              summary: String?,
@@ -376,6 +378,7 @@ internal extension CPPointOfInterest {
             self._view = CPPointOfInterest(self)
         }
         
+        @MainActor
         func updateTemplate() {
             let oldValue = _view!
             let newValue = view

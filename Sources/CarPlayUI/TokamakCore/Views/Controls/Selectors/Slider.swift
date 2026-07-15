@@ -154,11 +154,17 @@ public struct _SliderProxy<Label, ValueLabel> where Label: View, ValueLabel: Vie
 
   public init(_ subject: Slider<Label, ValueLabel>) { self.subject = subject }
 
+  @MainActor
   public var label: Label { subject.label }
+  @MainActor
   public var minValueLabel: ValueLabel { subject.minValueLabel }
+  @MainActor
   public var maxValueLabel: ValueLabel { subject.maxValueLabel }
+  @MainActor
   public var valueBinding: Binding<Double> { subject.valueBinding }
   public var bounds: ClosedRange<Double> { subject.bounds }
+  @MainActor
   public var step: _SliderStep { subject.step }
+  @MainActor
   public var onEditingChanged: (Bool) -> () { subject.onEditingChanged }
 }

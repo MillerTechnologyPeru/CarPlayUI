@@ -85,6 +85,7 @@ public extension View {
 }
 
 public extension ModifiedContent where Content: View, Modifier: ViewModifier {
+  @MainActor
   static func _makeView(_ inputs: ViewInputs<Self>) -> ViewOutputs {
     Modifier._makeView(.init(
       content: inputs.content.modifier,
@@ -95,6 +96,7 @@ public extension ModifiedContent where Content: View, Modifier: ViewModifier {
     ))
   }
 
+  @MainActor
   func _visitChildren<V>(_ visitor: V) where V: ViewVisitor {
     modifier._visitChildren(visitor, content: .init(modifier: modifier, view: content))
   }

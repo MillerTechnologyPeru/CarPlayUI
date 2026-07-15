@@ -27,6 +27,7 @@ public struct ModifiedContent<Content, Modifier>: ModifiedContentProtocol {
   public private(set) var content: Content
   public private(set) var modifier: Modifier
 
+  @MainActor
   public init(content: Content, modifier: Modifier) {
     self.content = content
     self.modifier = modifier

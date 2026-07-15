@@ -37,6 +37,7 @@ public struct ListSection: View, _PrimitiveView {
 
 public extension Section where Parent == EmptyView, Footer == EmptyView, Content == ListSection {
     
+    @MainActor
     init(header: String? = nil,
          sectionIndexTitle: String? = nil,
          data: [ListItem]

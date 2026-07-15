@@ -11,6 +11,7 @@ import CarPlay
 @available(iOS 14.0, *)
 internal extension CPPointOfInterest {
     
+    @MainActor
     convenience init(_ view: ViewObject) {
         if #available(iOS 16.0, *) {
             self.init(

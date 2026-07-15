@@ -1,9 +1,9 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
     name: "CarPlayUI",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v17)],
     products: [
         .library(
             name: "CarPlayUI",
@@ -14,14 +14,18 @@ let package = Package(
         .target(
             name: "CarPlayUI",
             swiftSettings: [
-                .swiftLanguageMode(.v6)
+                .swiftLanguageMode(.v6),
+                .enableUpcomingFeature("InferIsolatedConformances"),
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault")
             ]
         ),
         .testTarget(
             name: "CarPlayUITests",
             dependencies: ["CarPlayUI"],
             swiftSettings: [
-                .swiftLanguageMode(.v6)
+                .swiftLanguageMode(.v6),
+                .enableUpcomingFeature("InferIsolatedConformances"),
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault")
             ]
         )
     ]

@@ -16,7 +16,7 @@
 //
 
 public struct _OpacityEffect: Animatable, ViewModifier, Equatable {
-  public var opacity: Double
+  public nonisolated var opacity: Double
 
   public init(opacity: Double) {
     self.opacity = opacity
@@ -26,7 +26,7 @@ public struct _OpacityEffect: Animatable, ViewModifier, Equatable {
     content
   }
 
-  public var animatableData: Double {
+  public nonisolated var animatableData: Double {
     get { opacity }
     set { opacity = newValue }
   }

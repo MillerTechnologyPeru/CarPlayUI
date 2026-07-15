@@ -11,6 +11,7 @@ import CarPlay
 @available(iOS 14.0, *)
 internal extension CPTextButton {
     
+    @MainActor
     convenience init(button: Button<Text>) {
         let title = _TextProxy(button.label).rawText
         let textStyle = CPTextButtonStyle(role: button.role)

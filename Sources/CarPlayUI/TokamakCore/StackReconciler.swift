@@ -16,6 +16,7 @@
 //
 
 import Combine
+import Observation
 
 /** A class that reconciles a "raw" tree of element values (such as `App`, `Scene` and `View`,
  all coming from `body` or `renderedBody` properties) with a tree of mounted element instances
@@ -38,6 +39,7 @@ public final class StackReconciler<R: Renderer> {
    */
   private var queuedRerenders = Set<Rerender>()
 
+  @MainActor
   struct Rerender: Hashable {
     let element: MountedCompositeElement<R>
     let transaction: Transaction
@@ -155,6 +157,10 @@ public final class StackReconciler<R: Renderer> {
     queuedRerenders.removeAll()
 
     for mountedView in queued {
+      // Skip elements that have already been unmounted. This can happen when an Observable
+      // `onChange` Task is in-flight while the element is removed from the tree (e.g., a
+      // navigation pop), leaving a stale entry in `queuedRerenders`.
+      guard mountedView.element.transitionPhase != .willUnmount else { continue }
       mountedView.element.update(in: self, with: mountedView.transaction)
     }
 
@@ -262,7 +268,20 @@ public final class StackReconciler<R: Renderer> {
     let view = body(of: compositeView, keyPath: \.view.view)
 
     guard let renderedBody = renderer.primitiveBody(for: view) else {
-      return compositeView.view.bodyClosure(view)
+      // Track any `@Observable` properties read during `body`, so mutating them later
+      // schedules a re-render the same way a `@State` setter or `ObservableObject`
+      // `objectWillChange` emission does. `render(compositeView:)` re-runs on every
+      // mount and re-render, which naturally re-establishes tracking each time.
+      let reconcilerBox = WeakBox(value: self)
+      let elementBox = WeakBox(value: compositeView)
+      return withObservationTracking {
+        compositeView.view.bodyClosure(view)
+      } onChange: {
+        Task { @MainActor in
+          guard let reconciler = reconcilerBox.value, let element = elementBox.value else { return }
+          reconciler.queueUpdate(for: element, transaction: .init(animation: nil))
+        }
+      }
     }
 
     return renderedBody
@@ -327,4 +346,11 @@ public final class StackReconciler<R: Renderer> {
     queuedPostrenderCallbacks.forEach { $0() }
     queuedPostrenderCallbacks.removeAll()
   }
+}
+
+/// Smuggles a weak reference to a MainActor-isolated, non-`Sendable` object across the
+/// non-isolated `@Sendable` `onChange` closure of `withObservationTracking`. Safe because
+/// `.value` is only read after hopping back onto the main actor via `Task { @MainActor in }`.
+private struct WeakBox<T: AnyObject>: @unchecked Sendable {
+  weak var value: T?
 }

@@ -10,6 +10,7 @@ import CarPlay
 
 extension Text: AnyComponent {
         
+    @MainActor
     func build(parent: NSObject, before sibling: NSObject?) -> NSObject? {
         if #available(iOS 14.0, *), let template = parent as? CPInformationTemplate {
             return build(template: template, before: sibling as? CPInformationItem)
@@ -17,7 +18,8 @@ extension Text: AnyComponent {
             return nil
         }
     }
-    
+
+    @MainActor
     func update(component: inout NSObject, parent: NSObject) {
         if #available(iOS 14, *),
            let item = component as? CPInformationItem,
@@ -26,7 +28,8 @@ extension Text: AnyComponent {
             component = view.update(item, template: template)
         }
     }
-    
+
+    @MainActor
     func remove(component: NSObject, parent: NSObject) {
         if #available(iOS 14, *),
            let item = component as? CPInformationItem,
@@ -36,6 +39,7 @@ extension Text: AnyComponent {
     }
     
     @available(iOS 14.0, *)
+    @MainActor
     func remove(_ item: CPInformationItem, template: CPInformationTemplate) {
         template.remove(item: item)
     }

@@ -20,11 +20,11 @@ import Foundation
 public extension FiberReconciler.Fiber {
   enum Content {
     /// The underlying `App` instance and a function to visit it generically.
-    case app(Any, visit: (AppVisitor) -> ())
+    case app(Any, visit: @MainActor (AppVisitor) -> ())
     /// The underlying `Scene` instance and a function to visit it generically.
-    case scene(Any, visit: (SceneVisitor) -> ())
+    case scene(Any, visit: @MainActor (SceneVisitor) -> ())
     /// The underlying `View` instance and a function to visit it generically.
-    case view(Any, visit: (ViewVisitor) -> ())
+    case view(Any, visit: @MainActor (ViewVisitor) -> ())
   }
 
   /// Create a `Content` value for a given `App`.

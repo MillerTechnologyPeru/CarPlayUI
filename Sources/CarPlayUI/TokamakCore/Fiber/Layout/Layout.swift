@@ -286,11 +286,11 @@ protocol AnyLayoutBox: AnyObject {
     cache: inout Self.Cache
   ) -> CGFloat?
 
-  var animatableData: _AnyAnimatableData { get set }
+  nonisolated var animatableData: _AnyAnimatableData { get set }
 }
 
 final class ConcreteLayoutBox<L: Layout>: AnyLayoutBox {
-  var base: L
+  nonisolated(unsafe) var base: L
 
   init(_ base: L) {
     self.base = base
@@ -381,12 +381,12 @@ final class ConcreteLayoutBox<L: Layout>: AnyLayoutBox {
     }
   }
 
-  var animatableData: _AnyAnimatableData {
+  nonisolated var animatableData: _AnyAnimatableData {
     get {
       .init(base.animatableData)
     }
     set {
-      guard let newData = newValue.value as? L.AnimatableData else { return }
+      guard let newData = newValue.value as? L._AnimatableData else { return }
       base.animatableData = newData
     }
   }
@@ -394,7 +394,7 @@ final class ConcreteLayoutBox<L: Layout>: AnyLayoutBox {
 
 @frozen
 public struct AnyLayout: Layout {
-  var storage: AnyLayoutBox
+  nonisolated(unsafe) var storage: AnyLayoutBox
 
   public init<L>(_ layout: L) where L: Layout {
     storage = ConcreteLayoutBox(layout)
@@ -469,7 +469,7 @@ public struct AnyLayout: Layout {
     )
   }
 
-  public var animatableData: _AnyAnimatableData {
+  public nonisolated var animatableData: _AnyAnimatableData {
     get {
       _AnyAnimatableData(storage.animatableData)
     }

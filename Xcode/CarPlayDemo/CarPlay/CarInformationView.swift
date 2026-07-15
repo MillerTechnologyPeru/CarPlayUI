@@ -7,55 +7,70 @@
 //
 
 import Foundation
+import Observation
 import CarPlayUI
 
+/// Demonstrates that CarPlayUI auto-tracks `@Observable` view models: mutating `counter`
+/// from a button action re-renders `CarInformationView` without any property wrapper.
+@Observable
+final class InformationViewModel {
+    var counter = 0
+}
+
 struct CarInformationView: CarPlayUI.View {
-    
+
     @State
     var date = Date()
-    
+
     @State
     var showButton = false
-    
+
     @State
     var counter = 0
-    
+
     @State
     var rating = 0.5
-    
+
+    @State
+    private var viewModel = InformationViewModel()
+
     var body: some CarPlayUI.View {
         Form {
             // Items
             if counter == 0 {
                 Text("Use the increment button to increase the counter")
             }
-            
+
             CounterView(counter: counter)
-            
+
+            FormItem(title: "Observable Counter", detail: "\(viewModel.counter)")
+
             if #available(iOS 15.0, *) {
                 DateView(date: date)
             }
-            
+
             Rating(
                 title: Text("Rating"),
                 rating: rating,
                 maximum: 5.0
             )
-            
+
             if counter == 0 {
                 FormItem(title: nil, detail: "Detail Text")
                 Rating()
             }
-            
+
             // Buttons
             Button("Increment") { increment() }
-            
+
+            Button("Increment (Observable)") { viewModel.counter += 1 }
+
             Button(role: .confirm) {
                 reset()
             } label: {
                 Text("Reset")
             }
-            
+
             NavigationLink("Next", destination: CarInformationView())
         }
         .navigationTitle("Information")

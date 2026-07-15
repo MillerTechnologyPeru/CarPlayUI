@@ -27,6 +27,7 @@ public struct LayoutSubviews: Equatable, RandomAccessCollection {
     self.storage = storage
   }
 
+  @MainActor
   init<R: FiberRenderer>(_ node: FiberReconciler<R>.Fiber) {
     self.init(
       layoutDirection: node.outputs.environment.environment.layoutDirection,
@@ -78,6 +79,7 @@ public struct LayoutSubview: Equatable {
   private let storage: AnyStorage
 
   /// A protocol used to erase `Storage<R>`.
+  @MainActor
   private class AnyStorage {
     let traits: _ViewTraitStore?
 
@@ -193,6 +195,7 @@ public struct LayoutSubview: Equatable {
     }
   }
 
+  @MainActor
   init<R: FiberRenderer>(
     id: ObjectIdentifier,
     traits: _ViewTraitStore?,
@@ -209,30 +212,37 @@ public struct LayoutSubview: Equatable {
     )
   }
 
+  @MainActor
   public func _trait<K>(key: K.Type) -> K.Value where K: _ViewTraitKey {
     storage.traits?.value(forKey: key) ?? K.defaultValue
   }
 
+  @MainActor
   public subscript<K>(key: K.Type) -> K.Value where K: LayoutValueKey {
     _trait(key: _LayoutTrait<K>.self)
   }
 
+  @MainActor
   public var priority: Double {
     _trait(key: LayoutPriorityTraitKey.self)
   }
 
+  @MainActor
   public func sizeThatFits(_ proposal: ProposedViewSize) -> CGSize {
     storage.sizeThatFits(proposal)
   }
 
+  @MainActor
   public func dimensions(in proposal: ProposedViewSize) -> ViewDimensions {
     storage.dimensions(sizeThatFits(proposal))
   }
 
+  @MainActor
   public var spacing: ViewSpacing {
     storage.spacing()
   }
 
+  @MainActor
   public func place(
     at position: CGPoint,
     anchor: UnitPoint = .topLeading,

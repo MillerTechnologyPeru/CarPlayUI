@@ -33,6 +33,7 @@ public enum WalkResult<Renderer: FiberRenderer, Success> {
 /// Walk a fiber tree from `root` until the `work` predicate returns `false`.
 
 @discardableResult
+@MainActor
 public func walk<Renderer: FiberRenderer>(
   _ root: FiberReconciler<Renderer>.Fiber,
   _ work: @escaping (FiberReconciler<Renderer>.Fiber) throws -> Bool
@@ -53,6 +54,7 @@ public func walk<Renderer: FiberRenderer>(
 ///
 /// When the `root` is reached, the loop exits.
 
+@MainActor
 public func walk<Renderer: FiberRenderer, Success>(
   _ root: FiberReconciler<Renderer>.Fiber,
   _ work: @escaping (FiberReconciler<Renderer>.Fiber) throws -> WalkWorkResult<Success>

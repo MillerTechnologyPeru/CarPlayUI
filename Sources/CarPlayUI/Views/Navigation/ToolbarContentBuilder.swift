@@ -16,6 +16,7 @@
 //
 
 @resultBuilder
+@MainActor
 public enum ToolbarContentBuilder<ID> {
   public static func buildBlock<V>(_ content: ToolbarItem<ID, V>)
     -> ToolbarItemGroup<ID, ToolbarItem<ID, V>> where V: View
@@ -28,6 +29,7 @@ public enum ToolbarContentBuilder<ID> {
 // swiftlint:disable large_tuple
 // swiftlint:disable function_parameter_count
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1>(
     _ c0: ToolbarItem<ID, C0>,
@@ -42,6 +44,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2>(
     _ c0: ToolbarItem<ID, C0>,
@@ -55,6 +58,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2, C3>(
     _ c0: ToolbarItem<ID, C0>,
@@ -72,6 +76,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2, C3, C4>(
     _ c0: ToolbarItem<ID, C0>,
@@ -90,6 +95,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2, C3, C4, C5>(
     _ c0: ToolbarItem<ID, C0>,
@@ -110,6 +116,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2, C3, C4, C5, C6>(
     _ c0: ToolbarItem<ID, C0>,
@@ -132,6 +139,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2, C3, C4, C5, C6, C7>(
     _ c0: ToolbarItem<ID, C0>,
@@ -156,6 +164,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2, C3, C4, C5, C6, C7, C8>(
     _ c0: ToolbarItem<ID, C0>,
@@ -184,6 +193,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 public extension ToolbarContentBuilder {
   static func buildBlock<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9>(
     _ c0: ToolbarItem<ID, C0>,
@@ -214,6 +224,7 @@ public extension ToolbarContentBuilder {
   }
 }
 
+@MainActor
 extension ToolbarItemGroup: View {
   public var body: some View {
     let items = _items.sorted { a, b in

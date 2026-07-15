@@ -78,6 +78,7 @@ extension Grid.Storage {
         }
     }
     
+    @MainActor
     var view: AnyView {
         switch self {
         case .static:

@@ -20,14 +20,13 @@ internal struct _TaskModifierView<Content>: View where Content: View {
 
   let priority: TaskPriority
 
-  let action: @Sendable () async -> ()
+  let action: @isolated(any) @Sendable () async -> ()
 
   let content: Content
 
-  @State
-  nonisolated(unsafe) private var task: Task<(), Never>?
+  @State private nonisolated(unsafe) var task: Task<(), Never>?
 
-  init(priority: TaskPriority, action: @escaping @Sendable () async -> (), content: Content) {
+  init(priority: TaskPriority, action: @escaping @isolated(any) @Sendable () async -> (), content: Content) {
     self.priority = priority
     self.action = action
     self.content = content
@@ -48,7 +47,7 @@ internal struct _TaskModifierView<Content>: View where Content: View {
 public extension View {
   func task(
     priority: TaskPriority = .userInitiated,
-    _ action: @escaping @Sendable () async -> ()
+    _ action: @escaping @isolated(any) @Sendable () async -> ()
   ) -> some View {
     _TaskModifierView(priority: priority, action: action, content: self)
   }

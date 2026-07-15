@@ -11,6 +11,7 @@ import CarPlay
 
 internal extension UIImage {
     
+    @MainActor
     convenience init?(
         _ image: _ImageProxy,
         environment: EnvironmentValues = .defaultEnvironment
@@ -38,6 +39,7 @@ internal extension UIImage {
         }
     }
     
+    @MainActor
     static func unsafe(
         _ image: Image,
         environment: EnvironmentValues = .defaultEnvironment,
@@ -46,7 +48,8 @@ internal extension UIImage {
     ) -> UIImage {
         unsafe(_ImageProxy(image), environment: environment, file: file, line: line)
     }
-    
+
+    @MainActor
     static func unsafe(
         _ image: _ImageProxy,
         environment: EnvironmentValues = .defaultEnvironment,

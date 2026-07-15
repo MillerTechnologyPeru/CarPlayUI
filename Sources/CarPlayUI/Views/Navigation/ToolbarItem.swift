@@ -52,7 +52,7 @@ public protocol AnyToolbarItem {
 }
 
 public struct ToolbarItem<ID, Content>: View, AnyToolbarItem where Content: View {
-  public let id: ID
+  public nonisolated(unsafe) let id: ID
   public let placement: ToolbarItemPlacement
   public let showsByDefault: Bool
   let content: Content
@@ -91,7 +91,9 @@ public struct _ToolbarItemProxy<ID, Content> where Content: View {
 
   public init(_ subject: ToolbarItem<ID, Content>) { self.subject = subject }
 
+  @MainActor
   public var placement: ToolbarItemPlacement { subject.placement }
   public var showsByDefault: Bool { subject.showsByDefault }
+  @MainActor
   public var content: Content { subject.content }
 }

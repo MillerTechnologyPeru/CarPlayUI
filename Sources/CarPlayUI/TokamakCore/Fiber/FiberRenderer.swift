@@ -128,6 +128,7 @@ extension EnvironmentValues {
     }
   }
 
+  @MainActor
   var measureText: (Text, ProposedViewSize, EnvironmentValues) -> CGSize {
     get { self[MeasureTextKey.self] }
     set { self[MeasureTextKey.self] = newValue }
@@ -139,6 +140,7 @@ extension EnvironmentValues {
     }
   }
 
+  @MainActor
   var measureImage: (Image, ProposedViewSize, EnvironmentValues) -> CGSize {
     get { self[MeasureImageKey.self] }
     set { self[MeasureImageKey.self] = newValue }

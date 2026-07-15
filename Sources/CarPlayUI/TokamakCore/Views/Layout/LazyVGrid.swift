@@ -44,7 +44,9 @@ public struct _LazyVGridProxy<Content> where Content: View {
 
   public init(_ subject: LazyVGrid<Content>) { self.subject = subject }
 
+  @MainActor
   public var columns: [GridItem] { subject.columns }
+  @MainActor
   public var content: Content { subject.content }
   public var spacing: CGFloat { subject.spacing }
 }

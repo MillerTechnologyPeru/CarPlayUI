@@ -10,6 +10,7 @@ import CarPlay
 
 internal extension CPGridButton {
     
+    @MainActor
     convenience init(label: ParentView, action: @escaping (CPGridButton) -> ()) {
         // extract labels
         var labels = label.children.compactMap {
