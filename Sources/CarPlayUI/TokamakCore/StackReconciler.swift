@@ -157,6 +157,10 @@ public final class StackReconciler<R: Renderer> {
     queuedRerenders.removeAll()
 
     for mountedView in queued {
+      // Skip elements that have already been unmounted. This can happen when an Observable
+      // `onChange` Task is in-flight while the element is removed from the tree (e.g., a
+      // navigation pop), leaving a stale entry in `queuedRerenders`.
+      guard mountedView.element.transitionPhase != .willUnmount else { continue }
       mountedView.element.update(in: self, with: mountedView.transaction)
     }
 
