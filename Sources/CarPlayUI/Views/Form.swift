@@ -177,7 +177,6 @@ internal extension CPInformationTemplate {
             // The template can display three actions maximum.
             // If the array contains more actions, the template uses only the first three.
             let actions = Array(newValue.prefix(3))
-            print("[Form.actions] replace \(_coordinator.actions.map { ObjectIdentifier($0) }) -> \(actions.map { ObjectIdentifier($0) })")
             // store original instance
             _coordinator.actions = actions
             // send to CarPlay IPC
@@ -186,7 +185,6 @@ internal extension CPInformationTemplate {
     }
     
     func insert(_ action: CPTextButton, before sibling: CPTextButton? = nil) {
-        print("[Form.actions] insert \(ObjectIdentifier(action)) before \(sibling.map { ObjectIdentifier($0) }.map(String.init(describing:)) ?? "nil") — current: \(_actions.map { ObjectIdentifier($0) })")
         // move to before sibling
         if let sibling, let index = _actions.firstIndex(of: sibling) {
             _actions.insert(action, before: index)
@@ -197,7 +195,6 @@ internal extension CPInformationTemplate {
     }
 
     func update(oldValue: CPTextButton, newValue: CPTextButton) {
-        print("[Form.actions] update oldValue \(ObjectIdentifier(oldValue)) -> newValue \(ObjectIdentifier(newValue)) — current: \(_actions.map { ObjectIdentifier($0) })")
         guard let index = _actions.firstIndex(where: { $0 === oldValue }) else {
             _actions.append(newValue)
             return
@@ -207,7 +204,6 @@ internal extension CPInformationTemplate {
     }
 
     func remove(action: CPTextButton) {
-        print("[Form.actions] remove \(ObjectIdentifier(action)) — current: \(_actions.map { ObjectIdentifier($0) })")
         guard let index = _actions.firstIndex(where: { $0 === action }) else {
             return
         }
